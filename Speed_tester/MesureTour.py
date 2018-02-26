@@ -12,7 +12,11 @@ ANGLE_SUP = 273
 INIT_SPEED = 200  # PWM initial
 INCREMENT_SPEED = 82  # on incrementera 10 fois pour arriver a 1020 MAX = 1023
 MAX_SPEED = 1023 #VItesse max
+
+NB_MESURES=round((MAX_SPEED-INIT_SPEED)/INCREMENT_SPEED)+1
+
 SPEED = INIT_SPEED
+
 
 #Crée le dossier MesureTourResultats si il n'existe pas déjà
 if not path.exists("MesureTourResultats"):
@@ -31,11 +35,26 @@ print(info)
 health = lidar.get_health()
 print(health)
 
-for i in range(round((MAX_SPEED-INIT_SPEED)/INCREMENT_SPEED)):
+comptes=dict()
+for i in range(NB_MESURES):
     print("Mesure",i)
     with open("MesureTourResultats/csv/mesure_"+str(SPEED)+".csv","w") as outfile:
         print("Mesure à un PWM de",SPEED)
-        lidar.start_motor()
-        lidar._motor_speed=SPEED
-        for j, scan in enumerate(lidar.iter_scans()):
 
+                 #Démarre le moteur
+        lidar.motor_speed(SPEED)    #Change la vitesse lors d'iter_scans
+        points=0
+        for j, scan in enumerate(lidar.iter_scans()):
+            print(j,scan)
+            points+=len(scan)
+            if(j>100):
+                break
+            #TODO:Compter le nombre de points par scan
+        comptes[SPEED]=points
+        lidar.stop()
+        lidar.stop_motor()
+    SPEED+=INCREMENT_SPEED
+    sleep(5)
+
+for vitesse,nombre in comptes.items():
+    print("V:",vitesse," -> ",nombre," points")
