@@ -12,7 +12,6 @@ INCREMENT_SPEED = 82 #on incrementera 10 fois pour arriver a 1020 MAX = 1023
 
 SPEED = INIT_SPEED
 
-
 SPEED = INIT_SPEED
 for i in range(11):
 

@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
 """ INITIALISATION """
 import csv
-
+from numpy import var
+from collections import OrderedDict
 from rplidar import RPLidar
 from time import sleep, time
 import matplotlib.pyplot as plt
-
-PORT_NAME = "COM16"
-ANGLE_INF = 265
-ANGLE_SUP = 285
+plt.xkcd()
+PORT_NAME = "/dev/ttyUSB0"
+ANGLE_INF = 267
+ANGLE_SUP = 273
 INIT_SPEED = 200  # PWM initial
 INCREMENT_SPEED = 82  # on incrementera 10 fois pour arriver a 1020 MAX = 1023
 
 SPEED = INIT_SPEED
 
 lidar = RPLidar(PORT_NAME)
-
 info = lidar.get_info()  # info general sur le lidar
 print(info)
 health = lidar.get_health()
 print(health)
 
-""" PRISE DES MESURES 
-    Nombre de vitesses : 10 
+""" PRISE DES MESURES
+    Nombre de vitesses : 10
     Nombre de scans par vitesse : 100
 """
 for i in range(11):
@@ -36,7 +36,7 @@ for i in range(11):
 
     for j, scan in enumerate(lidar.iter_measures()):  # on realise 100 scans a la vitesse qu'on insere dans le csv cree
         timer_10 = time()
-        if timer_10 - start_time > 10. :
+        if timer_10 - start_time > 20. :
             break
         if scan[1] >= 12:
             if scan[3] > 0. :
@@ -68,11 +68,18 @@ print("Mesures termine")
 
 """ TRAITEMENT 1° """
 SPEED = INIT_SPEED
+ecart_max=0
+intervalEcarts=[i for i in range(5,50,5)]
+nbEcartsInterval=[0 for i in range(1,50,5)]
+nb_ecart=0
+nb_mesures=0
+variances=[]
+
+
 for i in range(11):
+    mesure = OrderedDict() # dictionnaire des angles de mesure
 
-    mesure = {} # dictionnaire des angles de mesure
-
-    file = open("./data_"+str(SPEED)+".csv", "r")
+    file = open("./measures/data_"+str(SPEED)+".csv", "r")
     data = csv.reader(file, delimiter=";")
 
     for row in data :
@@ -92,24 +99,34 @@ for i in range(11):
                 mesure[angle] = value
 
     for angles in mesure.keys():
+        nb_mesures+=1
         dico = mesure[angles]
         list = sorted(dico.items())
         x, y = zip(*list)
-        print(angles,sum(y))
+        variances.append(var(x))
+        ecart=max(x)-min(x)
+        if(ecart>ecart_max):ecart_max=ecart
+        for p in range(len(intervalEcarts)):
+            if(ecart>intervalEcarts[p]):nbEcartsInterval[p]+=1
+        print("ecart:{} min:{} max:{}".format(ecart,min(x),max(x)))
+        print("Angle:",angles," Nombre de points: ",sum(y))
         somme = 0.
         for i in range(len(x)):
             somme += x[i]*y[i]
         moyenne = somme / sum(y)
-        print(moyenne)
-        x_2 = [moyenne-1,moyenne,moyenne+1]
+        print("Moyenne: ",moyenne)
+        x_2 = [moyenne]
         y_2 = [0,25,0]
-        plt.plot(x,y)
-        plt.plot(x_2,y_2,'r')
-        plt.savefig('./mesures/test_vitesse/'+str(SPEED)+'_'+str(angles)+'.png')
-        plt.clf()
+        #plt.plot(x,y, 'bo')
+        #plt.plot(x_2,y_2,'ro')
+        #plt.title("v="+str(SPEED)+" angle:"+str(angles))
+        #plt.savefig('./graph/'+str(SPEED)+'_'+str(angles)+'.png')
+        #plt.clf()
+        print("\n")
     SPEED += INCREMENT_SPEED
 print(mesure)
-
-
-
-
+print(ecart_max)
+print("Ecarts minimaux considérés: ",intervalEcarts," & Nombre de valeurs supérieures à ces écarts: ", nb_mesures,[i/nb_mesures for i in nbEcartsInterval])
+mesure=OrderedDict(sorted(mesure.items()))
+for i,l in mesure.items():
+    print(i,len(l))
