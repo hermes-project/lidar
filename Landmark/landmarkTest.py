@@ -3,6 +3,7 @@ from os.path import exists
 from os import mkdir
 import matplotlib.pyplot as plt
 from numpy.random import randint,rand
+from time import time
 #plt.xkcd()
 
 
@@ -26,10 +27,11 @@ def getCesures(mesures,mu_infini):
     """
     Detection des contours dans le scan
     """
-    SEPARATION_MIN=80
+    SEPARATION_MIN=50
     cesures=[] #chaque discontinuité trouvée
     itemCount=0
     newItem = False
+    items=[]
 
     for i in range(len(mesures)):
         ri=mesures[i].r
@@ -46,22 +48,20 @@ def getCesures(mesures,mu_infini):
             ripp=mesures[1].r
 
 
-        if abs(ri-rim)+abs(ri-rip)>SEPARATION_MIN:# and abs(rim-rimm)+abs(rip-ripp)<50:
-            c=plt.Circle((mesures[i].x,mesures[i].y),20,color="r")
+        if (abs(ri-rim)<20 and abs(rim-rimm)<20 and abs(ri-rip)>SEPARATION_MIN) or (abs(ri-rip)<20 and abs(rip-ripp)<20 and abs(ri-rim)>SEPARATION_MIN) or (abs(ri-rip)+abs(ri-rim)>2*SEPARATION_MIN):# and abs(rim-rimm)+abs(rip-ripp)<50:
+            cesures.append(Vec(mesures[i].x,mesures[i].y))
             if not newItem:
                 newItem=True
                 itemCount=0
-            elif ri<mu_infini*0.95:
+            elif ri<mu_infini*0.98:
                 plt.plot([0, mesures[i].x], [0, mesures[i].y], 'b-', linewidth=0.35)
                 itemCount += 1
-                if(itemCount==2):
-                    newItem=False
+            if(itemCount==2 and ri>mu_infini*0.98):
+                newItem=False
 
-            cesures.append(c)
-            axes.add_artist(c)
 
             #TODO:récupérer le centre des obstacles, leur largeur
-
+    plt.plot([c.x for c in cesures],[c.y for c in cesures],'ro',markersize=mu_infini/3000)
 
 
 
@@ -69,25 +69,24 @@ def getCesures(mesures,mu_infini):
 Script principal, trace les graphes de 50 scans en plaçant les bordures(césures) détectées, et en y traçant une ligne depuis l'origine pour plus de visibilité
 """
 if __name__ == '__main__':
-    if not exists('./graph'):
-        mkdir('./graph')
-
-    mu_infini = 2000
+    if not exists('./graphs'):
+        mkdir('./graphs')
+    mu_infini = 8000
     sigma = 8
 
     axes = plt.axes()
-
+    times=0
     for i in range(50):
         print("Mesure",i)
         axes.set_xlim(-mu_infini*1.05, mu_infini*1.05)
         axes.set_ylim(-mu_infini*1.05, mu_infini*1.05)
-        axes.axhline(0, 0)
-        axes.axvline(0, 0)
+        axes.axhline(0, 0,ls="--",linewidth=0.35,color="g")
+        axes.axvline(0, 0,ls="--",linewidth=0.35,color="g")
         # Les obstacles aléatoires
-        nb_obst = 3
+        nb_obst = randint(3,6)
 
-        sizes = randint(5, 20, nb_obst)
-        distances = [randint(100, mu_infini) / mu_infini for _ in sizes]
+        sizes = randint(10, 20, nb_obst)
+        distances = [abs(normal(mu_infini/2,mu_infini/5)) / mu_infini for _ in sizes]
         angles = [360 * rand() for _ in distances]
         end_angles = [n * 0.9 + angle for n, angle in zip(sizes, angles)]
 
@@ -96,8 +95,11 @@ if __name__ == '__main__':
         gen = fakeLidar(mu_infini, sigma, angles, end_angles, distances)
 
         mesures=getMesures(gen)
+        now=time()
         cesures=getCesures(mesures,mu_infini)
+        times+=time()-now
 
-        plt.plot([v.x for v in mesures],[v.y for v in mesures],'s',markersize=0.5)
-        plt.savefig('./graphs/'+str(i)+'.png')
+        plt.plot([v.x for v in mesures],[v.y for v in mesures],'s',markersize=0.1)
+        plt.savefig('./graphs/'+str(i)+'.svg', dpi=300)
         axes.clear()
+    print(times/50)
