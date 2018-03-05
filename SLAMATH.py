@@ -1,11 +1,12 @@
 from math import pow, sqrt,sin,cos,atan2,pi
 from numpy.random import normal
 class Vec():
-    def __init__(self,x,y):
+    def __init__(self,x,y,id):
         self.x=x
         self.y=y
         self.r=sqrt(pow(self.x,2)+pow(self.y,2))
         self.theta = atan2(self.y, self.x)
+        self.id=id
 
     def dist(self,otherVec):
         return sqrt(pow(otherVec.x-self.x,2)+pow(otherVec.y-self.y,2))
@@ -22,6 +23,7 @@ class Line():
         self.vec2=vec2
         self.length=vec1.dist(vec2)
         self.theta=atan2(vec2.y-vec1.y,vec2.x-vec1.x)
+
 
 
 """

@@ -6,6 +6,7 @@ from collections import OrderedDict
 from rplidar import RPLidar
 from time import sleep, time
 import matplotlib.pyplot as plt
+
 plt.xkcd()
 PORT_NAME = "/dev/ttyUSB0"
 ANGLE_INF = 267
