@@ -35,7 +35,7 @@ def generator(lidar, resolution):
         m = average(distances)
         et = standard_deviation(distances,m)
         while j < len(distances) :
-            if (distances < m-(3*et) or distances > m + (3*et)):
+            if (distances[j] < m-(3*et) or distances[j] > m + (3*et)):
                 distances.pop(j)
             else:
                 j +=1
@@ -43,8 +43,14 @@ def generator(lidar, resolution):
     return data
 
 def average(array):
-    return sum(array, 0.0) / len(array)
+    if len(array) == 0:
+        return 0
+    else:
+        return sum(array, 0.0) / len(array)
 
 def standard_deviation(array,m):
-    return (average([(x - m)**2 for x in array]))**0.5
+    if len(array) == 0:
+        return 0
+    else:
+        return (average([(x - m)**2 for x in array]))**0.5
 
