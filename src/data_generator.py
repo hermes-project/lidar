@@ -20,10 +20,10 @@ def generator(lidar, resolution):
         alpha += resolution
 
     for measure in lidar.iter_measures():
-        if measure[0]:
+        if measure[0]: # si à TRUE (ie nouveau tour) on incremente
             i += 1
         theta = round(measure[2]/arround,1)*arround # arrondie a la resolution près. EX : à 0.5 près pour 2,57 et 2,8. round(2,57 / 5 , 1) = 0.5 et 0.5 * 5 = 2.5 . round ( 2,8 / 5 , 1) = 0.6 et 0.6 * 5 = 3
-        data[theta].append(measure[3])
-        if i >= 10 :
+        data[theta].append(measure[3]) # on ajoute la data dans l'array dont la clé correspond à l'angle
+        if i >= 10 : # si 10 tours realise
             break
     return data
