@@ -1,45 +1,45 @@
-from src.lidar_maths import fakeLidar
-import configparser
-from matplotlib import pyplot as plt
-from math import cos,sin,pi
-from numpy.random import rand, randint
+#!/usr/bin/env python3
 
-def analyze_dic(raw_dict):
+
+def analyze_dic(raw_dict, distance_max):
+    """
+    Fonction d'analyse de dictionnaire de valuers
+
+    :param raw_dict: Dictionnaire au format {angle:distance associée}
+    :param distance_max: distance sous laquelle on considère un obstacle
+    :return: list_bounds une liste contenant les angles ou couples d'angles associés aux objet détectés
+    """
     list_bounds=[]
     item=False
     precedent = False
-    #Récupération des données de config
-    config=configparser.ConfigParser()
-    config.read('../config.ini')
-    precision=config['MESURES']['precision']
-    distance_max=config['DETECTION']['distance_max']
-    distance_infini=config['DETECTION']['distance_infini']
-    print(precision,distance_infini,distance_max)
-    last_status=False
+    last_angle=0
+    todelete=[]
+
+    #On ignore les distances nulles, car absurdes
+    for k,v in raw_dict.items():
+        if v==0:
+            todelete.append(k)
+    for k in todelete:
+        del raw_dict[k]
+
     for i,(angle, distance) in enumerate(raw_dict.items()):
-        if i>0:
-            if not item and not precedent and distance<=3000:
+        if i>0 and distance>10:
+            if not item and not precedent and distance<=distance_max:
                 list_bounds.append([angle])
                 item=True
                 precedent=True
-            elif item and distance>=3000:
-                list_bounds[-1].append(float(angle)-float(precision))
+            elif item and distance>=distance_max:
+                list_bounds[-1].append(last_angle)
                 item=False
                 precedent=False
+            last_angle=angle
         if i==0:
             first=(angle,distance)
 
     #On traite le premier item en dernier pour avoir accès au dernier
-    if not item and not precedent and first[1]<=3000:
-        list_bounds.append([item[0]])
-    elif item and first[1]>=3000:
-        list_bounds[-1].append(first[0]-precision)
-    print(list_bounds)
+    if first[1]>10:
+        if not item and not precedent and first[1]<=distance_max:
+            list_bounds.append([first[0]])
+        elif item and first[1]>=3000:
+            list_bounds[-1].append(first[0])
     return list_bounds
-
-angles=[x/10.0 for x in range(0,3600,5)]
-distances=randint(200,8000,len(angles))
-
-dico=dict(zip(angles,distances))
-print(dico)
-analyze_dic(dico)

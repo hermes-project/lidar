@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+
 class Obstacles:
     """"Classe permettant de créer des obstacles"""
 
@@ -6,7 +9,6 @@ class Obstacles:
     predictedPosition = [0,0]
 
     def __init__(self, width, center):
-
         self.width = width  # correspond à la liste des données (angle , distances ) de l'obstacle
         self.center = center # valeur de milieu de l'objet calculé selon une méthode défini
 

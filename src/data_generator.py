@@ -1,15 +1,15 @@
-from rplidar import RPLidar
+#!/usr/bin/env python3
+from time import time
 
 
-"""
-fichier avec la fonction qui génère les données. Le Lidar doit être instencié dans le main
-Entrée : RPLidar, résolution en angle
-Sortie : Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
-"""
+def generator(lidar, nombre_tours, resolution):
+    """
+    fichier avec la fonction qui génère les données. Le Lidar doit être instencié dans le main
 
-
-
-def generator(lidar, resolution):
+    :param lidar: Le lidar utilisé
+    :param resolution: La résolution utilisée
+    :return: data Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
+    """
 
     alpha = 0.
     data = {}
@@ -22,6 +22,11 @@ def generator(lidar, resolution):
     for measure in lidar.iter_measures():
         if measure[0]: # si à TRUE (ie nouveau tour) on incremente
             i += 1
+
+        #Ignorer les valeurs absurdement proches
+        if measure[3] == 0:
+                continue
+
         theta = round(measure[2]/arround, 1)*arround # arrondie a la resolution près. EX : à 0.5 près pour 2,57 et 2,8. round(2,57 / 5 , 1) = 0.5 et 0.5 * 5 = 2.5 . round ( 2,8 / 5 , 1) = 0.6 et 0.6 * 5 = 3
         if theta == 360.:
             data[0].append(measure[3])
@@ -29,7 +34,6 @@ def generator(lidar, resolution):
             data[theta].append(measure[3])
         if i >= 10 : # si 10 tours realise
             break
-
     for angle,distances in data.items():
         j = 0
         m = average(distances)
@@ -39,7 +43,10 @@ def generator(lidar, resolution):
                 distances.pop(j)
             else:
                 j +=1
-        data[angle] = average(distances)
+        value=average(distances)
+        if value<10:
+            value=12000
+        data[angle] = round(average(distances))
     return data
 
 def average(array):
