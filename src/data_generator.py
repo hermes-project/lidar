@@ -32,7 +32,7 @@ def generator(lidar, nombre_tours, resolution):
             data[0].append(measure[3])
         else:
             data[theta].append(measure[3])
-        if i >= 10 : # si 10 tours realise
+        if i >= nombre_tours : # si nombre_tours tours realise
             break
     for angle,distances in data.items():
         j = 0
