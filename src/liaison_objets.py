@@ -3,7 +3,7 @@
 from src.obstacles import Obstacle
 
 
-def laison_objets( list_bounds,tolerance,seuil ):
+def liaison_objets( list_bounds,tolerance,seuil ):
     """
     Fonction qui créé des objets de type Obstacle et retourne une liste de ces obstacles
 
