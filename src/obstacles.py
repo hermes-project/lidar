@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 
-class Obstacles:
+class Obstacle:
     """"Classe permettant de créer des obstacles"""
 
     isMoving = False
     speed = 0. #necessite que ce soit des vecteurs
     predictedPosition = [0,0]
+    updated = False
 
     def __init__(self, width, center):
         self.width = width  # correspond à la liste des données (angle , distances ) de l'obstacle
@@ -22,6 +23,8 @@ class Obstacles:
         return self.width
     def get_center(self):
         return self.center
+    def get_updated(self):
+        return self.updated
 
     def set_isMoving(self, bool):
         self.isMoving = bool
@@ -33,7 +36,8 @@ class Obstacles:
         self.width = dictionnary
     def set_center(self, tuple):
         self.center = tuple
-
+    def set_updated(self,bool):
+        self.updated = bool
 
 
 
