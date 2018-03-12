@@ -37,7 +37,7 @@ for i in range(11):
 
     for j, scan in enumerate(lidar.iter_measures()):  # on realise 100 scans a la vitesse qu'on insere dans le csv cree
         timer_10 = time()
-        if timer_10 - start_time > 20. :
+        if timer_10 - start_time > 10. :
             break
         if scan[1] >= 12:
             if scan[3] > 0. :
@@ -80,7 +80,7 @@ variances=[]
 for i in range(11):
     mesure = OrderedDict() # dictionnaire des angles de mesure
 
-    file = open("./measures/data_"+str(SPEED)+".csv", "r")
+    file = open("./data_"+str(SPEED)+".csv", "r")
     data = csv.reader(file, delimiter=";")
 
     for row in data :
@@ -101,7 +101,7 @@ for i in range(11):
 
     for angles in mesure.keys():
         nb_mesures+=1
-        dico = mesure[angles]
+        dico = mesure[anglesç]
         list = sorted(dico.items())
         x, y = zip(*list)
         variances.append(var(x))
@@ -116,13 +116,14 @@ for i in range(11):
             somme += x[i]*y[i]
         moyenne = somme / sum(y)
         print("Moyenne: ",moyenne)
-        x_2 = [moyenne]
-        y_2 = [0,25,0]
-        #plt.plot(x,y, 'bo')
-        #plt.plot(x_2,y_2,'ro')
-        #plt.title("v="+str(SPEED)+" angle:"+str(angles))
-        #plt.savefig('./graph/'+str(SPEED)+'_'+str(angles)+'.png')
-        #plt.clf()
+        x_2 = [moyenne,moyenne]
+        print(x_2)
+        y_2 = [0,25]
+        plt.plot(x,y, 'bo')
+        plt.plot(x_2,y_2,'r-')
+        plt.title("v="+str(SPEED)+" angle:"+str(angles))
+        plt.savefig('./'+str(SPEED)+'_'+str(angles)+'.png')
+        plt.clf()
         print("\n")
     SPEED += INCREMENT_SPEED
 print(mesure)
