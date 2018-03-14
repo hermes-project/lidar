@@ -27,7 +27,7 @@ def generator(lidar, nombre_tours, resolution):
         if measure[3] == 0:
                 continue
 
-        theta = round(measure[2]/arround, 1)*arround # arrondie a la resolution près. EX : à 0.5 près pour 2,57 et 2,8. round(2,57 / 5 , 1) = 0.5 et 0.5 * 5 = 2.5 . round ( 2,8 / 5 , 1) = 0.6 et 0.6 * 5 = 3
+        theta = ( round(measure[2]/arround, 1)*arround ) % 360 # arrondie a la resolution près. EX : à 0.5 près pour 2,57 et 2,8. round(2,57 / 5 , 1) = 0.5 et 0.5 * 5 = 2.5 . round ( 2,8 / 5 , 1) = 0.6 et 0.6 * 5 = 3
         if theta == 360.:
             data[0].append(measure[3])
         else:
