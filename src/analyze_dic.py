@@ -42,4 +42,8 @@ def analyze_dic(raw_dict, distance_max):
             list_bounds.append([first[0]])
         elif item and first[1]>=3000:
             list_bounds[-1].append(first[0])
+    n=len(list_bounds)
+    for obst in range(n):
+        if len(list_bounds[obst]) == 1:
+            list_bounds[obst].append(list_bounds[obst][0])
     return list_bounds

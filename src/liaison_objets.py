@@ -17,16 +17,16 @@ def liaison_objets( dico,list_bounds,tolerance,seuil ):
     distance_min = 12000
     distance_max = 0
 
-    for obst in range(n-1):
+    for obst in range(n):
 
 
         # Calcul milieu obstacles et largeur
 
-        if len(list_bounds) > 1:
+        if len(list_bounds) >= 1:
             angle_min = list_bounds[obst][0]
             angle_max = list_bounds[obst][1]
             center = abs( angle_min+angle_max ) / 2
-            width = abs( angle_max-angle_min )
+
             if center not in dico.keys():
                 for angle in dico.keys():
                     if angle_min<=angle<=angle_max:
@@ -36,7 +36,7 @@ def liaison_objets( dico,list_bounds,tolerance,seuil ):
                         if distance<distance_min:
                             distance_min = distance
                 dico[center] = (distance_max+distance_min)/2
-
+            width = max(abs(angle_max - angle_min),(distance_max-distance_min) )
 
         # Creation des objets de type Obstacle
 
