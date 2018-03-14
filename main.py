@@ -51,11 +51,11 @@ try:
                 print(dico)
                 lidar.stop()
                 limits=analyze_dic(dico, distance_max)
-                list_obstacles = liaison_objets(limits,tolerance,seuil,precision)
+                list_obstacles = liaison_objets(dico,limits,tolerance,seuil)
                 for o in list_obstacles:
                     angle = o.center
                     print(angle)
-                    #print(dico[angle])
+                    print(dico[angle])
 
                 l=[]
                 for a in limits:

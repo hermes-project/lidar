@@ -3,7 +3,7 @@
 from src.obstacles import Obstacle
 
 
-def liaison_objets( list_bounds,tolerance,seuil,resolution ):
+def liaison_objets( dico,list_bounds,tolerance,seuil ):
     """
     Fonction qui créé des objets de type Obstacle et retourne une liste de ces obstacles
 
@@ -14,6 +14,8 @@ def liaison_objets( list_bounds,tolerance,seuil,resolution ):
     list_obstacles = []
     n = len(list_bounds)
     list_predicted_position = []
+    distance_min = 12000
+    distance_max = 0
 
     for obst in range(n-1):
 
@@ -21,8 +23,19 @@ def liaison_objets( list_bounds,tolerance,seuil,resolution ):
         # Calcul milieu obstacles et largeur
 
         if len(list_bounds) > 1:
-            center = round( abs( list_bounds[obst][1]+list_bounds[obst][0] ) / 2 ,0 )
-            width = abs( list_bounds[obst][1]-list_bounds[obst][0] )
+            angle_min = list_bounds[obst][0]
+            angle_max = list_bounds[obst][1]
+            center = abs( angle_min+angle_max ) / 2
+            width = abs( angle_max-angle_min )
+            if center not in dico.keys():
+                for angle in dico.keys():
+                    if angle_min<=angle<=angle_max:
+                        distance = dico[angle]
+                        if distance>distance_max:
+                            distance_max = distance
+                        if distance<distance_min:
+                            distance_min = distance
+                dico[center] = (distance_max+distance_min)/2
 
 
         # Creation des objets de type Obstacle
