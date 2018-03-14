@@ -3,7 +3,7 @@
 from src.obstacles import Obstacle
 
 
-def liaison_objets( list_bounds,tolerance,seuil ):
+def liaison_objets( list_bounds,tolerance,seuil,resolution ):
     """
     Fonction qui créé des objets de type Obstacle et retourne une liste de ces obstacles
 
@@ -15,13 +15,14 @@ def liaison_objets( list_bounds,tolerance,seuil ):
     n = len(list_bounds)
     list_predicted_position = []
 
-    for obst in range(n):
+    for obst in range(n-1):
 
 
         # Calcul milieu obstacles et largeur
 
-        center = abs( list_bounds[obst][1]-list_bounds[obst][0] ) / 2
-        width = abs( list_bounds[obst][1]-list_bounds[obst][0] )
+        if len(list_bounds) > 1:
+            center = round( abs( list_bounds[obst][1]+list_bounds[obst][0] ) / 2 ,0 )
+            width = abs( list_bounds[obst][1]-list_bounds[obst][0] )
 
 
         # Creation des objets de type Obstacle
@@ -37,7 +38,8 @@ def liaison_objets( list_bounds,tolerance,seuil ):
         obstacle_traite.set_predictedPosition( predictedPosition )
 
         # Calcul predicted_plus_proche
-        predicted_plus_proche = 0 # TODO
+        for predicted in list_predicted_position:
+            predicted_plus_proche = abs( predictedPosition-center )
 
         # Update et categorisation des obstacles
 
@@ -51,7 +53,7 @@ def liaison_objets( list_bounds,tolerance,seuil ):
                 obstacle_traite.set_updated( False )
                 list_obstacles.remove( obst )
 
-
+    return list_obstacles
 
 
 
