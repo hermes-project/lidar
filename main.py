@@ -5,7 +5,6 @@ import lib.rplidar as rplidar
 import configparser
 from matplotlib import pyplot as plt
 from math import cos,sin,pi
-import numpy as np
 from numpy.random import rand, randint
 
 from src.analyze_dic import analyze_dic
@@ -29,7 +28,7 @@ seuil = int(config['CATEGORISATION']['seuil'])
 
 try:
         #Le lidar:
-        lidar = rplidar.RPLidar("/dev/ttyUSB1")
+        lidar = rplidar.RPLidar("/dev/ttyUSB0")
         lidar.start_motor()
         sleep(3) #Laisse le temps au lidar de prendre sa vitesse
 
@@ -70,8 +69,8 @@ try:
                     r = dico[angle]
                     print(angle)
                     print(r)
-                    x = r*np.cos(-angle*2*pi/360)
-                    y = r*np.sin(-angle*2*pi/360)
+                    x = r*cos(-angle*2*pi/360)
+                    y = r*sin(-angle*2*pi/360)
                     circle = plt.Circle((x,y),o.width,color='g')
                     ax.add_artist( circle )
 
