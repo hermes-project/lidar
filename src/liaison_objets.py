@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 from src.obstacles import Obstacle
-from math import cos,sin,pi
+
 
 def liaison_objets( dico,list_bounds,tolerance,seuil ):
     """
@@ -25,10 +25,6 @@ def liaison_objets( dico,list_bounds,tolerance,seuil ):
         if len(list_bounds) >= 1:
             angle_min = list_bounds[obst][0]
             angle_max = list_bounds[obst][1]
-            xmin = dico[angle_min]*cos( -angle_min*2*pi/360 )
-            xmax = dico[angle_max]*cos( -2*pi*angle_max/360 )
-            ymin = dico[angle_min]*sin( -angle_min*2*pi/360 )
-            ymax = dico[angle_max]*sin( -2*pi*angle_max/360 )
             center = abs( angle_min+angle_max ) / 2
 
             if center not in dico.keys():
@@ -40,7 +36,7 @@ def liaison_objets( dico,list_bounds,tolerance,seuil ):
                         if distance<distance_min:
                             distance_min = distance
                 dico[center] = (distance_max+distance_min)/2
-            width = max( abs(xmax-xmin),abs(ymax-ymin) )
+            width = max(abs(angle_max - angle_min),(distance_max-distance_min) )
 
         # Creation des objets de type Obstacle
 
