@@ -4,6 +4,7 @@ from time import sleep, time
 import lib.rplidar as rplidar
 import configparser
 from matplotlib import pyplot as plt
+from matplotlib import animation as anim
 from math import cos,sin,pi
 from numpy.random import rand, randint
 
@@ -44,7 +45,7 @@ try:
         y=[]
         ax.plot(x,y,'r')
 
-        while affichage_continu:
+        def affichage_continu():
             for i in range(N_TESTS):
                 t=time()
                 dico=generator(lidar,nombre_tours,precision)
@@ -92,6 +93,7 @@ try:
                 plt.grid()
                 fig.canvas.draw()
                 lidar.start()
+        ani = anim.FuncAnimation(fig, affichage_continu, interval=800) # a tester
 
 except KeyboardInterrupt:
     lidar.stop_motor()

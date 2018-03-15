@@ -8,6 +8,7 @@ def generator(lidar, nombre_tours, resolution):
 
     :param lidar: Le lidar utilisé
     :param resolution: La résolution utilisée
+    :param le nombre de tours qu'effectue le LiDAR
     :return: data Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
     """
 
