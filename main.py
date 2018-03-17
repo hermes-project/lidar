@@ -23,8 +23,8 @@ nombre_tours = float(config['MESURES']['nombre_tours'])
 precision = float(config['MESURES']['precision'])
 distance_max = int(config['DETECTION']['distance_max'])
 distance_infini = int(config['DETECTION']['distance_infini'])
-tolerance = int(config['CATEGORISATION']['tolerance'])
-seuil = int(config['CATEGORISATION']['seuil'])
+tolerance_predicted_fixe = int(config['CATEGORISATION']['tolerance_predicted_fixe'])
+tolerance_Kalman = int(config['CATEGORISATION']['tolerance_Kalman'])
 
 try:
         #Le lidar:
@@ -52,7 +52,7 @@ try:
                 lidar.stop()
                 limits=analyze_dic(dico, distance_max)
                 print("Ostacles détectés aux angles:", limits)
-                list_obstacles = liaison_objets(dico,limits,tolerance,seuil)
+                list_obstacles = liaison_objets(dico,limits,tolerance_predicted_fixe,tolerance_Kalman)
 
                 l=[]
                 for a in limits:

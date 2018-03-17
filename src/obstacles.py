@@ -8,6 +8,7 @@ class Obstacle:
     speed = 0. #necessite que ce soit des vecteurs
     predictedPosition = [0,0]
     updated = False
+    piste_obstacle = []
 
     def __init__(self, width, center):
         self.width = width  # correspond à la liste des données (angle , distances ) de l'obstacle
@@ -19,6 +20,10 @@ class Obstacle:
         return self.speed
     def get_predictedPosition(self):
         return self.predictedPosition
+    def get_predicted_Kalman(self):
+        return self.predicted_Kalman
+    def get_piste_obstacle(self):
+        return self.piste_obstacle
     def get_width(self):
         return self.width
     def get_center(self):
@@ -32,6 +37,10 @@ class Obstacle:
         self.speed = vector
     def set_predictedPosition(self, tuple):
         self.predictedPosition = tuple
+    def set_predicted_Kalman(self,tuple):
+        self.predicted_Kalman = tuple
+    def set_new_position_piste(self,tuple):
+        self.piste_obstacle.append(tuple)
     def set_width(self,dictionnary):
         self.width = dictionnary
     def set_center(self, tuple):
