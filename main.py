@@ -13,14 +13,14 @@ from src.analyze_dic import analyze_dic
 from src.data_generator import generator
 from src.liaison_objets import liaison_objets
 
-#Nombre de tests, pour le calcul de temps moyens
-N_TESTS=1
+# Nombre de tests, pour le calcul de temps moyens
+N_TESTS = 1
 affichage_continu = True
 
 
-#Recuperationnage de la config:
+# Recuperationnage de la config:
 config = configparser.ConfigParser()
-config.read('config.ini',encoding="utf-8")
+config.read('config.ini', encoding="utf-8")
 nombre_tours = float(config['MESURES']['nombre_tours'])
 precision = float(config['MESURES']['precision'])
 distance_max = int(config['DETECTION']['distance_max'])
@@ -29,12 +29,12 @@ tolerance = int(config['CATEGORISATION']['tolerance'])
 seuil = int(config['CATEGORISATION']['seuil'])
 
 try:
-        #Le lidar:
+        # Le lidar:
         lidar = rplidar.RPLidar("/dev/ttyUSB1")
         lidar.start_motor()
-        sleep(3) #Laisse le temps au lidar de prendre sa vitesse
+        sleep(3) # Laisse le temps au lidar de prendre sa vitesse
 
-        tot=0    #Mesure du temps d'execution
+        tot=0    # Mesure du temps d'execution
         plt.ion()
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -49,14 +49,14 @@ try:
         def affichage_continu():
             for i in range(N_TESTS):
                 t=time()
-                dico=generator(lidar,nombre_tours,precision)
+                dico=generator(lidar, nombre_tours, precision)
                 print(dico)
                 lidar.stop()
-                limits=analyze_dic(dico, distance_max)
+                limits = analyze_dic(dico, distance_max)
                 print("Ostacles détectés aux angles:", limits)
-                list_obstacles = liaison_objets(dico,limits,tolerance,seuil)
+                list_obstacles = liaison_objets(dico, limits, tolerance, seuil)
 
-                l=[]
+                l = []
                 for a in limits:
                     for n in range(len(a)):
                         l.append(a[n])
@@ -76,25 +76,25 @@ try:
                     circle = plt.Circle((x,y),o.width,color='g')
                     ax.add_artist( circle )
 
-                #Listes des positions des obstacles à afficher
+                # Listes des positions des obstacles à afficher
                 detectedx=[dico[a]*cos(2*pi-2*pi*a/360.0) for a in l]
                 detectedy=[dico[a]*sin(2*pi-2*pi*a/360.0) for a in l]
 
-                #Listes des positions des points à afficher
-                x=[d*cos(2*pi-2*pi*a/360.0) for a,d in zip(dico.keys(),dico.values())]
-                y=[d*sin(2*pi-2*pi*a/360.0) for a,d in zip(dico.keys(),dico.values())]
-                t=time()-t
-                tot+=t
+                # Listes des positions des points à afficher
+                x = [d*cos(2*pi-2*pi*a/360.0) for a,d in zip(dico.keys(),dico.values())]
+                y = [d*sin(2*pi-2*pi*a/360.0) for a,d in zip(dico.keys(),dico.values())]
+                t = time()-t
+                # tot += t  # TODO : tot n'est pas défini !!!
 
                 print("Temps d'execution:",t)
-
 
                 plt.plot(x, y, 'ro', markersize=0.6)
                 plt.plot(detectedx, detectedy, 'bo', markersize=1.8)
                 plt.grid()
                 fig.canvas.draw()
                 lidar.start()
-        ani = anim.FuncAnimation(fig, affichage_continu, interval=800) # a tester
+        ani = anim.FuncAnimation(fig, affichage_continu, interval=800)  # a tester
+
 
 except KeyboardInterrupt:
     lidar.stop_motor()
