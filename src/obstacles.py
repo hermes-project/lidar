@@ -14,8 +14,7 @@ class Obstacle:
         self.pisteObstacle = []
         self.updated = False
         self.width = width  # correspond à la liste des données (angle , distances ) de l'obstacle
-        self.center = center  # valeur de milieu de l'objet calculé selon une méthode défini
-
+        self.center = center  # valeur de milieu de l'objet calculé selon une méthgit 
 
     def get_isMoving(self):
         return self.isMoving
@@ -60,6 +59,7 @@ class Obstacle:
     def set_predicted_Kalman(self,predicted_kalman):
         """
         Position suivante de l'objet, predite avec Kalman
+
         :param is_moving: tuple
         :return:
         """
@@ -68,6 +68,7 @@ class Obstacle:
     def set_new_position_piste(self,new_position_piste):
         """
         Ajoute la derniere position de l'objet a sa liste de positions precedentes
+
         :param is_moving: tuple
         :return:
         """
@@ -76,6 +77,7 @@ class Obstacle:
     def set_predicted_position(self, predicted_position):
         """
         Position suivante de l'objet, predite si cet objet est suppose fixe
+
         :param predicted_position: tuple
         :return:
         """

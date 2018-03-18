@@ -4,7 +4,7 @@ from time import time
 
 def generator(lidar, nombre_tours, resolution):
     """
-    fichier avec la fonction qui génère les données. Le Lidar doit être instencié dans le main
+    Fichier avec la fonction qui génère les données. Le Lidar doit être instencié dans le main
 
     :param lidar: Le lidar utilisé
     :param nombre_tours: le nombre de tours qu'effectue le LiDAR

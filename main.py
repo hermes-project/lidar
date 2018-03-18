@@ -25,7 +25,7 @@ precision = float(config['MESURES']['precision'])
 distance_max = int(config['DETECTION']['distance_max'])
 distance_infini = int(config['DETECTION']['distance_infini'])
 tolerance_predicted_fixe = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe'])
-tolerance_Kalman = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_Kalman'])
+tolerance_kalman = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman'])
 
 try:
         # Le lidar:
@@ -54,7 +54,7 @@ try:
                 limits = analyze_dic(dico, distance_max)
                 print("Ostacles détectés aux angles:", limits)
 
-                list_obstacles = liaison_objets(dico,limits,tolerance_predicted_fixe,tolerance_Kalman)
+                list_obstacles = liaison_objets(dico,limits,tolerance_predicted_fixe,tolerance_kalman)
 
                 l = []
                 for a in limits:
