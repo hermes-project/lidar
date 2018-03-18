@@ -3,8 +3,7 @@
 
 from src.obstacles import Obstacle
 
-
-def liaison_objets(dico, list_bounds, tolerance, seuil):
+def liaison_objets( dico,list_bounds,tolerance_predicted_fixe,tolerance_Kalman ):
     """
     Fonction qui créé des objets de type Obstacle et retourne une liste de ces obstacles
 
@@ -17,7 +16,6 @@ def liaison_objets(dico, list_bounds, tolerance, seuil):
 
     list_obstacles = []
     n = len(list_bounds)
-    list_predicted_position = []
     distance_min = 12000
     distance_max = 0
 
@@ -43,24 +41,27 @@ def liaison_objets(dico, list_bounds, tolerance, seuil):
         list_obstacles.append(Obstacle(width, center))  # TODO :  width n'est pas défini
         obstacle_traite = list_obstacles[obst]
 
-        # Calcul predicted_position: la position predite de l'obstacle a l'instant t+1
-        predicted_position = center  # TODO
-        list_predicted_position.append(predicted_position)
-        obstacle_traite.set_predictedPosition(predicted_position)
+        # Calcul predicted_position: la position predite de l'obstacle a l'instant t+1 s'il ne bouge pas
 
-        # Calcul predicted_plus_proche
-        for predicted in list_predicted_position:
-            # TODO : predicted n'est pas utilisé
-            predicted_plus_proche = abs(predicted_position-center)
+        predictedPosition = center # TODO quand on aura le deplacement du robot
+        obstacle_traite.set_predictedPosition( predictedPosition )
 
         # Update et categorisation des obstacles
 
-        if abs(center-predicted_position) < tolerance:
-            obstacle_traite.set_updated(True)
+        if abs( center-predictedPosition ) < tolerance_predicted_fixe: #on a alors un obstacle fixe
+            obstacle_traite.set_updated( True )
+            
         else:
-            if abs(predicted_plus_proche-center) < seuil:
+
+            # Calcul de la position predite avec Kalman dans le cas d'un objet mobile
+            predicted_Kalman = center #TODO
+
+            if abs( center-predicted_Kalman ) < tolerance_Kalman:
                 obstacle_traite.set_isMoving(True)  # on a un objet mobile
                 obstacle_traite.set_updated(True)
+                obstacle_traite.set_predicted_Kalman(predicted_Kalman)
+                obstacle_traite.set_new_position_piste( center ) #les positions precedentes de l'objet en mouvement
+
             else:
                 obstacle_traite.set_updated(False)
                 list_obstacles.remove(obst)
