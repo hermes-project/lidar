@@ -8,27 +8,27 @@ class Obstacle:
 
     def __init__(self, width, center):
         self.isMoving = False
-        self.speed = 0.  # necessite que ce soit des vecteurs
-        self.predictedPosition = [0, 0] # [distance, angle]
-        self.predictedKalman = [0, 0] # [distance, angle]
-        self.pisteObstacle = []
+        self.speed = 0.  # necessite que ce soit des vecteurs # TODO
+        self.predictedPosition = [0, 0] # [distance, angle] avec la distance en mm  et l'angle en radian
+        self.predictedKalman = [0, 0] # [distance, angle] avec la distance en mm  et l'angle en radian
+        self.pisteObstacle = [] # Les positions precedentes de l'objet en mouvement
         self.updated = False
-        self.width = width  # correspond à la liste des données (angle , distances ) de l'obstacle
-        self.center = center  # valeur de milieu de l'objet calculé selon une méthgit 
+        self.width = width  # distance en mm
+        self.center = center  # valeur de milieu de l'objet, exprimé grâce à un angle en radian
 
-    def get_isMoving(self):
+    def get_is_moving(self):
         return self.isMoving
 
     def get_speed(self):
         return self.speed
 
-    def get_predictedPosition(self):
+    def get_predicted_position(self):
         return self.predictedPosition
 
-    def get_predictedKalman(self):
+    def get_predicted_kalman(self):
         return self.predictedKalman
 
-    def get_pisteObstacle(self):
+    def get_piste_obstacle(self):
         return self.pisteObstacle
 
     def get_width(self):
@@ -48,45 +48,45 @@ class Obstacle:
         """
         self.isMoving = is_moving
 
-    def set_speed(self, vector):
+    def set_speed(self, vitesse):
         """
 
-        :param vector: Vec
+        :param vitesse: Vec
         :return:
         """
-        self.speed = vector
-
-    def set_predicted_Kalman(self,predicted_kalman):
-        """
-        Position suivante de l'objet, predite avec Kalman
-
-        :param is_moving: tuple ([distance, angle] avec l'angle en degré et la distance en mm)
-        :return:
-        """
-        self.predictedKalman = predicted_kalman
-
-    def set_new_position_piste(self,new_position_piste):
-        """
-        Ajoute la derniere position de l'objet a sa liste de positions precedentes
-
-        :param is_moving: tuple ([distance, angle] avec l'angle en degré et la distance en mm)
-        :return:
-        """
-        self.pisteObstacle.append(new_position_piste)
+        self.speed = vitesse
 
     def set_predicted_position(self, predicted_position):
         """
         Position suivante de l'objet, predite si cet objet est suppose fixe
 
-        :param predicted_position: tuple ([distance, angle] avec l'angle en degré et la distance en mm)
+        :param predicted_position: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
         :return:
         """
         self.predictedPosition = predicted_position
 
+    def set_predicted_kalman(self, predicted_kalman):
+        """
+        Position suivante de l'objet, predite avec Kalman
+
+        :param predicted_kalman: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
+        :return:
+        """
+        self.predictedKalman = predicted_kalman
+
+    def set_new_position_piste(self, new_position_piste):
+        """
+        Ajoute la derniere position de l'objet a sa liste de positions precedentes
+
+        :param new_position_piste: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
+        :return:
+        """
+        self.pisteObstacle.append(new_position_piste)
+
     def set_width(self, width):
         """
 
-        :param width: dict
+        :param width: tuple
         :return:
         """
         self.width = width
@@ -94,7 +94,7 @@ class Obstacle:
     def set_center(self, center):
         """
 
-        :param center: tuple ([distance, angle] avec l'angle en degré et la distance en mm)
+        :param center: tuple (angle en RADIAN)
         :return:
         """
         self.center = center

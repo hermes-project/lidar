@@ -20,6 +20,12 @@ class Vec:
         return other_vec.x*self.x+other_vec.y*self.y
 
 
+class VecPolaire:
+    def __init__(self, r, theta):
+        self.r = r
+        self.theta = theta
+
+
 class Line:
     def __init__(self, vec1, vec2):
         self.vec1 = vec1
@@ -28,11 +34,12 @@ class Line:
         self.theta = atan2(vec2.y-vec1.y, vec2.x-vec1.x)
 
 
-def fakeLidar(mu=1000, sigma=3, angles_min=None, angles_max=None, distances=None):
+def fake_lidar(mu=1000, sigma=3, angles_min=None, angles_max=None, distances=None):
     """
     Retourne un générateur de mesures fournissant 400 mesures distances gaussiennes avec une moyenne de mu
     et d'écart-type sigma, avec n portions à mu/3 entre les angles anglemin et anglemax
     """
+
     if angles_max is None:
         angles_max = [0.0]
     if angles_min is None:
@@ -49,7 +56,7 @@ def fakeLidar(mu=1000, sigma=3, angles_min=None, angles_max=None, distances=None
     for i in range(400):
         if angle > 360:
             angle = 0
-        val=normal(mu, sigma)
+        val = normal(mu, sigma)
         for m, M, r in zip(angles_min, angles_max, distances):
             if m < angle < M:
                 val = normal(r*mu, sigma)
