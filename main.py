@@ -24,8 +24,8 @@ nombre_tours = float(config['MESURES']['nombre_tours'])
 precision = float(config['MESURES']['precision'])
 distance_max = int(config['DETECTION']['distance_max'])
 distance_infini = int(config['DETECTION']['distance_infini'])
-tolerance_predicted_fixe = int(config['CATEGORISATION']['tolerance_predicted_fixe'])
-tolerance_Kalman = int(config['CATEGORISATION']['tolerance_Kalman'])
+tolerance_predicted_fixe = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe'])
+tolerance_Kalman = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_Kalman'])
 
 try:
         # Le lidar:
@@ -33,7 +33,7 @@ try:
         lidar.start_motor()
         sleep(3) # Laisse le temps au lidar de prendre sa vitesse
 
-        tot=0    # Mesure du temps d'execution
+        tot = 0    # Mesure du temps d'execution
         plt.ion()
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -41,14 +41,14 @@ try:
         ax.set_ylim(-2000, 2000)
         ax.axhline(0, 0)
         ax.axvline(0, 0)
-        x=[]
-        y=[]
+        x = []
+        y = []
         ax.plot(x,y,'r')
 
         while affichage_continu:
             for i in range(N_TESTS):
-                t=time()
-                dico=generator(lidar, nombre_tours, precision)
+                t = time()
+                dico = generator(lidar, nombre_tours, precision)
                 print(dico)
                 lidar.stop()
                 limits = analyze_dic(dico, distance_max)
@@ -77,8 +77,8 @@ try:
                     ax.add_artist( circle )
 
                 # Listes des positions des obstacles à afficher
-                detectedx=[dico[a]*cos(2*pi-2*pi*a/360.0) for a in l]
-                detectedy=[dico[a]*sin(2*pi-2*pi*a/360.0) for a in l]
+                detectedx = [dico[a]*cos(2*pi-2*pi*a/360.0) for a in l]
+                detectedy = [dico[a]*sin(2*pi-2*pi*a/360.0) for a in l]
 
                 # Listes des positions des points à afficher
                 x = [d*cos(2*pi-2*pi*a/360.0) for a,d in zip(dico.keys(),dico.values())]

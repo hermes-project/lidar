@@ -10,10 +10,12 @@ class Obstacle:
         self.isMoving = False
         self.speed = 0.  # necessite que ce soit des vecteurs
         self.predictedPosition = [0, 0]
+        self.predictedKalman = [0, 0]
+        self.pisteObstacle = []
         self.updated = False
         self.width = width  # correspond à la liste des données (angle , distances ) de l'obstacle
         self.center = center  # valeur de milieu de l'objet calculé selon une méthode défini
-        self.piste_obstacle = []
+
 
     def get_isMoving(self):
         return self.isMoving
@@ -25,10 +27,10 @@ class Obstacle:
         return self.predictedPosition
 
     def get_predicted_Kalman(self):
-        return self.predicted_Kalman
+        return self.predictedKalman
 
     def get_piste_obstacle(self):
-        return self.piste_obstacle
+        return self.pisteObstacle
 
     def get_width(self):
         return self.width
@@ -55,21 +57,21 @@ class Obstacle:
         """
         self.speed = vector
 
-    def set_predicted_Kalman(self,predictedKalman):
+    def set_predicted_Kalman(self,predicted_kalman):
         """
         Position suivante de l'objet, predite avec Kalman
         :param is_moving: tuple
         :return:
         """
-        self.predicted_Kalman = predictedKalman
+        self.predictedKalman = predicted_kalman
 
-    def set_new_position_piste(self,newPositionPiste):
+    def set_new_position_piste(self,new_position_piste):
         """
         Ajoute la derniere position de l'objet a sa liste de positions precedentes
         :param is_moving: tuple
         :return:
         """
-        self.piste_obstacle.append(newPositionPiste)
+        self.pisteObstacle.append(new_position_piste)
 
     def set_predicted_position(self, predicted_position):
         """

@@ -4,15 +4,15 @@
 from src.obstacles import Obstacle
 from math import cos, sin, pi
 
-def liaison_objets( dico,list_bounds,tolerance_predicted_fixe,tolerance_Kalman ):
+def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_Kalman):
     """
     Fonction qui créé des objets de type Obstacle et retourne une liste de ces obstacles
 
-    :param dico:
+    :param dico: Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
     :param list_bounds: Liste de listes de format [angle début obstacle,angle fin obstacle]
-    :param tolerance:
-    :param seuil:
-    :return: list_obstacles: liste d'objets de type Obstacle
+    :param tolerance_predicted_fixe: Tolerance pour savoir si l'objet est reste fixe
+    :param tolerance_Kalman: Tolerance pour savoir si l'objet est alle a sa position predite avec Kalman
+    :return: list_obstacles: Liste d'objets de type Obstacle
     """
 
     list_obstacles = []
@@ -33,11 +33,11 @@ def liaison_objets( dico,list_bounds,tolerance_predicted_fixe,tolerance_Kalman )
 
             if center not in dico.keys():
                 for angle in dico.keys():
-                    if angle_min<=angle<=angle_max:
+                    if angle_min <= angle<=angle_max:
                         distance = dico[angle]
-                        if distance>distance_max:
+                        if distance > distance_max:
                             distance_max = distance
-                        if distance<distance_min:
+                        if distance < distance_min:
                             distance_min = distance
                 dico[center] = (distance_max+distance_min)/2
             width = max(abs(xmax - xmin), abs(ymax - ymin))
