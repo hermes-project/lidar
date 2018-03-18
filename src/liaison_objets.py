@@ -21,6 +21,7 @@ def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman
     distance_max = 0
 
     for obst in range(n):
+
         # Calcul milieu obstacles et largeur
         if len(list_bounds) >= 1:
             angle_min = list_bounds[obst][0]

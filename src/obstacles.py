@@ -9,8 +9,8 @@ class Obstacle:
     def __init__(self, width, center):
         self.isMoving = False
         self.speed = 0.  # necessite que ce soit des vecteurs
-        self.predictedPosition = [0, 0]
-        self.predictedKalman = [0, 0]
+        self.predictedPosition = [0, 0] # [distance, angle]
+        self.predictedKalman = [0, 0] # [distance, angle]
         self.pisteObstacle = []
         self.updated = False
         self.width = width  # correspond à la liste des données (angle , distances ) de l'obstacle
@@ -25,10 +25,10 @@ class Obstacle:
     def get_predictedPosition(self):
         return self.predictedPosition
 
-    def get_predicted_Kalman(self):
+    def get_predictedKalman(self):
         return self.predictedKalman
 
-    def get_piste_obstacle(self):
+    def get_pisteObstacle(self):
         return self.pisteObstacle
 
     def get_width(self):
@@ -60,7 +60,7 @@ class Obstacle:
         """
         Position suivante de l'objet, predite avec Kalman
 
-        :param is_moving: tuple
+        :param is_moving: tuple ([distance, angle] avec l'angle en degré et la distance en mm)
         :return:
         """
         self.predictedKalman = predicted_kalman
@@ -69,7 +69,7 @@ class Obstacle:
         """
         Ajoute la derniere position de l'objet a sa liste de positions precedentes
 
-        :param is_moving: tuple
+        :param is_moving: tuple ([distance, angle] avec l'angle en degré et la distance en mm)
         :return:
         """
         self.pisteObstacle.append(new_position_piste)
@@ -78,7 +78,7 @@ class Obstacle:
         """
         Position suivante de l'objet, predite si cet objet est suppose fixe
 
-        :param predicted_position: tuple
+        :param predicted_position: tuple ([distance, angle] avec l'angle en degré et la distance en mm)
         :return:
         """
         self.predictedPosition = predicted_position
@@ -94,7 +94,7 @@ class Obstacle:
     def set_center(self, center):
         """
 
-        :param center: tuple
+        :param center: tuple ([distance, angle] avec l'angle en degré et la distance en mm)
         :return:
         """
         self.center = center
