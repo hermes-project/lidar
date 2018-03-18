@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.obstacles import Obstacle
+from math import cos, sin, pi
 
 def liaison_objets( dico,list_bounds,tolerance_predicted_fixe,tolerance_Kalman ):
     """
@@ -24,7 +25,11 @@ def liaison_objets( dico,list_bounds,tolerance_predicted_fixe,tolerance_Kalman )
         if len(list_bounds) >= 1:
             angle_min = list_bounds[obst][0]
             angle_max = list_bounds[obst][1]
-            center = abs( angle_min+angle_max ) / 2
+            xmin = dico[angle_min] * cos(-angle_min * 2 * pi / 360)
+            xmax = dico[angle_max] * cos(-2 * pi * angle_max / 360)
+            ymin = dico[angle_min] * sin(-angle_min * 2 * pi / 360)
+            ymax = dico[angle_max] * sin(-2 * pi * angle_max / 360)
+            center = abs(angle_min + angle_max) / 2
 
             if center not in dico.keys():
                 for angle in dico.keys():
@@ -35,7 +40,7 @@ def liaison_objets( dico,list_bounds,tolerance_predicted_fixe,tolerance_Kalman )
                         if distance<distance_min:
                             distance_min = distance
                 dico[center] = (distance_max+distance_min)/2
-            width = max(abs(angle_max - angle_min), (distance_max-distance_min))
+            width = max(abs(xmax - xmin), abs(ymax - ymin))
 
         # Creation des objets de type Obstacle
         list_obstacles.append(Obstacle(width, center))  # TODO :  width n'est pas défini
@@ -44,7 +49,7 @@ def liaison_objets( dico,list_bounds,tolerance_predicted_fixe,tolerance_Kalman )
         # Calcul predicted_position: la position predite de l'obstacle a l'instant t+1 s'il ne bouge pas
 
         predictedPosition = center # TODO quand on aura le deplacement du robot
-        obstacle_traite.set_predictedPosition( predictedPosition )
+        obstacle_traite.set_predicted_position( predictedPosition )
 
         # Update et categorisation des obstacles
 
