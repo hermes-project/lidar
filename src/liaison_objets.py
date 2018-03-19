@@ -18,38 +18,60 @@ def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman
 
     list_obstacles = []
     n = len(list_bounds)
-    distance_min = 12000
-    distance_max = 0
-    predicted_position = [0, 0]
-    predicted_kalman = [0, 0]
 
     for obst in range(n):
 
+        distance_min = 12000
+        distance_max = 0
+        predicted_position = [0, 0]
+        predicted_kalman = [0, 0]
+        
         # Calcul milieu obstacles et largeur
         if len(list_bounds) >= 1:
-            angle_min = list_bounds[obst][0]
-            angle_max = list_bounds[obst][1]
-            #  xmin = dico[angle_min] * cos(-angle_min * 2 * pi / 360)
-            # xmax = dico[angle_max] * cos(-2 * pi * angle_max / 360)
-            # ymin = dico[angle_min] * sin(-angle_min * 2 * pi / 360)
-            # ymax = dico[angle_max] * sin(-2 * pi * angle_max / 360)
-            center = abs(angle_min + angle_max) / 2
+            angle_debut = list_bounds[obst][0]
+            angle_fin = list_bounds[obst][1]
+            # xmin = dico[angle_debut] * cos(-angle_debut * 2 * pi / 360)
+            # xmax = dico[angle_fin] * cos(-2 * pi * angle_fin / 360)
+            # ymin = dico[angle_debut] * sin(-angle_debut * 2 * pi / 360)
+            # ymax = dico[angle_fin] * sin(-2 * pi * angle_fin / 360)
+
+            if angle_fin < angle_debut:
+                center = (abs(angle_debut + angle_fin + 2*pi) / 2)%(2*pi)
+            else:
+                center = abs(angle_debut + angle_fin) / 2
+            center = round(center, 4)
+            print("center: ", center)
 
             if center not in dico.keys():
                 for angle in dico.keys():
-                    if angle_min <= angle <= angle_max:
-                        distance = dico[angle]
+                    if angle_fin < angle_debut:
+                        angle_fin += 2*pi
+
+                    if angle_debut <= angle <= angle_fin:
+                        if angle < 2*pi:
+                            distance = dico[angle]
+                        elif angle >= 2*pi:
+                            distance = dico[angle - 2*pi]
+
                         if distance > distance_max:
                             distance_max = distance
                         if distance < distance_min:
                             distance_min = distance
+                print("distance_max: ", distance_max)
+                print("distance_min: ", distance_min)
                 dico[center] = (distance_max + distance_min)/2
+                print("dico_center: ", dico[center])
+
+            if angle_fin > 2*pi:
+                angle_fin = round(angle_fin - 2 * pi, 4)
+
             # width = max(abs(xmax - xmin), abs(ymax - ymin)) # en degre
-            width = sqrt(dico[angle_min]**2 + dico[angle_max]**2 - 2 * dico[angle_min] * dico[angle_max] \
-                    * cos(abs(angle_max - angle_min)))  # Al Kashi
+            width = sqrt(dico[angle_debut]**2 + dico[angle_fin]**2 - 2 * dico[angle_debut] * dico[angle_fin] \
+                    * cos(abs(angle_fin - angle_debut)))  # Al Kashi
+            print("width: ", width)
 
         # Creation des objets de type Obstacle
-        list_obstacles.append(Obstacle(width, center))  # TODO :  width n'est pas défini
+        list_obstacles.append(Obstacle(width, center))
         obstacle_traite = list_obstacles[obst]
 
         # Calcul predicted_position: la position predite de l'obstacle a l'instant t+1 s'il ne bouge pas
