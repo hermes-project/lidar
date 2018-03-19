@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from math import pi
 
 
 def analyze_dic(raw_dict, distance_max):
@@ -16,6 +17,9 @@ def analyze_dic(raw_dict, distance_max):
     last_angle = 0
     to_delete = []
 
+
+
+
     # On ignore les distances nulles, car absurdes
     for k, v in raw_dict.items():
         if v == 0:
@@ -24,12 +28,24 @@ def analyze_dic(raw_dict, distance_max):
     for k in to_delete:
         del raw_dict[k]
 
+    list_angles = list(raw_dict.keys())
+    list_distances = list(raw_dict.values())
+    print(list_distances[-1])
+
+    if list_distances[0] <= distance_max:
+        item = True
+        list_bounds.append([list_angles[0]])
+
     for i, (angle, distance) in enumerate(raw_dict.items()):
-        if i > 0 and distance > 10:
+        if i >= 0:
             if not item and not precedent and distance <= distance_max:
                 list_bounds.append([angle])
                 item = True
                 precedent = True
+            if item and angle == list_angles[-1]:
+                print("yolooooooo")
+                list_bounds[0][0] = list_bounds[-1][0]
+                list_bounds.pop()
             elif item and distance >= distance_max:
                 list_bounds[-1].append(last_angle)
                 item = False
@@ -39,11 +55,10 @@ def analyze_dic(raw_dict, distance_max):
             first = (angle, distance)
 
     # On traite le premier item en dernier pour avoir accès au dernier
-    if first[1] > 10:
-        if not item and not precedent and first[1] <= distance_max:
-            list_bounds.append([first[0]])
-        elif item and first[1] >= 3000:
-            list_bounds[-1].append(first[0])
+    if not item and not precedent and first[1] <= distance_max:
+        list_bounds.append([first[0]])
+    elif item and first[1] >= 3000:
+        list_bounds[-1].append(first[0])
     n = len(list_bounds)
 
     for obstacle in range(n):
