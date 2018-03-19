@@ -12,6 +12,7 @@ from matplotlib.projections import PolarAxes
 from src.analyze_dic import analyze_dic
 from src.data_generator import generator
 from src.liaison_objets import liaison_objets
+import pylab as pl
 
 # Nombre de tests, pour le calcul de temps moyens
 N_TESTS = 1
@@ -26,6 +27,7 @@ resolution_degre = float(config['MESURES']['resolution_degre'])
 resolution = 0.5*2*pi/360 # en radian
 distance_max = int(config['DETECTION']['distance_max'])
 distance_infini = int(config['DETECTION']['distance_infini'])
+ecart_min_inter_objet = int(config['DETECTION']['ecart_min_inter_objet'])
 tolerance_predicted_fixe_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_r'])
 tolerance_predicted_fixe_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_theta'])
 tolerance_predicted_fixe = [tolerance_predicted_fixe_r,tolerance_predicted_fixe_theta]
@@ -40,10 +42,10 @@ try:
         sleep(3)  # Laisse le temps au lidar de prendre sa vitesse
 
         tot = 0    # Mesure du temps d'execution
-        plt.ion()
-        fig = plt.figure()
+        pl.ion()
+        fig = pl.figure()
         # ax = fig.add_subplot(111)
-        ax = fig.add_subplot(111, projection='polar')  # polaire !
+        ax = fig.add_subplot(111, polar=True)  # polaire !
         #ax.set_xlim(-2000, 2000)
         #ax.set_ylim(-2000, 2000)
         ax.set_xlim(0, +distance_max)
@@ -55,7 +57,7 @@ try:
         #ax.plot(x, y, 'r')
         r = []
         theta = []
-        ax.plot(r, theta, 'r')
+        ax.scatter(theta, r)
 
         while affichage_continu:
             for i in range(N_TESTS):
@@ -63,7 +65,7 @@ try:
                 dico = generator(lidar, nombre_tours, resolution_degre)
                 print(dico)
                 lidar.stop()
-                limits = analyze_dic(dico, distance_max)
+                limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
                 print("Ostacles détectés aux angles:", limits)
 
                 list_obstacles = liaison_objets(dico, limits, tolerance_predicted_fixe, tolerance_kalman)
@@ -86,15 +88,18 @@ try:
                 for o in list_obstacles:
                     angle = o.center
                     r = dico[angle]
-                    print(angle)
-                    print(r)
+                    #print(angle)
+                    #print(r)
                     #x = r*cos(-angle*2*pi/360)
                     #y = r*sin(-angle*2*pi/360)
                     #circle = plt.Circle((x, y), o.width, color='g')
                     #circle = plt.Circle((500, 700), 200, color='g')
                     #ax.add_artist(circle)
-                    colors = 2 * pi * rand(150)
-                    c = ax.scatter(angle, r, c='g', s=(o.width)*2, cmap='hsv', alpha=0.75)
+                    print("nb_obstacles: ", len(list_obstacles))
+                    circle = pl.Circle((r*cos(angle), r*sin(angle)), o.width/2, transform=ax.transData._b, color='g', alpha=0.4)
+                    ax.add_artist(circle)
+                    #colors = 2 * pi * rand(150)
+                    #c = ax.scatter(angle, r, c='g', s=700, cmap='hsv', alpha=0.75)
 
                 # Listes des positions des obstacles à afficher
                 # detectedx = [dico[detected]*cos(2*pi-2*pi*detected/360.0) for detected in list_detected]
@@ -114,10 +119,10 @@ try:
                 print("Temps d'execution:", t)
 
                 #plt.plot(x, y, 'ro', markersize=0.6)
-                plt.plot(theta, r, 'ro', markersize=0.6)
+                pl.plot(theta, r, 'ro', markersize=0.6)
                 #plt.plot(detectedx, detectedy, 'bo', markersize=1.8)
-                plt.plot(detected_theta, detected_r, 'bo', markersize=1.8)
-                plt.grid()
+                pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
+                pl.grid()
                 fig.canvas.draw()
                 lidar.start()
 

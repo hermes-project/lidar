@@ -25,7 +25,7 @@ def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman
         distance_max = 0
         predicted_position = [0, 0]
         predicted_kalman = [0, 0]
-        
+
         # Calcul milieu obstacles et largeur
         if len(list_bounds) >= 1:
             angle_debut = list_bounds[obst][0]
@@ -57,12 +57,13 @@ def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman
                             distance_max = distance
                         if distance < distance_min:
                             distance_min = distance
-                print("distance_max: ", distance_max)
-                print("distance_min: ", distance_min)
                 dico[center] = (distance_max + distance_min)/2
-                print("dico_center: ", dico[center])
 
-            if angle_fin > 2*pi:
+            print("distance_max: ", distance_max)
+            print("distance_min: ", distance_min)
+            print("dico_center: ", dico[center])
+
+            if angle_fin >= 2*pi:
                 angle_fin = round(angle_fin - 2 * pi, 4)
 
             # width = max(abs(xmax - xmin), abs(ymax - ymin)) # en degre

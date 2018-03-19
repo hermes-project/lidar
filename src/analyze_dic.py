@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-from math import pi
+from math import pi, cos, sin, pi, sqrt
 
 
-def analyze_dic(raw_dict, distance_max):
+def analyze_dic(raw_dict, distance_max, ecart_min_inter_objet):
     """
     Fonction d'analyse de dictionnaire de valuers
 
@@ -14,11 +14,10 @@ def analyze_dic(raw_dict, distance_max):
     list_bounds = []
     item = False
     precedent = False
-    last_angle = 0
     to_delete = []
 
-
-
+    list_angles = list(raw_dict.keys())
+    dernier_angle_avant_0 = list_angles[-1]
 
     # On ignore les distances nulles, car absurdes
     for k, v in raw_dict.items():
@@ -29,6 +28,7 @@ def analyze_dic(raw_dict, distance_max):
         del raw_dict[k]
 
     list_angles = list(raw_dict.keys())
+    last_angle = list_angles[-1]
     list_distances = list(raw_dict.values())
     print(list_distances[-1])
 
@@ -38,18 +38,32 @@ def analyze_dic(raw_dict, distance_max):
 
     for i, (angle, distance) in enumerate(raw_dict.items()):
         if i >= 0:
+
+            ecart_points = sqrt(distance ** 2 + list_distances[i - 1] ** 2 - 2 * distance * list_distances[i - 1] \
+                                * cos(abs(list_angles[i - 1] - angle)))  # Al Kashi
+
             if not item and not precedent and distance <= distance_max:
                 list_bounds.append([angle])
                 item = True
                 precedent = True
-            if item and angle == list_angles[-1]:
+
+            if item and angle == dernier_angle_avant_0:
                 print("yolooooooo")
                 list_bounds[0][0] = list_bounds[-1][0]
                 list_bounds.pop()
+
             elif item and distance >= distance_max:
                 list_bounds[-1].append(last_angle)
                 item = False
                 precedent = False
+
+            elif item and ecart_points > ecart_min_inter_objet and distance <= distance_max and \
+                    raw_dict[last_angle] <= distance_max:
+                list_bounds[-1].append(last_angle)
+                item = True
+                precedent = True
+                list_bounds.append([angle])
+
             last_angle = angle
         if i == 0:
             first = (angle, distance)
