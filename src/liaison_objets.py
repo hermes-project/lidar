@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.obstacles import Obstacle
-from math import cos, sin, pi, sqrt
+from math import cos, pi, sqrt
 
 
 def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman):
@@ -30,10 +30,6 @@ def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman
         if len(list_bounds) >= 1:
             angle_debut = list_bounds[obst][0]
             angle_fin = list_bounds[obst][1]
-            # xmin = dico[angle_debut] * cos(-angle_debut * 2 * pi / 360)
-            # xmax = dico[angle_fin] * cos(-2 * pi * angle_fin / 360)
-            # ymin = dico[angle_debut] * sin(-angle_debut * 2 * pi / 360)
-            # ymax = dico[angle_fin] * sin(-2 * pi * angle_fin / 360)
 
             if angle_fin < angle_debut:
                 center = (abs(angle_debut + angle_fin + 2*pi) / 2)%(2*pi)
@@ -57,6 +53,7 @@ def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman
                             distance_max = distance
                         if distance < distance_min:
                             distance_min = distance
+
                 dico[center] = (distance_max + distance_min)/2
 
             print("distance_max: ", distance_max)
@@ -76,13 +73,11 @@ def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman
         obstacle_traite = list_obstacles[obst]
 
         # Calcul predicted_position: la position predite de l'obstacle a l'instant t+1 s'il ne bouge pas
-
         predicted_position[0] = dico[center]  # TODO quand on aura le deplacement du robot
         predicted_position[1] = center  # TODO quand on aura le deplacement du robot
         obstacle_traite.set_predicted_position(predicted_position)
 
         # Update et categorisation des obstacles
-
         if abs(center-predicted_position[1]) < tolerance_predicted_fixe[1] and abs(dico[center]-predicted_position[0])\
                 < tolerance_predicted_fixe[0]:  # On a alors un obstacle fixe
             obstacle_traite.set_updated(True)

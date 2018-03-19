@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from math import pi, cos, sin, pi, sqrt
+from math import cos, sqrt
 
 
 def analyze_dic(raw_dict, distance_max, ecart_min_inter_objet):
@@ -48,7 +48,6 @@ def analyze_dic(raw_dict, distance_max, ecart_min_inter_objet):
                 precedent = True
 
             if item and angle == dernier_angle_avant_0:
-                print("yolooooooo")
                 list_bounds[0][0] = list_bounds[-1][0]
                 list_bounds.pop()
 
