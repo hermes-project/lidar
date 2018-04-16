@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 from time import time
 from math import pi
+from time import time
 
 
-def generator(lidar, nombre_tours, resolution_degre):
+def generator(lidar, nombre_tours, resolution_degre, ancien_data_time):
     """
     Fichier avec la fonction qui génère les données. Le Lidar doit être instencié dans le main
 
     :param lidar: Le lidar utilisé
     :param nombre_tours: le nombre de tours qu'effectue le LiDAR
     :param resolution: La résolution utilisée en DEGRES
+    :param ancien_data_time: quand on a finit l'avant-dernier scan
     :return: data Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
     """
 
+    data_time = time()
+    Te = data_time - ancien_data_time
     alpha_degre = 0.
     data = {}
     i = 0
@@ -55,7 +59,7 @@ def generator(lidar, nombre_tours, resolution_degre):
             value = 12000
         data[angle] = round(average(distances))
 
-    return data
+    return data, data_time, Te  # Notre dico de valeurs, et le temps auquel on a finit de faire le dernier scan
 
 
 def average(array):  # TODO : on ne donne pas à une variable le nom d'un type

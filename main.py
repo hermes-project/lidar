@@ -16,6 +16,7 @@ affichage_continu = True
 
 Te = 1.  # Période d'échantillonnage pour le Kalman, à voir pour la mettre à jour en continu
 list_obstacles_precedente = []  # Liste des positions des anciens obstacles
+data_time = time()
 
 # Recuperationnage de la config
 config = configparser.ConfigParser()
@@ -55,7 +56,9 @@ try:
         while affichage_continu:
             for i in range(N_TESTS):
                 t = time()
-                dico = generator(lidar, nombre_tours, resolution_degre)
+                dico, data_time, Te = generator(lidar, nombre_tours, resolution_degre, data_time)
+                print("Te = ", Te)
+                print("data_time = ", data_time)
                 print(dico)
                 lidar.stop()
                 limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
