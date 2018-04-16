@@ -83,6 +83,16 @@ try:
                                        alpha=0.4)
                     ax.add_artist(circle)
 
+                    if o.get_predicted_kalman() is not None:
+                        x_kalman = o.get_predicted_kalman()[0][0]
+                        y_kalman = o.get_predicted_kalman()[0][2]
+                        print("position kalman: ", x_kalman, " et ", y_kalman)
+                        circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
+                                       color='b',
+                                       alpha=0.4)
+
+                        ax.add_artist(circle)
+
                 # Listes des positions des obstacles à afficher
                 detected_r = [dico[detected] for detected in list_detected]
                 detected_theta = [detected for detected in list_detected]
