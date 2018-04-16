@@ -2,34 +2,37 @@
 # -*- coding: utf-8 -*-
 
 from src.obstacles import Obstacle
-from math import cos, pi, sqrt
+from math import cos, sin, pi, sqrt
+from src.kalman import ekf
+import numpy as np
 
 
-def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman):
+def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obstacles_precedente):
     """
     Fonction qui créé des objets de type Obstacle et retourne une liste de ces obstacles
 
     :param dico: Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
     :param list_bounds: Liste de listes de format [angle début obstacle,angle fin obstacle]
-    :param tolerance_predicted_fixe: Tolerance pour savoir si l'objet est reste fixe
-    :param tolerance_kalman: Tolerance pour savoir si l'objet est alle a sa position predite avec Kalman
+    :param seuil_association_cartesien: Tolerance pour savoir si un nouvel objet est un ancien objet qui s'est déplacé
+    :param Te: écart entre 2 scans (en ms ?)
+    :param list_obstacles_precedente: Liste d'objets de type Obstacle
     :return: list_obstacles: Liste d'objets de type Obstacle
     """
 
     list_obstacles = []
     n = len(list_bounds)
 
-    for obst in range(n):
+    for new_obstacle in range(n):
 
         distance_min = 12000
         distance_max = 0
-        predicted_position = [0, 0]
-        predicted_kalman = [0, 0]
+        dist_min_ancien_new_obst = distance_min
+        ancien_obst_associe = None
 
         # Calcul milieu obstacles et largeur
         if len(list_bounds) >= 1:
-            angle_debut = list_bounds[obst][0]
-            angle_fin = list_bounds[obst][1]
+            angle_debut = list_bounds[new_obstacle][0]
+            angle_fin = list_bounds[new_obstacle][1]
 
             if angle_fin < angle_debut:
                 center = (abs(angle_debut + angle_fin + 2*pi) / 2)%(2*pi)
@@ -69,37 +72,53 @@ def liaison_objets(dico, list_bounds, tolerance_predicted_fixe, tolerance_kalman
             print("width: ", width)
 
         # Creation des objets de type Obstacle
-        list_obstacles.append(Obstacle(width, center))
-        obstacle_traite = list_obstacles[obst]
+        list_obstacles.append(Obstacle(width, center, dico[center]))
+        obstacle_traite = list_obstacles[new_obstacle]
 
-        # Calcul predicted_position: la position predite de l'obstacle a l'instant t+1 s'il ne bouge pas
-        predicted_position[0] = dico[center]  # TODO quand on aura le deplacement du robot
-        predicted_position[1] = center  # TODO quand on aura le deplacement du robot
-        obstacle_traite.set_predicted_position(predicted_position)
+        # Association des anciens obstacles avec les nouveaux obstacles
+        if list_obstacles_precedente:
+            for precedent_obstacle in list_obstacles_precedente:
+                a1 = center
+                r1 = dico[a1]
+                if obstacle_traite.get_predicted_kalman():
+                    a2 = precedent_obstacle.get_predicted_kalman()[1]
+                    r2 = precedent_obstacle.get_predicted_kalman()[0]
+                else:
+                    a2 = precedent_obstacle.get_center()
+                    r2 = precedent_obstacle.get_distance()
+                distance_entre_objets = sqrt(r1**2 + r2**2 - 2*r1*r2*cos(a2-a1))
 
-        # Update et categorisation des obstacles
-        if abs(center-predicted_position[1]) < tolerance_predicted_fixe[1] and abs(dico[center]-predicted_position[0])\
-                < tolerance_predicted_fixe[0]:  # On a alors un obstacle fixe
-            obstacle_traite.set_updated(True)
-            
-        else:
+                if distance_entre_objets < dist_min_ancien_new_obst:  # Distance entre le dernier kalman estimé
+                    # et la position mesurée du nvel objet
+                    dist_min_ancien_new_obst = distance_entre_objets
+                    ancien_obst_associe = precedent_obstacle
 
-            # Calcul de la position predite avec Kalman dans le cas d'un objet mobile
-            predicted_kalman[0] = dico[center]  # TODO
-            predicted_kalman[1] = center  # TODO
+            if dist_min_ancien_new_obst < seuil_association_cartesien:
+                ancien_obst_associe.set_updated(True)
+                obstacle_traite.set_ancien_obst_associe(ancien_obst_associe)
+                if ancien_obst_associe.get_predicted_kalman() is not None:  # On récupère la valeur de l'ancien objet
+                    # car les 2 objets sont en fait les mêmes
+                    obstacle_traite.set_predicted_kalman(ancien_obst_associe.get_predicted_kalman()[0],
+                                                         ancien_obst_associe.get_predicted_kalman()[1])
 
-            if abs(center - predicted_kalman[1]) < tolerance_kalman[1] and abs(dico[center] - predicted_kalman[0]) \
-                    < tolerance_kalman[0]:  # On a alors un obstacle fixe
-                obstacle_traite.set_isMoving(True)  # On a un objet mobile
-                obstacle_traite.set_updated(True)
-                obstacle_traite.set_predicted_kalman(predicted_kalman)
-                obstacle_traite.set_new_position_piste(center)  # Les positions precedentes de l'objet en mouvement
-
+            # Kalman
+            # y_k: derniere mesure faite avec le lidar -> [obstacle_traite.get_center, dico[center]]
+            # x_kalm_prec: ancienne sortie du Kalman
+            # p_kalm_prec: ancienne sortie du Kalman
+            if obstacle_traite.get_predicted_kalman() is not None:
+                x_kalm_prec, p_kalm_prec = ekf(Te, np.array([center, dico[center]]),
+                    obstacle_traite.get_predicted_kalman()[0],
+                    obstacle_traite.get_predicted_kalman()[1])
+                obstacle_traite.set_predicted_kalman(x_kalm_prec, p_kalm_prec)
             else:
-                obstacle_traite.set_updated(False)
-                list_obstacles.remove(obst)
+                r = dico[center]
+                x_kalm_prec = np.array([r*cos(center), 0, r*sin(center), 0]).T
+                p_kalm_prec = np.identity(4)
+                obstacle_traite.set_predicted_kalman(x_kalm_prec, p_kalm_prec)  # Initialisation du
+                # Kalman à la 1ère position mesurée de l'obstacle
 
-    return list_obstacles
+    list_obstacles_precedente = list_obstacles
+    return list_obstacles, list_obstacles_precedente
 
 
 

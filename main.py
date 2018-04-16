@@ -14,6 +14,8 @@ import pylab as pl
 N_TESTS = 1
 affichage_continu = True
 
+Te = 1.  # Période d'échantillonnage pour le Kalman, à voir pour la mettre à jour en continu
+list_obstacles_precedente = []  # Liste des positions des anciens obstacles
 
 # Recuperationnage de la config
 config = configparser.ConfigParser()
@@ -26,10 +28,11 @@ distance_infini = int(config['DETECTION']['distance_infini'])
 ecart_min_inter_objet = int(config['DETECTION']['ecart_min_inter_objet'])
 tolerance_predicted_fixe_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_r'])
 tolerance_predicted_fixe_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_theta'])
-tolerance_predicted_fixe = [tolerance_predicted_fixe_r,tolerance_predicted_fixe_theta]
+tolerance_predicted_fixe = [tolerance_predicted_fixe_r, tolerance_predicted_fixe_theta]
 tolerance_kalman_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_r'])
 tolerance_kalman_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_theta'])
-tolerance_kalman = [tolerance_kalman_r,tolerance_kalman_theta]
+tolerance_kalman = [tolerance_kalman_r, tolerance_kalman_theta]
+seuil_association = seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'])
 
 try:
         # Le lidar:
@@ -58,7 +61,8 @@ try:
                 limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
                 print("Ostacles détectés aux angles:", limits)
 
-                list_obstacles = liaison_objets(dico, limits, tolerance_predicted_fixe, tolerance_kalman)
+                list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
+                                                                           Te, list_obstacles_precedente)
 
                 list_detected = []
                 for detected in limits:
