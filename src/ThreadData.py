@@ -19,24 +19,27 @@ class ThreadData(Thread):
         self.running = True
         self.generated_data = []
         self.ready = False
+        self.readyData=[]
 
     def run(self):
-        self.generated_data = [0] * int(((360. / self.resolution) * float(self.nombre_tours)))
+        self.generated_data = [[0,False] for _ in range(int((360. / self.resolution) * float(self.nombre_tours)))]
         i = 0
         previous_bool = False
+        around = self.resolution * 10
         for newTurn, quality, angle, distance in self.lidar.iter_measures():
             if newTurn and not previous_bool:  # Si True precede d un False
                 i = int((i + 1) % self.nombre_tours)
                 previous_bool = True
-                self.ready=True
+                self.readyData=[]
                 for x in self.generated_data:
                     if x[1]:
                         x[1] = False
                     else:
                         x = [0, False]
+                    self.readyData.append(x[0])
+                self.ready=True
             elif not newTurn:
                 previous_bool = False
-            around = self.resolution * 10
             angle = ((round(angle / around, 1) * around) % 360)
             self.generated_data[self.getIndex(angle, i)] = [distance, True]
             if not self.running:

@@ -61,13 +61,13 @@ try:
             # while not threadData.ready:
             #     pass
             sleep(0.005)
-            lidarDataList = list(threadData.generated_data)
+            lidarDataList = list(threadData.readyData)
             # threadData.ready = False
             threadData.lidar.clean_input()
 
             dico = data_cleaner(lidarDataList, nombre_tours, resolution_degre, distance_infini)
             limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
-            # print("Ostacles détectés aux angles:", limits)
+            print("Ostacles détectés aux angles:", limits)
 
             list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
                                                                        Te, list_obstacles_precedente)
@@ -117,6 +117,7 @@ try:
             pl.grid()
             fig.canvas.draw()
 
-except (KeyboardInterrupt, KeyError, rplidar.RPLidarException, TypeError):
+except (KeyboardInterrupt, KeyError, rplidar.RPLidarException, TypeError, IndexError) as e:
+    print(e)
     threadData.stopLidar()
     threadData.join()
