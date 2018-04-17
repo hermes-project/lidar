@@ -41,13 +41,13 @@ try:
     # Le Thread recevant les donnees
     threadData.start()
 
-    sleep(4)  # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
+    sleep(2)  # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
 
     tot = 0  # Mesure du temps d'execution
     pl.ion()
     fig = pl.figure()
     ax = fig.add_subplot(111, polar=True)  # polaire !
-    ax.set_xlim(0, +distance_max)
+    ax.set_xlim(0, 3 * distance_max)
     ax.set_ylim(2 * pi)
     ax.axhline(0, 0)
     ax.axvline(0, 0)
@@ -58,24 +58,33 @@ try:
     while affichage_continu:
         for i in range(N_TESTS):
             t = time()
-            # while not threadData.ready:
-            #     pass
-            sleep(0.005)
+
+            sleep(0.05)
+            # Copie de la liste des mesures du thread
             lidarDataList = list(threadData.readyData)
-            # threadData.ready = False
+            print("A")
             threadData.lidar.clean_input()
+            print("B")
 
+            # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
             dico = data_cleaner(lidarDataList, nombre_tours, resolution_degre, distance_infini)
-            limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
-            print("Ostacles détectés aux angles:", limits)
+            print("C")
 
+            # Detection des bords d'obstacles
+            limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
+            # print("Ostacles détectés aux angles:", limits)
+            print("D")
+
+            # Mise a jour des obstacles detectes, incluant le filtre de kalman
             list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
                                                                        Te, list_obstacles_precedente)
+            print("E")
 
             list_detected = []
             for detected in limits:
                 for n in range(len(detected)):
                     list_detected.append(detected[n])
+            print("E")
 
             ax.clear()
             ax.set_xlim(0, 2 * pi)
@@ -117,7 +126,7 @@ try:
             pl.grid()
             fig.canvas.draw()
 
-except (KeyboardInterrupt, KeyError, rplidar.RPLidarException, TypeError, IndexError) as e:
-    print(e)
+except (KeyboardInterrupt, KeyError) as e:
+    print("ARRET DEMANDE")
     threadData.stopLidar()
     threadData.join()

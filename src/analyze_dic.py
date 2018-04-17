@@ -36,6 +36,7 @@ def analyze_dic(raw_dict, distance_max, ecart_min_inter_objet):
         item = True
         list_bounds.append([list_angles[0]])
 
+
     for i, (angle, distance) in enumerate(raw_dict.items()):
         if i >= 0:
             ecart_points = sqrt(distance ** 2 + list_distances[i - 1] ** 2 - 2 * distance * list_distances[i - 1] \

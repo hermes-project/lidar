@@ -33,7 +33,7 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
         if len(list_bounds) >= 1:
             angle_debut = list_bounds[new_obstacle][0]
             angle_fin = list_bounds[new_obstacle][1]
-
+            width=300
             if angle_fin < angle_debut:
                 center = (abs(angle_debut + angle_fin + 2*pi) / 2)%(2*pi)
             else:
@@ -62,15 +62,13 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
             # print("distance_max: ", distance_max)
             # print("distance_min: ", distance_min)
             # print("dico_center: ", dico[center])
-
             if angle_fin >= 2*pi:
                 angle_fin = round(angle_fin - 2 * pi, 4)
 
-            # width = max(abs(xmax - xmin), abs(ymax - ymin)) # en degre
-            width = sqrt(dico[angle_debut]**2 + dico[angle_fin]**2 - 2 * dico[angle_debut] * dico[angle_fin] \
-                    * cos(abs(angle_fin - angle_debut)))  # Al Kashi
-            # print("width: ", width)
+                # width = sqrt(dico[angle_debut]**2 + dico[angle_fin]**2 - 2 * dico[angle_debut] * dico[angle_fin] \
+                #         * cos(abs(angle_fin - angle_debut)))  # Al Kashi
 
+                # # print("width: ", width)
         # Creation des objets de type Obstacle
         list_obstacles.append(Obstacle(width, center, dico[center]))
         obstacle_traite = list_obstacles[new_obstacle]

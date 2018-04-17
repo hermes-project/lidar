@@ -34,9 +34,12 @@ def data_cleaner(lidarData, nombre_tours, resolution_degre, distance_infini):
             else:
                 j += 1
         value = average(distances)
-        if value < 10:
-            value = distance_infini
         data[angle] = value
+    last_angle=resolution_degre * ((len(lidarData)-1) % int(360. / resolution_degre))*toRadian
+    for angle, distance in data.items():
+        if distance <10:
+            data[angle]=data[last_angle]
+        last_angle=angle
     return data
 
 

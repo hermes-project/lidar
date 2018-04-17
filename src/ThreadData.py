@@ -10,7 +10,7 @@ class ThreadData(Thread):
 
     def __init__(self, resolution, nombre_tours):
         Thread.__init__(self)
-        self.lidar = rp("/dev/ttyUSB0", baudrate=115200)
+        self.lidar = rp("/dev/ttyUSB0")
         self.lidar.start_motor()
         self.lidar.start()
 
@@ -52,8 +52,11 @@ class ThreadData(Thread):
         return index
 
     def stopLidar(self):
-        print("STOP")
-        self.lidar.stop()
-        self.lidar.stop_motor()
-        self.lidar.disconnect()
+        print("STOP LIDAR")
+        try:
+            self.lidar.stop()
+            self.lidar.stop_motor()
+            self.lidar.disconnect()
+        except:
+            print("ERREUR DANS STOPPING")
         self.running = False
