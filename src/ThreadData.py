@@ -1,34 +1,51 @@
 import sys
 from threading import Thread
-import time
+from time import time
+
+from pip import logger
 from rplidar import RPLidar as rp
 
 
 class ThreadData(Thread):
 
-    def __init__(self, resolution, lidar):
+    def __init__(self, resolution, nombre_tours):
         Thread.__init__(self)
+        self.lidar = rp("/dev/ttyUSB0",baudrate=115200)
+        self.lidar.start_motor()
+        self.lidar.start()
+
         self.resolution = resolution
-        self.lidar = lidar
+        self.nombre_tours = nombre_tours
+        self.running = True
+        self.generated_data = []
+        self.ready = False
 
     def run(self):
-
-        generated_data = [0] * ((360. / self.resolution) * 4.)
+        self.generated_data = [0] * int(((360. / self.resolution) * float(self.nombre_tours)))
         i = 0
         previous_bool = False
-        for measure in self.lidar.iter_measures():
-
-            if measure[0] and not previous_bool: # Si True precede d un False
-                i = (i+1) % 4
+        for newTurn, quality, angle, distance in self.lidar.iter_measures():
+            if newTurn and not previous_bool:  # Si True precede d un False
+                i = int((i + 1) % self.nombre_tours)
                 previous_bool = True
-            elif not measure[0] :
+                self.ready=True
+            elif not newTurn:
                 previous_bool = False
             around = self.resolution * 10
-            measure[2] = ((round(measure[2]/around, 1)*around) % 360)
-            generated_data[self.getIndex(measure[2], i)] = measure[3]
+            angle = ((round(angle / around, 1) * around) % 360)
+            self.generated_data[self.getIndex(angle, i)] = distance
+            if not self.running:
+                break
 
     def getIndex(self, alpha, i):
 
-        index = i * ( 360. / self.resolution) + (alpha / self.resolution)
+        index = int(i * (360. / self.resolution) + (alpha / self.resolution))
 
         return index
+
+    def stopLidar(self):
+        print("STOP")
+        self.lidar.stop()
+        self.lidar.stop_motor()
+        self.lidar.disconnect()
+        self.running = False

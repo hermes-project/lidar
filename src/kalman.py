@@ -6,11 +6,11 @@ set_printoptions(suppress=True)
 
 
 def ekf(Te, y_k, x_kalm_prec, p_kalm_prec):
-    print("KAAAAAALLLLLMMMMMMAAAANNNN")
-    print("Te ", Te)
-    print("y_k ", y_k)
-    print("x_kalm_prec ", x_kalm_prec)
-    print("p_kalm_prec ", p_kalm_prec)
+    # print("KAAAAAALLLLLMMMMMMAAAANNNN")
+    # print("Te ", Te)
+    # print("y_k ", y_k)
+    # print("x_kalm_prec ", x_kalm_prec)
+    # print("p_kalm_prec ", p_kalm_prec)
 
     """
     Extended Kalman Filter:
@@ -27,8 +27,8 @@ def ekf(Te, y_k, x_kalm_prec, p_kalm_prec):
     # TODO: F et Q dépendent du temps d'échantillonnage, et R dépend des variances de mesures -> gérer ça
 
     # Données utiles au filtrage kalman
-    sigmaQ = 1.  # Ecart type du modèle, on peut à priori le garder à 1, à tester
-    sigma_angle = pi / 180  # Ecart type sur la mesure de l'angle (on peut à priori la supposer nulle dans notre cas)
+    sigmaQ = 10.  # Ecart type du modèle, on peut à priori le garder à 1, à tester
+    sigma_angle = pi / 360  # Ecart type sur la mesure de l'angle (on peut à priori la supposer nulle dans notre cas)
     sigma_distance = 300.  # Ecart type sur la mesure de la distance (à mesurer)
 
     F = array([[1, Te, 0, 0],
