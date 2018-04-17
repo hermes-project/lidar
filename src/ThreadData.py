@@ -10,7 +10,7 @@ class ThreadData(Thread):
 
     def __init__(self, resolution, nombre_tours):
         Thread.__init__(self)
-        self.lidar = rp("/dev/ttyUSB0",baudrate=115200)
+        self.lidar = rp("/dev/ttyUSB0", baudrate=115200)
         self.lidar.start_motor()
         self.lidar.start()
 
@@ -29,11 +29,16 @@ class ThreadData(Thread):
                 i = int((i + 1) % self.nombre_tours)
                 previous_bool = True
                 self.ready=True
+                for x in self.generated_data:
+                    if x[1]:
+                        x[1] = False
+                    else:
+                        x = [0, False]
             elif not newTurn:
                 previous_bool = False
             around = self.resolution * 10
             angle = ((round(angle / around, 1) * around) % 360)
-            self.generated_data[self.getIndex(angle, i)] = distance
+            self.generated_data[self.getIndex(angle, i)] = [distance, True]
             if not self.running:
                 break
 
