@@ -28,6 +28,8 @@ def analyze_dic(raw_dict, distance_max, ecart_min_inter_objet):
         del raw_dict[k]
 
     list_angles = list(raw_dict.keys())
+    print(raw_dict)
+    print(list_angles)
     last_angle = list_angles[-1]
     list_distances = list(raw_dict.values())
     # print(list_distances[-1])

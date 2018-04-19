@@ -58,13 +58,39 @@ def readData(path):
             dataToReturn.append([row[0] == "True", int(row[1]), float(row[2]), float(row[3])])
     return dataToReturn
 
+def cleanData(lidarData,resolution,nombre_tours):
+    data=[]
+    readyData=[] #Contient à chaque iteration un scan entier
+    fullData=[] #Contient chaque scan du fichier
+    i = 0
+    previous_bool = False
+    around = resolution * 10
+    for newTurn, quality, angle, distance in lidarData:
+        if newTurn and not previous_bool:  # Si True precede d un False
+            i = int((i + 1) % nombre_tours)
+            previous_bool = True
+            for x in data:
+                if x[1]:
+                    x[1] = False
+                else:
+                    x = [0, False]
+                readyData.append(x[0])
+            fullData.append(readyData)
+            readyData.clear()
+        elif not newTurn:
+            previous_bool = False
+        angle = ((round(angle / around, 1) * around) % 360)
+        data[int(i * (360. / resolution) + (angle / resolution))] = [distance, True]
+    return fullData
+
 
 if __name__ == '__main__':
     NB_TOURS = 0
     NB_SECONDES = 10
 
     FILE_PATH = "./scanData.csv"
-    # lidar=RPLidar("/dev/ttyUSB0")
-    data = []  # scanData(lidar,NB_SECONDES,NB_TOURS)
+    lidar=RPLidar("/dev/ttyUSB0")
+    data = []
+    scanData(lidar,NB_SECONDES,NB_TOURS)
     print(data)
     saveData(FILE_PATH, data)

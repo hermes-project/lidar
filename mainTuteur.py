@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-from time import sleep, time
-
-import rplidar
+from time import sleep
 import configparser
 from math import cos, sin, pi
+import pylab as pl
+from os.path import isfile
 
 from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
-import pylab as pl
-from src.ThreadData import ThreadData
+from src.file_data_manager import readData
 
 # Nombre de tests, pour le calcul de temps moyens
 N_TESTS = 1
@@ -35,43 +34,40 @@ tolerance_kalman_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kal
 tolerance_kalman = [tolerance_kalman_r, tolerance_kalman_theta]
 seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'])
 
-threadData = ThreadData(resolution_degre, nombre_tours)
+data = []
 
+if isfile("src/scanData.csv"):
+    data = readData("src/scanData.csv")
+else:
+    print("ERREUR: FICHIER DE DONNEES NON TROUVE")
+    exit()
+
+pl.ion()
+fig = pl.figure()
+ax = fig.add_subplot(111, polar=True)  # polaire !
+ax.set_xlim(0, 3 * distance_max)
+ax.set_ylim(2 * pi)
+ax.axhline(0, 0)
+ax.axvline(0, 0)
+r = []
+theta = []
+ax.scatter(theta, r)
+
+print(data)
 try:
-    # Le Thread recevant les donnees
-    threadData.start()
-
-    sleep(2)  # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
-
-    tot = 0  # Mesure du temps d'execution
-    pl.ion()
-    fig = pl.figure()
-    ax = fig.add_subplot(111, polar=True)  # polaire !
-    ax.set_xlim(0, 3 * distance_max)
-    ax.set_ylim(2 * pi)
-    ax.axhline(0, 0)
-    ax.axvline(0, 0)
-    r = []
-    theta = []
-    ax.scatter(theta, r)
-
     while affichage_continu:
-        for i in range(N_TESTS):
-            # Delai evitant de bloquer le thread en effectuant des lectures non stop
-            sleep(0.05)
-
-            t = time()
-
-            # Copie de la liste des mesures du thread
-            lidarDataList = list(threadData.readyData)
+        for i in range(len(data)):
+            currentData=data[i]
+            print(i,"CurrentData",currentData)
+            # A ~10Hz, pour coller aux mesures du LiDAR
+            sleep(0.1)
 
             # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
-            dico = data_cleaner(lidarDataList, nombre_tours, resolution_degre, distance_infini)
-
+            dico = data_cleaner(currentData, nombre_tours, resolution_degre, distance_infini)
+            print("Dico:",dico)
             # Detection des bords d'obstacles
             limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
-            if limits:
-                print("Ostacles détectés aux angles:", limits)
+            # print("Ostacles détectés aux angles:", limits)
 
             # Mise a jour des obstacles detectes, incluant le filtre de kalman
             list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
@@ -88,19 +84,18 @@ try:
             ax.axhline(0, 0)
             ax.axvline(0, 0)
 
-            if list_obstacles:
-                print("nb_obstacles: ", len(list_obstacles))
-
             for o in list_obstacles:
                 angle = o.center
                 r = dico[angle]
+                # print("nb_obstacles: ", len(list_obstacles))
                 circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
                                    alpha=0.4)
                 ax.add_artist(circle)
+
                 if o.get_predicted_kalman() is not None:
                     x_kalman = o.get_predicted_kalman()[0][0]
                     y_kalman = o.get_predicted_kalman()[0][2]
-                    print("position kalman: ", x_kalman, " et ", y_kalman)
+                    # print("position kalman: ", x_kalman, " et ", y_kalman)
                     circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
                                        color='b',
                                        alpha=0.4)
@@ -115,15 +110,12 @@ try:
             r = [distance for distance in dico.values()]
             theta = [angle for angle in dico.keys()]
 
-            t = time() - t
-            print("Temps d'execution:", t)
+            # print("Temps d'execution:", t)
 
             pl.plot(theta, r, 'ro', markersize=0.6)
             pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
             pl.grid()
             fig.canvas.draw()
-
-except (KeyboardInterrupt, KeyError) as e:
+except KeyboardInterrupt:
     print("ARRET DEMANDE")
-    threadData.stopLidar()
-    threadData.join()
+    pl.close()
