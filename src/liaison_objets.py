@@ -33,9 +33,9 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
         if len(list_bounds) >= 1:
             angle_debut = list_bounds[new_obstacle][0]
             angle_fin = list_bounds[new_obstacle][1]
-            width=300
+
             if angle_fin < angle_debut:
-                center = (abs(angle_debut + angle_fin + 2*pi) / 2)%(2*pi)
+                center = (abs(angle_debut + angle_fin + 2 * pi) / 2) % (2 * pi)
             else:
                 center = abs(angle_debut + angle_fin) / 2
             center = round(center, 4)
@@ -44,31 +44,33 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
             if center not in dico.keys():
                 for angle in dico.keys():
                     if angle_fin < angle_debut:
-                        angle_fin += 2*pi
+                        angle_fin += 2 * pi
 
                     if angle_debut <= angle <= angle_fin:
-                        if angle < 2*pi:
+                        if angle < 2 * pi:
                             distance = dico[angle]
-                        elif angle >= 2*pi:
-                            distance = dico[angle - 2*pi]
+                        elif angle >= 2 * pi:
+                            distance = dico[angle - 2 * pi]
 
                         if distance > distance_max:
                             distance_max = distance
                         if distance < distance_min:
                             distance_min = distance
 
-                dico[center] = (distance_max + distance_min)/2
+                dico[center] = (distance_max + distance_min) / 2
 
             # print("distance_max: ", distance_max)
             # print("distance_min: ", distance_min)
             # print("dico_center: ", dico[center])
-            if angle_fin >= 2*pi:
+            if angle_fin >= 2 * pi:
                 angle_fin = round(angle_fin - 2 * pi, 4)
 
-                # width = sqrt(dico[angle_debut]**2 + dico[angle_fin]**2 - 2 * dico[angle_debut] * dico[angle_fin] \
-                #         * cos(abs(angle_fin - angle_debut)))  # Al Kashi
+            # width = max(abs(xmax - xmin), abs(ymax - ymin)) # en degre
+            width = sqrt(dico[angle_debut] ** 2 + dico[angle_fin] ** 2 - 2 * dico[angle_debut] * dico[angle_fin] \
+                         * cos(abs(angle_fin - angle_debut)))  # Al Kashi
+            # print("width: ", width)
 
-                # # print("width: ", width)
+            # # print("width: ", width)
         # Creation des objets de type Obstacle
         list_obstacles.append(Obstacle(width, center, dico[center]))
         obstacle_traite = list_obstacles[new_obstacle]
@@ -84,7 +86,7 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
                 else:
                     a2 = precedent_obstacle.get_center()
                     r2 = precedent_obstacle.get_distance()
-                distance_entre_objets = sqrt(r1**2 + r2**2 - 2*r1*r2*cos(a2-a1))
+                distance_entre_objets = sqrt(r1 ** 2 + r2 ** 2 - 2 * r1 * r2 * cos(a2 - a1))
 
                 if distance_entre_objets < dist_min_ancien_new_obst:  # Distance entre le dernier kalman estimé
                     # et la position mesurée du nvel objet
@@ -105,22 +107,15 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
             # p_kalm_prec: ancienne sortie du Kalman
             if obstacle_traite.get_predicted_kalman() is not None:
                 x_kalm_prec, p_kalm_prec = ekf(Te, np.array([center, dico[center]]),
-                    obstacle_traite.get_predicted_kalman()[0],
-                    obstacle_traite.get_predicted_kalman()[1])
+                                               obstacle_traite.get_predicted_kalman()[0],
+                                               obstacle_traite.get_predicted_kalman()[1])
                 obstacle_traite.set_predicted_kalman(x_kalm_prec, p_kalm_prec)
             else:
                 r = dico[center]
-                x_kalm_prec = np.array([r*cos(center), 0, r*sin(center), 0]).T
+                x_kalm_prec = np.array([r * cos(center), 0, r * sin(center), 0]).T
                 p_kalm_prec = np.identity(4)
                 obstacle_traite.set_predicted_kalman(x_kalm_prec, p_kalm_prec)  # Initialisation du
                 # Kalman à la 1ère position mesurée de l'obstacle
 
     list_obstacles_precedente = list_obstacles
     return list_obstacles, list_obstacles_precedente
-
-
-
-
-
-
-

@@ -54,37 +54,33 @@ try:
     r = []
     theta = []
     ax.scatter(theta, r)
-
+    t = time()
+    Te= t
     while affichage_continu:
         for i in range(N_TESTS):
+            while not threadData.ready:
+                continue
+            Te = (time() - t)
             t = time()
 
-            sleep(0.05)
             # Copie de la liste des mesures du thread
             lidarDataList = list(threadData.readyData)
-            print("A")
-            threadData.lidar.clean_input()
-            print("B")
-
+            threadData.ready = True
             # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
             dico = data_cleaner(lidarDataList, nombre_tours, resolution_degre, distance_infini)
-            print("C")
 
             # Detection des bords d'obstacles
             limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
             # print("Ostacles détectés aux angles:", limits)
-            print("D")
 
             # Mise a jour des obstacles detectes, incluant le filtre de kalman
             list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
                                                                        Te, list_obstacles_precedente)
-            print("E")
 
             list_detected = []
             for detected in limits:
                 for n in range(len(detected)):
                     list_detected.append(detected[n])
-            print("E")
 
             ax.clear()
             ax.set_xlim(0, 2 * pi)
@@ -118,7 +114,6 @@ try:
             r = [distance for distance in dico.values()]
             theta = [angle for angle in dico.keys()]
 
-            t = time() - t
             # print("Temps d'execution:", t)
 
             pl.plot(theta, r, 'ro', markersize=0.6)
