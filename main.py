@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 from time import sleep, time
-
-import rplidar
-import configparser
 from math import cos, sin, pi
+
+from serial import SerialException
 
 from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
-import pylab as pl
 from src.ThreadData import ThreadData
+
+import configparser
+import pylab as pl
 
 # Nombre de tests, pour le calcul de temps moyens
 N_TESTS = 1
@@ -37,6 +38,11 @@ seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'
 
 threadData = ThreadData(resolution_degre, nombre_tours)
 
+def stop_handler(thread):
+    print("ARRET DEMANDE")
+    thread.stopLidar()
+    thread.join()
+
 try:
     # Le Thread recevant les donnees
     threadData.start()
@@ -55,7 +61,7 @@ try:
     theta = []
     ax.scatter(theta, r)
     t = time()
-    Te= t
+    Te = t
     while affichage_continu:
         for i in range(N_TESTS):
             while not threadData.ready:
@@ -120,8 +126,5 @@ try:
             pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
             pl.grid()
             fig.canvas.draw()
-
-except (KeyboardInterrupt, KeyError) as e:
-    print("ARRET DEMANDE")
-    threadData.stopLidar()
-    threadData.join()
+finally:
+    stop_handler(threadData)
