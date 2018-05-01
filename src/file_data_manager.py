@@ -1,3 +1,5 @@
+from math import pi
+
 from rplidar import RPLidar
 from time import sleep, time
 from csv import writer, reader
@@ -19,11 +21,8 @@ def scanData(lidar, seconds=10, turns=0):
     turn = 0
     if seconds == 0 and turns == 0:
         seconds = 10
-
     startTime = time()
-
     newTurnOld = False
-
     for measure in lidar.iter_measures():
         measureData.append(measure)
         if measure[0] and not newTurnOld:
@@ -59,9 +58,8 @@ def readData(path):
     return dataToReturn
 
 def cleanData(lidarData,resolution,nombre_tours):
-    data=[]
-    readyData=[] #Contient à chaque iteration un scan entier
     fullData=[] #Contient chaque scan du fichier
+    generated_data = [[0, False] for _ in range(int((360. / resolution) * float(nombre_tours)))]
     i = 0
     previous_bool = False
     around = resolution * 10
@@ -69,18 +67,18 @@ def cleanData(lidarData,resolution,nombre_tours):
         if newTurn and not previous_bool:  # Si True precede d un False
             i = int((i + 1) % nombre_tours)
             previous_bool = True
-            for x in data:
+            readyData = []
+            for x in generated_data:
                 if x[1]:
                     x[1] = False
                 else:
                     x = [0, False]
                 readyData.append(x[0])
             fullData.append(readyData)
-            readyData.clear()
         elif not newTurn:
             previous_bool = False
         angle = ((round(angle / around, 1) * around) % 360)
-        data[int(i * (360. / resolution) + (angle / resolution))] = [distance, True]
+        generated_data[int(i * (360. / resolution) + (angle / resolution))] = [distance, True]
     return fullData
 
 
@@ -90,7 +88,10 @@ if __name__ == '__main__':
 
     FILE_PATH = "./scanData.csv"
     lidar=RPLidar("/dev/ttyUSB0")
-    data = []
-    scanData(lidar,NB_SECONDES,NB_TOURS)
+    data = scanData(lidar,NB_SECONDES,NB_TOURS)
+    lidar.stop_motor()
+    lidar.stop()
+    lidar.disconnect()
     print(data)
     saveData(FILE_PATH, data)
+

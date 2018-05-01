@@ -8,7 +8,7 @@ from os.path import isfile
 from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
-from src.file_data_manager import readData
+from src.file_data_manager import readData, cleanData
 
 # Nombre de tests, pour le calcul de temps moyens
 N_TESTS = 1
@@ -37,7 +37,7 @@ seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'
 data = []
 
 if isfile("src/scanData.csv"):
-    data = readData("src/scanData.csv")
+    data = cleanData(readData("src/scanData.csv"), resolution_degre, nombre_tours)
 else:
     print("ERREUR: FICHIER DE DONNEES NON TROUVE")
     exit()
@@ -53,69 +53,56 @@ r = []
 theta = []
 ax.scatter(theta, r)
 
-print(data)
+# print(data)
 try:
-    while affichage_continu:
-        for i in range(len(data)):
-            currentData=data[i]
-            print(i,"CurrentData",currentData)
-            # A ~10Hz, pour coller aux mesures du LiDAR
-            sleep(0.1)
+    for i in range(len(data)):
+        currentData=data[i]
+        # A ~10Hz, pour coller aux mesures du LiDAR
+        sleep(0.05)
 
-            # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
-            dico = data_cleaner(currentData, nombre_tours, resolution_degre, distance_infini)
-            print("Dico:",dico)
-            # Detection des bords d'obstacles
-            limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
-            # print("Ostacles détectés aux angles:", limits)
+        # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
+        dico = data_cleaner(currentData, nombre_tours, resolution_degre, distance_infini)
+        # Detection des bords d'obstacles
+        limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
+        # Mise a jour des obstacles detectes, incluant le filtre de kalman
+        list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
+                                                                   Te, list_obstacles_precedente)
 
-            # Mise a jour des obstacles detectes, incluant le filtre de kalman
-            list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
-                                                                       Te, list_obstacles_precedente)
+        list_detected = []
+        for detected in limits:
+            for n in range(len(detected)):
+                list_detected.append(detected[n])
 
-            list_detected = []
-            for detected in limits:
-                for n in range(len(detected)):
-                    list_detected.append(detected[n])
+        ax.clear()
+        ax.set_xlim(0, 2 * pi)
+        ax.set_ylim(0, +distance_max)
+        ax.axhline(0, 0)
+        ax.axvline(0, 0)
 
-            ax.clear()
-            ax.set_xlim(0, 2 * pi)
-            ax.set_ylim(0, +distance_max)
-            ax.axhline(0, 0)
-            ax.axvline(0, 0)
+        for o in list_obstacles:
+            angle = o.center
+            r = dico[angle]
+            circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
+                               alpha=0.4)
+            ax.add_artist(circle)
 
-            for o in list_obstacles:
-                angle = o.center
-                r = dico[angle]
-                # print("nb_obstacles: ", len(list_obstacles))
-                circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
+            if o.get_predicted_kalman() is not None:
+                x_kalman = o.get_predicted_kalman()[0][0]
+                y_kalman = o.get_predicted_kalman()[0][2]
+                circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
+                                   color='b',
                                    alpha=0.4)
                 ax.add_artist(circle)
-
-                if o.get_predicted_kalman() is not None:
-                    x_kalman = o.get_predicted_kalman()[0][0]
-                    y_kalman = o.get_predicted_kalman()[0][2]
-                    # print("position kalman: ", x_kalman, " et ", y_kalman)
-                    circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
-                                       color='b',
-                                       alpha=0.4)
-
-                    ax.add_artist(circle)
-
-            # Listes des positions des obstacles à afficher
-            detected_r = [dico[detected] for detected in list_detected]
-            detected_theta = [detected for detected in list_detected]
-
-            # Listes des positions des points à afficher
-            r = [distance for distance in dico.values()]
-            theta = [angle for angle in dico.keys()]
-
-            # print("Temps d'execution:", t)
-
-            pl.plot(theta, r, 'ro', markersize=0.6)
-            pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
-            pl.grid()
-            fig.canvas.draw()
+        # Listes des positions des obstacles à afficher
+        detected_r = [dico[detected] for detected in list_detected]
+        detected_theta = [detected for detected in list_detected]
+        # Listes des positions des points à afficher
+        r = [distance for distance in dico.values()]
+        theta = [angle for angle in dico.keys()]
+        pl.plot(theta, r, 'ro', markersize=0.6)
+        pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
+        pl.grid()
+        fig.canvas.draw()
 except KeyboardInterrupt:
     print("ARRET DEMANDE")
     pl.close()
