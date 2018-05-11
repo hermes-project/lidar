@@ -28,7 +28,7 @@ class UnscentedKalman:
         self.kappa = kappa  # paramètre bizarre
         self.mu = mu0  # position initiale
         self.SIGMA = SIGMA0  # variance initiale
-        self.lam = alpha* * 2 *( d +kappa) - d  # un paramètre un peu étrange aussi
+        self.lam = alpha** 2 *( d +kappa) - d  # un paramètre un peu étrange aussi
         self.gamma = d+ self.lam  # à nouveau bizarre !
         self.Q = Q  # matrice de covariance de la gaussienne de l'équation d'évolution
         self.R = R  # matrice de covariance de la gaussienne de l'équation d'observation
