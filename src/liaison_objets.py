@@ -66,9 +66,9 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
                 angle_fin = round(angle_fin - 2 * pi, 4)
 
             # width = max(abs(xmax - xmin), abs(ymax - ymin)) # en degre
-           # width = sqrt(dico[angle_debut] ** 2 + dico[angle_fin] ** 2)# - 2 * dico[angle_debut] * dico[angle_fin] * cos(abs(angle_fin - angle_debut)))  # Al Kashi
-            width=100
-            # print("width: ", width)
+            width = sqrt(dico[angle_debut]**2 + dico[angle_fin]**2 - 2 * dico[angle_debut] * dico[angle_fin] \
+                    * cos(abs(angle_fin - angle_debut)))  # Al Kashi
+            print("width: ", width)
 
             # # print("width: ", width)
         # Creation des objets de type Obstacle

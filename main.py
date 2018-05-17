@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from threading import Lock
 from time import sleep, time
 from math import cos, sin, pi
 
@@ -36,12 +37,15 @@ tolerance_kalman_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kal
 tolerance_kalman = [tolerance_kalman_r, tolerance_kalman_theta]
 seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'])
 
-threadData = ThreadData(resolution_degre, nombre_tours)
+lock = Lock()
+threadData = ThreadData(lock, resolution_degre, nombre_tours)
+
 
 def stop_handler(thread):
     print("ARRET DEMANDE")
     thread.stopLidar()
     thread.join()
+
 
 try:
     # Le Thread recevant les donnees
@@ -63,68 +67,68 @@ try:
     t = time()
     Te = t
     while affichage_continu:
-        for i in range(N_TESTS):
-            while not threadData.ready:
-                continue
-            Te = (time() - t)
-            t = time()
+        if not threadData.isReady():
+            continue
+        sleep(0.05)
 
-            # Copie de la liste des mesures du thread
-            lidarDataList = list(threadData.readyData)
-            threadData.ready = True
-            # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
-            dico = data_cleaner(lidarDataList, nombre_tours, resolution_degre, distance_infini)
+        Te = (time() - t)
+        t = time()
 
-            # Detection des bords d'obstacles
-            limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
-            # print("Ostacles détectés aux angles:", limits)
+        # Copie de la liste des mesures du thread
+        lidarDataList = list(threadData.readyData)
+        # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
+        dico = data_cleaner(lidarDataList, nombre_tours, resolution_degre, distance_infini)
 
-            # Mise a jour des obstacles detectes, incluant le filtre de kalman
-            list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
-                                                                       Te, list_obstacles_precedente)
+        # Detection des bords d'obstacles
+        limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
+        print("Ostacles détectés aux angles:", limits)
 
-            list_detected = []
-            for detected in limits:
-                for n in range(len(detected)):
-                    list_detected.append(detected[n])
+        # Mise a jour des obstacles detectes, incluant le filtre de kalman
+        list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
+                                                                   Te, list_obstacles_precedente)
 
-            ax.clear()
-            ax.set_xlim(0, 2 * pi)
-            ax.set_ylim(0, +distance_max)
-            ax.axhline(0, 0)
-            ax.axvline(0, 0)
+        list_detected = []
+        for detected in limits:
+            for n in range(len(detected)):
+                list_detected.append(detected[n])
 
-            for o in list_obstacles:
-                angle = o.center
-                r = dico[angle]
-                # print("nb_obstacles: ", len(list_obstacles))
-                circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
+        ax.clear()
+        ax.set_xlim(0, 2 * pi)
+        ax.set_ylim(0, +distance_max)
+        ax.axhline(0, 0)
+        ax.axvline(0, 0)
+
+        for o in list_obstacles:
+            angle = o.center
+            r = dico[angle]
+            # print("nb_obstacles: ", len(list_obstacles))
+            circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
+                               alpha=0.4)
+            ax.add_artist(circle)
+
+            if o.get_predicted_kalman() is not None:
+                x_kalman = o.get_predicted_kalman()[0][0]
+                y_kalman = o.get_predicted_kalman()[0][2]
+                # print("position kalman: ", x_kalman, " et ", y_kalman)
+                circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
+                                   color='b',
                                    alpha=0.4)
+
                 ax.add_artist(circle)
 
-                if o.get_predicted_kalman() is not None:
-                    x_kalman = o.get_predicted_kalman()[0][0]
-                    y_kalman = o.get_predicted_kalman()[0][2]
-                    # print("position kalman: ", x_kalman, " et ", y_kalman)
-                    circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
-                                       color='b',
-                                       alpha=0.4)
+        # Listes des positions des obstacles à afficher
+        detected_r = [dico[detected] for detected in list_detected]
+        detected_theta = [detected for detected in list_detected]
 
-                    ax.add_artist(circle)
+        # Listes des positions des points à afficher
+        r = [distance for distance in dico.values()]
+        theta = [angle for angle in dico.keys()]
 
-            # Listes des positions des obstacles à afficher
-            detected_r = [dico[detected] for detected in list_detected]
-            detected_theta = [detected for detected in list_detected]
+        # print("Temps d'execution:", t)
 
-            # Listes des positions des points à afficher
-            r = [distance for distance in dico.values()]
-            theta = [angle for angle in dico.keys()]
-
-            # print("Temps d'execution:", t)
-
-            pl.plot(theta, r, 'ro', markersize=0.6)
-            pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
-            pl.grid()
-            fig.canvas.draw()
+        pl.plot(theta, r, 'ro', markersize=0.6)
+        pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
+        pl.grid()
+        fig.canvas.draw()
 finally:
     stop_handler(threadData)

@@ -1,22 +1,27 @@
 from threading import Thread
-
+import queue
 from serial.tools.list_ports import comports
 from rplidar import RPLidar as rp
 
 
 class ThreadData(Thread):
 
-    def __init__(self, resolution, nombre_tours):  # initialisation du LiDAR.
+    def __init__(self, lock, resolution, nombre_tours):  # initialisation du LiDAR.
         Thread.__init__(self)
-        self.lidar = rp(comports()[0].device)  # Tente de se connecter au premier port Serie disponible
+        try:
+            self.lidar = rp(comports()[0].device)  # Tente de se connecter au premier port Serie disponible
+        except IndexError:
+            print("ERREUR: Pas de connexion serie disponible")
+            exit()
         self.lidar.start_motor()
         self.lidar.start()
         self.resolution = resolution
         self.nombre_tours = nombre_tours
         self.running = True
         self.generated_data = []
+        self.readyData = queue.Queue(maxsize=10)
         self.ready = False
-        self.readyData = []
+        self.lock=lock
 
     def run(self):
         self.generated_data = [[0, False] for _ in range(int((360. / self.resolution) * float(
@@ -29,18 +34,19 @@ class ThreadData(Thread):
                 i = int((i + 1) % self.nombre_tours)
                 previous_bool = True
                 self.readyData = []
-                for x in self.generated_data:
-                    if x[1]:
-                        x[1] = False
-                    else:
-                        x = [0, False]
-                    self.readyData.append(x[0])
-                self.ready = True
+                with self.lock:
+                    for x in self.generated_data:
+                        if x[1]:
+                            x[1] = False
+                        else:
+                            x = [0, False]
+                        self.readyData.append(x[0])
+                    self.ready = True
             elif not newTurn:
                 previous_bool = False
             angle = ((round(angle / around, 1) * around) % 360)
             # l'indice dans la liste determine l'angle du lidar, on reduit ainsi la liste.
-            self.generated_data[self.getIndex(angle, i)] = [distance,True]
+            self.generated_data[self.getIndex(angle, i)] = [distance, True]
             if not self.running:
                 break
 
@@ -54,3 +60,9 @@ class ThreadData(Thread):
         self.lidar.stop_motor()
         self.lidar.disconnect()
 
+    def isReady(self):
+        with self.lock:
+            if self.ready:
+                self.ready = False
+                return True
+        return False

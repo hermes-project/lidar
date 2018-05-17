@@ -24,8 +24,8 @@ def ekf(Te, y_k, x_kalm_prec, p_kalm_prec):
     """
     # Données utiles au filtrage kalman
     sigmaQ = 10.  # Ecart type du modèle, on peut à priori le garder à 1, à tester
-    sigma_angle = pi / 180  # Ecart type sur la mesure de l'angle (on peut à priori la supposer nulle dans notre cas)
-    sigma_distance = 100.  # Ecart type sur la mesure de la distance (à mesurer)
+    sigma_angle = 5  # Ecart type sur la mesure de l'angle (on peut à priori la supposer nulle dans notre cas)
+    sigma_distance = 10.  # Ecart type sur la mesure de la distance (à mesurer)
     Te=10*Te
     F = array([[1, Te, 0, 0],
                [0, 1, 0, 0],
