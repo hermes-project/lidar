@@ -70,6 +70,7 @@ try:
 
         list_detected = []
         for detected in limits:
+            print(detected)
             for n in range(len(detected)):
                 list_detected.append(detected[n])
 
@@ -99,8 +100,8 @@ try:
         # Listes des positions des points à afficher
         r = [distance for distance in dico.values()]
         theta = [angle for angle in dico.keys()]
-        pl.plot(theta, r, 'ro', markersize=0.6)
-        pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
+        # pl.plot(theta, r, 'ro', markersize=0.6)
+        # pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
         pl.grid()
         fig.canvas.draw()
 except KeyboardInterrupt:
