@@ -30,15 +30,15 @@ def analyze_dic(raw_dict, distance_max, ecart_min_inter_objet):
     list_angles = list(raw_dict.keys())
     last_angle = list_angles[-1]
     list_distances = list(raw_dict.values())
-    print(list_distances[-1])
+    # print(list_distances[-1])
 
     if list_distances[0] <= distance_max:
         item = True
         list_bounds.append([list_angles[0]])
 
+
     for i, (angle, distance) in enumerate(raw_dict.items()):
         if i >= 0:
-
             ecart_points = sqrt(distance ** 2 + list_distances[i - 1] ** 2 - 2 * distance * list_distances[i - 1] \
                                 * cos(abs(list_angles[i - 1] - angle)))  # Al Kashi
 
