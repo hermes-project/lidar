@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 from src.obstacles import Obstacle
 from math import cos, sin, pi, sqrt
 from src.kalman import ekf
 import numpy as np
 
 
-def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obstacles_precedente):
+def liaison_objets(dico, list_bounds, seuil_association_cartesien, te, list_obstacles_precedente):
     """
     Fonction qui créé des objets de type Obstacle et retourne une liste de ces obstacles
 
     :param dico: Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
     :param list_bounds: Liste de listes de format [angle début obstacle,angle fin obstacle]
     :param seuil_association_cartesien: Tolerance pour savoir si un nouvel objet est un ancien objet qui s'est déplacé
-    :param Te: écart entre 2 scans (en ms ?)
+    :param te: écart entre 2 scans (en ms ?)
     :param list_obstacles_precedente: Liste d'objets de type Obstacle
     :return: list_obstacles: Liste d'objets de type Obstacle
     """
@@ -28,6 +27,7 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
         distance_max = 0
         dist_min_ancien_new_obst = distance_min
         ancien_obst_associe = None
+        width = None
 
         # Calcul milieu obstacles et largeur
         if len(list_bounds) >= 1:
@@ -39,7 +39,6 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
             else:
                 center = abs(angle_debut + angle_fin) / 2
             center = round(center, 4)
-            # print("center: ", center)
 
             if center not in dico.keys():
                 for angle in dico.keys():
@@ -51,7 +50,6 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
                             distance = dico[angle]
                         elif angle >= 2 * pi:
                             distance = dico[angle - 2 * pi]
-
                         if distance > distance_max:
                             distance_max = distance
                         if distance < distance_min:
@@ -59,18 +57,14 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
 
                 dico[center] = (distance_max + distance_min) / 2
 
-            # print("distance_max: ", distance_max)
-            # print("distance_min: ", distance_min)
-            # print("dico_center: ", dico[center])
             if angle_fin >= 2 * pi:
                 angle_fin = round(angle_fin - 2 * pi, 4)
 
             # width = max(abs(xmax - xmin), abs(ymax - ymin)) # en degre
-            width = sqrt(dico[angle_debut]**2 + dico[angle_fin]**2 - 2 * dico[angle_debut] * dico[angle_fin] \
-                    * cos(abs(angle_fin - angle_debut)))  # Al Kashi
+            width = sqrt(dico[angle_debut]**2 + dico[angle_fin]**2 - 2 * dico[angle_debut] * dico[angle_fin]
+                         * cos(abs(angle_fin - angle_debut)))  # Al Kashi
             print("width: ", width)
 
-            # # print("width: ", width)
         # Creation des objets de type Obstacle
         list_obstacles.append(Obstacle(width, center, dico[center]))
         obstacle_traite = list_obstacles[new_obstacle]
@@ -106,14 +100,14 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
                         if len(piste) > 30:
                             obstacle_traite.remove_point_piste()
                     obstacle_traite.set_new_position_piste([ancien_obst_associe.get_predicted_kalman()[0][0],
-                                                                ancien_obst_associe.get_predicted_kalman()[0][2]])
+                                                            ancien_obst_associe.get_predicted_kalman()[0][2]])
 
             # Kalman
             # y_k: derniere mesure faite avec le lidar -> [obstacle_traite.get_center, dico[center]]
             # x_kalm_prec: ancienne sortie du Kalman
             # p_kalm_prec: ancienne sortie du Kalman
             if obstacle_traite.get_predicted_kalman() is not None:
-                x_kalm_prec, p_kalm_prec = ekf(Te, np.array([center, dico[center]]),
+                x_kalm_prec, p_kalm_prec = ekf(te, np.array([center, dico[center]]),
                                                obstacle_traite.get_predicted_kalman()[0],
                                                obstacle_traite.get_predicted_kalman()[1])
                 obstacle_traite.set_predicted_kalman(x_kalm_prec, p_kalm_prec)
@@ -125,4 +119,5 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
                 # Kalman à la 1ère position mesurée de l'obstacle
 
     list_obstacles_precedente = list_obstacles
+
     return list_obstacles, list_obstacles_precedente

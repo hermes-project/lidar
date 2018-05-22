@@ -1,28 +1,27 @@
 #!/usr/bin/env python3
-from time import time
+# coding: utf-8
 from math import pi
 
 
-def data_cleaner(lidarData, nombre_tours, resolution_degre, distance_infini):
+def data_cleaner(lidar_data, resolution_degre):
     """
     Fichier avec la fonction qui génère les données. Le Lidar doit être instencié dans le main
 
-    :param lidar: Le lidar utilisé
-    :param nombre_tours: le nombre de tours qu'effectue le LiDAR
-    :param resolution: La résolution utilisée en DEGRES
+    :param lidar_data: données brutes du LiDAR
+    :param resolution_degre: La résolution utilisée en DEGRES
     :return: data Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
     """
 
     data = {}
-    toRadian = pi / 180.
+    to_radian = pi / 180.
 
-    for indice in range(len(lidarData)):
+    for indice in range(len(lidar_data)):
         angle_degre = resolution_degre * (indice % int(360. / resolution_degre))
-        angle_radian = round(angle_degre * toRadian,4)
+        angle_radian = round(angle_degre * to_radian, 4)
         if angle_radian in data:
-            data[angle_radian].append(lidarData[indice])
+            data[angle_radian].append(lidar_data[indice])
         else:
-            data[angle_radian] = [lidarData[indice]]
+            data[angle_radian] = [lidar_data[indice]]
 
     for angle, distances in data.items():
         j = 0
@@ -35,23 +34,23 @@ def data_cleaner(lidarData, nombre_tours, resolution_degre, distance_infini):
                 j += 1
         value = average(distances)
         data[angle] = value
-    last_angle=round(resolution_degre * ((len(lidarData)-1) % int(360. / resolution_degre))*toRadian,4)
+    last_angle = round(resolution_degre * ((len(lidar_data) - 1) % int(360. / resolution_degre)) * to_radian, 4)
     for angle, distance in data.items():
-        if distance <10:
-            data[angle]=data[last_angle]
-        last_angle=angle
+        if distance < 10:
+            data[angle] = data[last_angle]
+        last_angle = angle
     return data
 
 
 def average(data):
-    S = 0.
+    s = 0.
     n = 0
     for value in data:
         if value > 0:
-            S += value
+            s += value
             n += 1
-    if n >0:
-        return S/n
+    if n > 0:
+        return s/n
     else:
         return 0
 

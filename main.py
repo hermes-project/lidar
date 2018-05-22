@@ -1,54 +1,85 @@
 #!/usr/bin/env python3
 from time import sleep, time
 
-from src.HL_connection import HL_connected
-from src.HL_connection import HL_socket
-from src.HL_connection import stop_com_HL
+from src.HL_connection import hl_connected
+from src.HL_connection import hl_socket
+from src.HL_connection import stop_com_hl
 from src.ThreadData import ThreadData
 from src.affichage import *
 from src.mesures import mesures
 
-list_obstacles_precedente = []  # Liste des positions des anciens obstacles
-threadData = ThreadData()
-
-
-def stop_handler(thread):
-    print("ARRET DEMANDE")
-    thread.stopLidar()
-    thread.join()
-
+socket = None
+thread_data = None
+ax = None
+fig = None
 
 try:
+
+    # Liste des positions des anciens obstacles
+    list_obstacles_precedente = []
+
     # Creation de socket pour communiquer avec le HL
-    socket = HL_socket()
-    # Le Thread recevant les donnees
-    threadData.start()
-    sleep(2)  # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
-    if not HL_connected:
+    if hl_connected:
+        socket = hl_socket()
+
+    # Demarre le Thread recevant les donnees
+    thread_data = ThreadData()
+    thread_data.start()
+
+    # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
+    sleep(2)
+
+    # Initialisation de l'affichage
+    if not hl_connected:
         ax, fig = init_affichage_cartesien()
 
+    # Initialisation des valeurs pour le calcul du temps d'exécution
     t = time()
-    Te = t
+    te = t
 
+    # Boucle de récupération,de traitement des données, d'envoi et d'affichage
     while True:
-        if not threadData.isReady():
-            continue
+
+        # Attendre qu'au moins 1 scan soit effectué
         sleep(0.05)
-        Te = (time() - t)
+        if not thread_data.is_ready():
+            continue
+
+        # Calcul du temps d'exécution : aussi utilisé pour le Kalman
+        te = (time() - t)
         t = time()
 
-        dico, limits, list_obstacles, list_obstacles_precedente = mesures(Te, list_obstacles_precedente, threadData)
+        # On récupère les données du scan du LiDAR et on fait les traitements
+        dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
 
-        if HL_connected:
+        # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
+        if hl_connected:
             for o in list_obstacles:
                 angle = o.center
                 r = dico[angle]
                 socket.send([r, angle])
+
+        # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         else:
             affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
+        # Affichage du temps d'exécution
         print("Temps d'execution:", t)
 
+except KeyboardInterrupt:
+    # Arrêt du système
+    if hl_connected:
+        stop_com_hl(socket)
+    print("ARRET DEMANDE")
+    if thread_data:
+        thread_data.stop_lidar()
+        thread_data.join()
+
 finally:
-    stop_com_HL(socket)
-    stop_handler(threadData)
+    # Arrêt du système
+    if hl_connected:
+        stop_com_hl(socket)
+    print("ARRET DEMANDE")
+    if thread_data:
+        thread_data.stop_lidar()
+        thread_data.join()

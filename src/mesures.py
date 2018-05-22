@@ -15,16 +15,18 @@ ecart_min_inter_objet = int(config['DETECTION']['ecart_min_inter_objet'])
 seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'])
 
 
-def mesures(Te, list_obstacles_precedente, threadData):
+def mesures(te, list_obstacles_precedente, thread_data):
     """
     Récupération et traitements de données.
 
     """
 
     # Copie de la liste des mesures du thread
-    lidarDataList = list(threadData.readyData)
-    # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
-    dico = data_cleaner(lidarDataList, nombre_tours, resolution_degre, distance_infini)
+    lidar_data_list = list(thread_data.readyData)
+
+    # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee,
+    # et moyennant les distances si il y a plusieurs tours effectues
+    dico = data_cleaner(lidar_data_list, resolution_degre)
 
     # Detection des bords d'obstacles
     limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
@@ -32,6 +34,6 @@ def mesures(Te, list_obstacles_precedente, threadData):
 
     # Mise a jour des obstacles detectes, incluant le filtre de kalman
     list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
-                                                               Te, list_obstacles_precedente)
+                                                               te, list_obstacles_precedente)
 
     return dico, limits, list_obstacles, list_obstacles_precedente
