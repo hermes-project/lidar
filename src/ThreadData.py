@@ -2,11 +2,17 @@ from threading import Thread
 import queue
 from serial.tools.list_ports import comports
 from rplidar import RPLidar as rp
+import configparser
+
+config = configparser.ConfigParser()
+config.read('config.ini', encoding="utf-8")
+resolution_degre = float(config['MESURES']['resolution_degre'])
+nombre_tours = float(config['MESURES']['nombre_tours'])
 
 
 class ThreadData(Thread):
 
-    def __init__(self, lock, resolution, nombre_tours):  # initialisation du LiDAR.
+    def __init__(self):  # initialisation du LiDAR.
         Thread.__init__(self)
         try:
             self.lidar = rp(comports()[0].device)  # Tente de se connecter au premier port Serie disponible
@@ -15,13 +21,12 @@ class ThreadData(Thread):
             exit()
         self.lidar.start_motor()
         self.lidar.start()
-        self.resolution = resolution
+        self.resolution = resolution_degre
         self.nombre_tours = nombre_tours
         self.running = True
         self.generated_data = []
         self.readyData = queue.Queue(maxsize=10)
         self.ready = False
-        self.lock=lock
 
     def run(self):
         self.generated_data = [[0, False] for _ in range(int((360. / self.resolution) * float(

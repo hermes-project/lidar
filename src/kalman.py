@@ -1,8 +1,17 @@
 from numpy import array, eye, set_printoptions
 from math import atan2, sqrt, pi, cos, sin
 from numpy.linalg import inv
-
+import configparser
 set_printoptions(suppress=True)
+
+config = configparser.ConfigParser()
+config.read('config.ini', encoding="utf-8")
+tolerance_predicted_fixe_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_r'])
+tolerance_predicted_fixe_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_theta'])
+tolerance_predicted_fixe = [tolerance_predicted_fixe_r, tolerance_predicted_fixe_theta]
+tolerance_kalman_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_r'])
+tolerance_kalman_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_theta'])
+tolerance_kalman = [tolerance_kalman_r, tolerance_kalman_theta]
 
 
 def isnan(x):

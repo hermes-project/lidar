@@ -7,6 +7,7 @@ config = configparser.ConfigParser()
 config.read('config.ini', encoding="utf-8")
 server = int(config['COMMUNICATION SOCKET']['server'])
 port = int(config['COMMUNICATION SOCKET']['port'])
+HL_connected = config['COMMUNICATION SOCKET']['HL_connected'] == "True"
 
 
 def HL_socket():
