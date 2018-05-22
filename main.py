@@ -3,8 +3,6 @@ from threading import Lock
 from time import sleep, time
 from math import cos, sin, pi
 
-from serial import SerialException
-
 from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
@@ -28,6 +26,8 @@ nombre_tours = float(config['MESURES']['nombre_tours'])
 resolution_degre = float(config['MESURES']['resolution_degre'])
 resolution = 0.5 * 2 * pi / 360  # en radian
 distance_max = int(config['DETECTION']['distance_max'])
+distance_max_x_cartesien = int(config['DETECTION']['distance_max_x_cartesien'])
+distance_max_y_cartesien = int(config['DETECTION']['distance_max_y_cartesien'])
 distance_infini = int(config['DETECTION']['distance_infini'])
 ecart_min_inter_objet = int(config['DETECTION']['ecart_min_inter_objet'])
 tolerance_predicted_fixe_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_r'])
@@ -57,9 +57,14 @@ try:
     tot = 0  # Mesure du temps d'execution
     pl.ion()
     fig = pl.figure()
-    ax = fig.add_subplot(111, polar=True)  # polaire !
-    ax.set_xlim(0, 3 * distance_max)
-    ax.set_ylim(2 * pi)
+    # ax = fig.add_subplot(111, polar=True)  # polaire !
+    ax = fig.add_subplot(111)
+
+    # ax.set_ylim(0, distance_max)
+    # ax.set_ylim(0, 2 * pi)
+    ax.set_xlim(-distance_max_x_cartesien/2, distance_max_x_cartesien/2)
+    ax.set_ylim(-distance_max_y_cartesien/2, distance_max_y_cartesien/2)
+
     ax.axhline(0, 0)
     ax.axvline(0, 0)
     r = []
@@ -94,8 +99,11 @@ try:
                 list_detected.append(detected[n])
 
         ax.clear()
-        ax.set_xlim(0, 2 * pi)
-        ax.set_ylim(0, +distance_max)
+        # ax.set_xlim(0, 2 * pi)
+        # ax.set_ylim(0, +distance_max)
+        ax.set_xlim(-distance_max_x_cartesien / 2, distance_max_x_cartesien / 2)
+        ax.set_ylim(-distance_max_y_cartesien / 2, distance_max_y_cartesien / 2)
+
         ax.axhline(0, 0)
         ax.axvline(0, 0)
 
@@ -103,8 +111,9 @@ try:
             angle = o.center
             r = dico[angle]
             # print("nb_obstacles: ", len(list_obstacles))
-            circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
-                               alpha=0.4)
+            # circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
+            #                   alpha=0.4)
+            circle = pl.Circle((r * cos(angle), r * sin(angle)), radius=200, fc='g')
             ax.add_artist(circle)
 
             if o.get_piste_obstacle() is not None:
@@ -112,9 +121,10 @@ try:
                 for elt_piste in o.get_piste_obstacle():
                     x_elt = elt_piste[0]
                     y_elt = elt_piste[1]
-                    circle = pl.Circle((x_elt, y_elt), 8, transform=ax.transData._b,
-                                       color='y',
-                                       alpha=0.4)
+                    # circle = pl.Circle((x_elt, y_elt), 8, transform=ax.transData._b,
+                    #                   color='y',
+                    #                   alpha=0.4)
+                    circle = pl.Circle((x_elt, y_elt), radius=8, fc='y')
                     ax.add_artist(circle)
 
             if o.get_predicted_kalman() is not None:
@@ -123,24 +133,32 @@ try:
                 print("x_kalman : ", x_kalman)
                 print("y_kalman : ", y_kalman)
                 # print("position kalman: ", x_kalman, " et ", y_kalman)
-                circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
-                                   color='b',
-                                   alpha=0.4)
+                # circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
+                #                   color='b',
+                #                   alpha=0.4)
+                circle = pl.Circle((x_kalman, y_kalman), radius=200, fc='b')
 
                 ax.add_artist(circle)
 
         # Listes des positions des obstacles à afficher
-        detected_r = [dico[detected] for detected in list_detected]
-        detected_theta = [detected for detected in list_detected]
+        # detected_r = [dico[detected] for detected in list_detected]
+        # detected_theta = [detected for detected in list_detected]
+        detected_x = [dico[detected]*cos(detected) for detected in list_detected]
+        detected_y = [dico[detected]*sin(detected) for detected in list_detected]
 
         # Listes des positions des points à afficher
-        r = [distance for distance in dico.values()]
-        theta = [angle for angle in dico.keys()]
+        # r = [distance for distance in dico.values()]
+        # theta = [angle for angle in dico.keys()]
+        x = [distance*cos(angle) for distance, angle in zip(dico.values(), dico.keys())]
+        y = [distance*sin(angle) for distance, angle in zip(dico.values(), dico.keys())]
 
         # print("Temps d'execution:", t)
 
-        pl.plot(theta, r, 'ro', markersize=0.6)
-        pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
+        # pl.plot(theta, r, 'ro', markersize=0.6)
+        # pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
+        pl.plot(x, y, 'ro', markersize=0.6)
+        pl.plot(detected_x, detected_y, 'bo', markersize=1.8)
+
         pl.grid()
         fig.canvas.draw()
 finally:
