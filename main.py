@@ -113,7 +113,7 @@ try:
             # print("nb_obstacles: ", len(list_obstacles))
             # circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
             #                   alpha=0.4)
-            circle = pl.Circle((r * cos(angle), r * sin(angle)), radius=200, fc='g')
+            circle = pl.Circle((r * cos(angle), r * sin(angle)), radius=200, fc='orange')
             ax.add_artist(circle)
 
             if o.get_piste_obstacle() is not None:
@@ -124,7 +124,7 @@ try:
                     # circle = pl.Circle((x_elt, y_elt), 8, transform=ax.transData._b,
                     #                   color='y',
                     #                   alpha=0.4)
-                    circle = pl.Circle((x_elt, y_elt), radius=8, fc='y')
+                    circle = pl.Circle((x_elt, y_elt), radius=8, fc='black')
                     ax.add_artist(circle)
 
             if o.get_predicted_kalman() is not None:
@@ -136,7 +136,7 @@ try:
                 # circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
                 #                   color='b',
                 #                   alpha=0.4)
-                circle = pl.Circle((x_kalman, y_kalman), radius=200, fc='b')
+                circle = pl.Circle((x_kalman, y_kalman), radius=200, fc='crimson')
 
                 ax.add_artist(circle)
 
