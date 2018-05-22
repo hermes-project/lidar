@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
 from threading import Lock
 from time import sleep, time
-from math import cos, sin, pi
-
-from src.analyze_dic import analyze_dic
-from src.data_cleaner import data_cleaner
-from src.liaison_objets import liaison_objets
+from math import cos, sin
 from src.ThreadData import ThreadData
 from src.HL_connection import HL_socket
 from src.HL_connection import stop_com_HL
 from src.affichage import *
 from src.mesures import mesures
-
 import configparser
 import pylab as pl
 
@@ -36,9 +31,6 @@ tolerance_kalman_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_
 tolerance_kalman_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_theta'])
 tolerance_kalman = [tolerance_kalman_r, tolerance_kalman_theta]
 
-server = int(config['COMMUNICATION SOCKET']['server'])
-port = int(config['COMMUNICATION SOCKET']['port'])
-
 lock = Lock()
 threadData = ThreadData(lock, resolution_degre, nombre_tours)
 
@@ -51,7 +43,7 @@ def stop_handler(thread):
 
 try:
     # Creation de socket pour communiquer avec le HL
-    socket = HL_socket(server, port)
+    socket = HL_socket()
 
     # Le Thread recevant les donnees
     threadData.start()
