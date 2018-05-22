@@ -7,6 +7,7 @@ from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
 from src.ThreadData import ThreadData
+from src.HL_connection import HL_socket
 
 import configparser
 import pylab as pl
@@ -48,7 +49,15 @@ def stop_handler(thread):
     thread.join()
 
 
+def stop_com_HL(socket):
+    print("Close")
+    socket.close()
+
+
 try:
+    # Creation de socket pour communiquer avec le HL
+    socket = HL_socket()
+
     # Le Thread recevant les donnees
     threadData.start()
 
@@ -110,6 +119,8 @@ try:
         for o in list_obstacles:
             angle = o.center
             r = dico[angle]
+            socket.send([r, angle])
+
             # print("nb_obstacles: ", len(list_obstacles))
             # circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
             #                   alpha=0.4)
@@ -124,7 +135,7 @@ try:
                     # circle = pl.Circle((x_elt, y_elt), 8, transform=ax.transData._b,
                     #                   color='y',
                     #                   alpha=0.4)
-                    circle = pl.Circle((x_elt, y_elt), radius=8, fc='black')
+                    circle = pl.Circle((x_elt, y_elt), radius=20, fc='black')
                     ax.add_artist(circle)
 
             if o.get_predicted_kalman() is not None:
