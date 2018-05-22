@@ -100,6 +100,13 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
                     # car les 2 objets sont en fait les mêmes
                     obstacle_traite.set_predicted_kalman(ancien_obst_associe.get_predicted_kalman()[0],
                                                          ancien_obst_associe.get_predicted_kalman()[1])
+                    piste = ancien_obst_associe.get_piste_obstacle()
+                    obstacle_traite.set_position_piste(piste)
+                    if piste:
+                        if len(piste) > 30:
+                            obstacle_traite.remove_point_piste()
+                    obstacle_traite.set_new_position_piste([ancien_obst_associe.get_predicted_kalman()[0][0],
+                                                                ancien_obst_associe.get_predicted_kalman()[0][2]])
 
             # Kalman
             # y_k: derniere mesure faite avec le lidar -> [obstacle_traite.get_center, dico[center]]

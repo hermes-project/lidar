@@ -107,9 +107,21 @@ try:
                                alpha=0.4)
             ax.add_artist(circle)
 
+            if o.get_piste_obstacle() is not None:
+                print("piste : ", o.get_piste_obstacle())
+                for elt_piste in o.get_piste_obstacle():
+                    x_elt = elt_piste[0]
+                    y_elt = elt_piste[1]
+                    circle = pl.Circle((x_elt, y_elt), 8, transform=ax.transData._b,
+                                       color='y',
+                                       alpha=0.4)
+                    ax.add_artist(circle)
+
             if o.get_predicted_kalman() is not None:
                 x_kalman = o.get_predicted_kalman()[0][0]
                 y_kalman = o.get_predicted_kalman()[0][2]
+                print("x_kalman : ", x_kalman)
+                print("y_kalman : ", y_kalman)
                 # print("position kalman: ", x_kalman, " et ", y_kalman)
                 circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b,
                                    color='b',

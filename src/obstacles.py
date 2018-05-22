@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from collections import deque
+
 import numpy
 
 class Obstacle:
@@ -12,7 +14,7 @@ class Obstacle:
         self.predictedPosition = numpy.array([0, 0])  # [distance, angle] avec la distance en mm  et l'angle en radian
         self.ancienPredictedKalman = None
         self.predictedKalman = None
-        self.pisteObstacle = []  # Les positions precedentes de l'objet en mouvement
+        self.pisteObstacle = deque()  # Les positions precedentes de l'objet en mouvement
         self.updated = False
         self.ancienObstacle = None
         self.width = width  # distance en mm
@@ -103,6 +105,23 @@ class Obstacle:
         :return:
         """
         self.pisteObstacle.append(new_position_piste)
+
+    def remove_point_piste(self):
+        """
+        Enlève la valeur à gauche dans la liste de positions precedentes (piste)
+
+        :return:
+        """
+        self.pisteObstacle.popleft()
+
+    def set_position_piste(self, position_piste):
+        """
+        Met à jour la liste de positions precedentes
+
+        :param position_piste: liste de positions
+        :return:
+        """
+        self.pisteObstacle = position_piste
 
     def set_width(self, width):
         """
