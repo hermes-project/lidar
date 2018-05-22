@@ -8,6 +8,7 @@ from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
 from src.ThreadData import ThreadData
 from src.HL_connection import HL_socket
+from src.HL_connection import stop_com_HL
 
 import configparser
 import pylab as pl
@@ -38,6 +39,8 @@ tolerance_kalman_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_
 tolerance_kalman_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_theta'])
 tolerance_kalman = [tolerance_kalman_r, tolerance_kalman_theta]
 seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'])
+server = int(config['COMMUNICATION SOCKET']['server'])
+port = int(config['COMMUNICATION SOCKET']['port'])
 
 lock = Lock()
 threadData = ThreadData(lock, resolution_degre, nombre_tours)
@@ -49,14 +52,9 @@ def stop_handler(thread):
     thread.join()
 
 
-def stop_com_HL(socket):
-    print("Close")
-    socket.close()
-
-
 try:
     # Creation de socket pour communiquer avec le HL
-    socket = HL_socket()
+    socket = HL_socket(server, port)
 
     # Le Thread recevant les donnees
     threadData.start()
@@ -173,5 +171,6 @@ try:
         pl.grid()
         fig.canvas.draw()
 finally:
+    stop_com_HL(socket)
     stop_handler(threadData)
 
