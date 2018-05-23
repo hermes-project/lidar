@@ -2,6 +2,7 @@
 # coding: utf-8
 import socket
 import configparser
+from time import sleep
 
 config = configparser.ConfigParser()
 config.read('config.ini', encoding="utf-8")
@@ -16,7 +17,11 @@ def hl_socket():
 
     """
 
+    print("port: ", port, " et server: ", server)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print("ah!")
+    print("wants to connect")
+    sleep(4)
     s.connect((server, port))
     print("Connection on {}".format(port))
 
