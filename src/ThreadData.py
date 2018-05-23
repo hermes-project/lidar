@@ -15,6 +15,7 @@ nombre_tours = float(config['MESURES']['nombre_tours'])
 class ThreadData(Thread):
 
     def __init__(self):  # initialisation du LiDAR.
+        print("thread")
         Thread.__init__(self)
         try:
             self.lidar = Rp(comports()[0].device)  # Tente de se connecter au premier port Serie disponible

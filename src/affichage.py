@@ -10,6 +10,7 @@ config.read('config.ini', encoding="utf-8")
 distance_max_x_cartesien = int(config['DETECTION']['distance_max_x_cartesien'])
 distance_max_y_cartesien = int(config['DETECTION']['distance_max_y_cartesien'])
 distance_max = int(config['DETECTION']['distance_max'])
+afficher_en_polaire = config['AFFICHAGE']['afficher_en_polaire'] == "True"
 
 
 def init_affichage_cartesien():
@@ -43,6 +44,7 @@ def init_affichage_polaire():
     ax.axhline(0, 0)
     ax.axvline(0, 0)
 
+
     return ax, fig
 
 
@@ -64,10 +66,11 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
     ax.set_ylim(-distance_max_y_cartesien / 2, distance_max_y_cartesien / 2)
     ax.axhline(0, 0)
     ax.axvline(0, 0)
+    pl.grid()
 
     for o in list_obstacles:
 
-        # Ajout de la position mesurée de l'obstacle
+         # Ajout de la position mesurée de l'obstacle
         angle = o.center
         r = dico[angle]
         circle = pl.Circle((r * cos(angle), r * sin(angle)), radius=200, fc='orange')
@@ -94,15 +97,15 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
     # Listes des positions des obstacles à afficher
     detected_x = [dico[detected] * cos(detected) for detected in list_detected]
     detected_y = [dico[detected] * sin(detected) for detected in list_detected]
-    pl.plot(detected_x, detected_y, 'bo', markersize=1.8)
 
     # Listes des positions des points à afficher
     x = [distance * cos(angle) for distance, angle in zip(dico.values(), dico.keys())]
     y = [distance * sin(angle) for distance, angle in zip(dico.values(), dico.keys())]
+
+    pl.plot(detected_x, detected_y, 'bo', markersize=1.8)
     pl.plot(x, y, 'ro', markersize=0.6)
 
     # Affichage
-    pl.grid()
     fig.canvas.draw()
 
 
@@ -132,7 +135,7 @@ def affichage_polaire(limits, ax, list_obstacles, dico, fig):
         r = dico[angle]
         print("nb_obstacles: ", len(list_obstacles))
         circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
-                           lpha=0.4)
+                           alpha=0.4)
         ax.add_artist(circle)
 
         # Ajout de la position Kalman de l'obstacle
@@ -159,11 +162,12 @@ def affichage_polaire(limits, ax, list_obstacles, dico, fig):
     # Listes des positions des obstacles à afficher
     detected_r = [dico[detected] for detected in list_detected]
     detected_theta = [detected for detected in list_detected]
-    pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
 
     # Listes des positions des points à afficher
     r = [distance for distance in dico.values()]
     theta = [angle for angle in dico.keys()]
+
+    pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
     pl.plot(theta, r, 'ro', markersize=0.6)
 
     # Affichage

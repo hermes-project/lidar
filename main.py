@@ -6,6 +6,7 @@ from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
 from src.ThreadData import ThreadData
 from src.affichage import *
+from src.affichage import afficher_en_polaire
 from src.mesures import mesures
 
 socket = None
@@ -31,7 +32,10 @@ try:
 
     # Initialisation de l'affichage
     if not hl_connected:
-        ax, fig = init_affichage_cartesien()
+        if afficher_en_polaire:
+            ax, fig = init_affichage_polaire()
+        else:
+            ax, fig = init_affichage_cartesien()
 
     # Initialisation des valeurs pour le calcul du temps d'exécution
     t = time()
@@ -41,9 +45,9 @@ try:
     while True:
 
         # Attendre qu'au moins 1 scan soit effectué
-        sleep(0.05)
         if not thread_data.is_ready():
             continue
+        sleep(0.1)
 
         # Calcul du temps d'exécution : aussi utilisé pour le Kalman
         te = (time() - t)
@@ -65,21 +69,15 @@ try:
 
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         else:
-            affichage_cartesien(limits, ax, list_obstacles, dico, fig)
+            if afficher_en_polaire:
+                affichage_polaire(limits, ax, list_obstacles, dico, fig)
+            else:
+                affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
         # Affichage du temps d'exécution
-        print("Temps d'execution:", t)
+        # print("Temps d'execution:", t)
 
 except KeyboardInterrupt:
-    # Arrêt du système
-    if hl_connected:
-        stop_com_hl(socket)
-    print("ARRET DEMANDE")
-    if thread_data:
-        thread_data.stop_lidar()
-        thread_data.join()
-
-finally:
     # Arrêt du système
     if hl_connected:
         stop_com_hl(socket)
