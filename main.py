@@ -54,10 +54,14 @@ try:
 
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
         if hl_connected:
+            liste_envoyee = []
             for o in list_obstacles:
                 angle = o.center
                 r = dico[angle]
-                socket.send([r, angle])
+                liste_envoyee.append(str((r, angle)))
+                envoi = " ".join(liste_envoyee)
+                print("envoi au hl: ", envoi)
+                socket.send(envoi)
 
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         else:
