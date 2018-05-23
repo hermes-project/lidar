@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+
 from time import sleep, time
 
 from src.HL_connection import hl_connected
 from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
+
 from src.ThreadData import ThreadData
 from src.affichage import *
 from src.affichage import afficher_en_polaire
@@ -75,7 +77,6 @@ try:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
         # Affichage du temps d'exécution
-        # print("Temps d'execution:", t)
 
 except KeyboardInterrupt:
     # Arrêt du système
