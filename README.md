@@ -5,7 +5,8 @@ Code of data treatment of the Hermes-LiDAR project.
 1) Clone the repository.
 2) sudo pip install pyserial
 3) sudo pip install matplotlib
-4) Enjoy !
+4) Install tk8.6 (yaourt -S tk).
+5) Enjoy !
 
 # Choice
 You can:
