@@ -66,7 +66,7 @@ try:
                 r = dico[angle]
                 liste_envoyee.append(str((r, angle)))
                 envoi = " ".join(liste_envoyee)
-                envoi = envoi + "/n"
+                envoi = envoi + "\n"
             print("envoi au hl: ", envoi)
             socket.send(envoi.encode('ascii'))
 
