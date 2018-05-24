@@ -77,9 +77,7 @@ try:
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
-        # Affichage du temps d'exécution
-
-except KeyboardInterrupt:
+finally:
     # Arrêt du système
     if hl_connected:
         stop_com_hl(socket)
