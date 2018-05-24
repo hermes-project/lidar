@@ -67,7 +67,7 @@ try:
                 liste_envoyee.append(str((r, angle)))
                 envoi = " ".join(liste_envoyee)
             print("envoi au hl: ", envoi)
-            socket.send(envoi.encode('utf-8'))
+            socket.send(envoi.encode('ascii'))
 
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         else:
