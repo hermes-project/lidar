@@ -77,9 +77,18 @@ try:
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
+except KeyboardInterrupt:
+    # Arrêt du système
+    if hl_connected and socket is not None:
+        stop_com_hl(socket)
+    print("ARRET DEMANDE")
+    if thread_data:
+        thread_data.stop_lidar()
+        thread_data.join()
+
 finally:
     # Arrêt du système
-    if hl_connected:
+    if hl_connected and socket is not None:
         stop_com_hl(socket)
     print("ARRET DEMANDE")
     if thread_data:
