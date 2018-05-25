@@ -63,7 +63,7 @@ try:
             liste_envoyee = []
             for o in list_obstacles:
                 angle = o.center
-                r = dico[angle]
+                r =  dico[angle]
                 liste_envoyee.append(str((r, angle)))
                 envoi = ";".join(liste_envoyee)
                 envoi = envoi + "\n"
