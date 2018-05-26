@@ -9,6 +9,7 @@ from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
 from src.file_data_manager import readData, cleanData
+pl.switch_backend('TkAgg')
 
 # Recuperationnage de la config
 config = configparser.ConfigParser()
