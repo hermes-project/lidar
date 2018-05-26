@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from time import sleep
+from time import sleep, time
 import configparser
 from math import cos, sin, pi
 import pylab as pl
@@ -9,13 +9,6 @@ from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
 from src.file_data_manager import readData, cleanData
-
-# Nombre de tests, pour le calcul de temps moyens
-N_TESTS = 1
-affichage_continu = True
-
-Te = 1.  # Période d'échantillonnage pour le Kalman, à voir pour la mettre à jour en continu
-list_obstacles_precedente = []  # Liste des positions des anciens obstacles
 
 # Recuperationnage de la config
 config = configparser.ConfigParser()
@@ -37,6 +30,7 @@ seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'
 data = []
 
 if isfile("src/scanData.csv"):
+    print("FICHIER DE DONNEES TROUVE")
     data = cleanData(readData("src/scanData.csv"), resolution_degre, nombre_tours)
 else:
     print("ERREUR: FICHIER DE DONNEES NON TROUVE")
@@ -55,10 +49,14 @@ ax.scatter(theta, r)
 
 # print(data)
 try:
+    last_time = time()
+    list_obstacles_precedente = []  # Liste des positions des anciens obstacles
     for i in range(len(data)):
-        currentData=data[i]
+        currentData = data[i]
+        Te = (time() - last_time) * 8.
+        last_time = time()
         # A ~10Hz, pour coller aux mesures du LiDAR
-        sleep(0.05)
+        sleep(0.1)
 
         # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
         dico = data_cleaner(currentData, nombre_tours, resolution_degre, distance_infini)

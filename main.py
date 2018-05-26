@@ -11,7 +11,6 @@ from src.ThreadData import ThreadData
 
 import configparser
 import pylab as pl
-
 # option numpy pour éviter les écritures scientifiques dans les objets numpy
 set_printoptions(suppress=True)
 
