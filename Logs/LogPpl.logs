@@ -1,0 +1,19 @@
+2018-05-28 10:16:32,152 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 10:18:18,407 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 10:34:14,745 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 10:34:14,747 - ThreadData:26 - ERROR - Pas de connexion serie disponible. 1.0
+2018-05-28 10:40:47,870 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 10:40:47,872 - ThreadData:26 - ERROR - Pas de connexion serie disponible.
+2018-05-28 10:41:17,934 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 10:41:17,936 - ThreadData:26 - ERROR - Pas de connexion serie disponible.1.0
+2018-05-28 10:41:25,306 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 10:41:25,309 - ThreadData:26 - ERROR - Pas de connexion serie disponible.1
+2018-05-28 10:41:32,327 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 10:41:32,329 - ThreadData:26 - ERROR - Pas de connexion serie disponible.1.000000
+2018-05-28 10:41:38,844 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 10:41:38,846 - ThreadData:26 - ERROR - Pas de connexion serie disponible.1.0
+2018-05-28 10:50:29,260 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 10:50:29,262 - ThreadData:26 - ERROR - Pas de connexion serie disponible.
+2018-05-28 13:07:20,478 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 13:07:31,163 - ThreadData:21 - INFO - Lancement thread de récupération des données.
+2018-05-28 13:09:44,793 - main:88 - INFO - ARRET DEMANDE.
