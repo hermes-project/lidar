@@ -14,10 +14,11 @@ tolerance_predicted_fixe = [tolerance_predicted_fixe_r, tolerance_predicted_fixe
 tolerance_kalman_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_r'])
 tolerance_kalman_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_theta'])
 tolerance_kalman = [tolerance_kalman_r, tolerance_kalman_theta]
-
-
-def isnan(x):
-    return x != x
+# Données utiles au filtrage kalman
+sigma_q = float(config['KALMAN']['sigma_q'])  # Ecart type du modèle, on peut à priori le garder à 1
+sigma_angle = float(config['KALMAN']['sigma_angle'])  # Ecart type sur la mesure de l'angle
+sigma_distance = float(config['KALMAN']['sigma_distance'])  # Ecart type sur la mesure de la distance
+facteur_temps = float(config['KALMAN']['facteur_temps'])  # Ecart type sur la mesure de la distance
 
 
 def ekf(te, y_k, x_kalm_prec, p_kalm_prec):
@@ -34,11 +35,9 @@ def ekf(te, y_k, x_kalm_prec, p_kalm_prec):
     initialement c'est la matrice identité (numpy.eye(4)) ou nulle (numpy.zeros(4))
     :return: x_kalm, p_kalm: Le couple du vecteur position estimé et la matrice de covariance estimée (x_k|k , p_k|k)
     """
-    # Données utiles au filtrage kalman
-    sigma_q = 10.  # Ecart type du modèle, on peut à priori le garder à 1, à tester
-    sigma_angle = 5  # Ecart type sur la mesure de l'angle (on peut à priori la supposer nulle dans notre cas)
-    sigma_distance = 10.  # Ecart type sur la mesure de la distance (à mesurer)
-    te = 10 * te
+
+    te = facteur_temps*te
+
     f = array([[1, te, 0, 0],
                [0, 1, 0, 0],
                [0, 0, 1, te],
