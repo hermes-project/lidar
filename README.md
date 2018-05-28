@@ -12,3 +12,12 @@ Code of data treatment of the Hermes-LiDAR project.
 You can:
 *either show the obstacles on the screen ("hl_connected = False" in config.ini)
 *either connect with a java server that has launched the python main.py before ("hl_connected = True" in config.ini)
+
+## TODO
+
+- [x] Détection et affichage des obstacles
+- [x] Kalman
+- [x] Communication socket avec le HL Java
+- [x] Fichiers de log
+- [ ] Résoudre problème de "Cleaning buffer..."
+- [ ] Arrêt propre (Tk, thread et fermeture série)
