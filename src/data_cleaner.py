@@ -7,10 +7,9 @@ def data_cleaner(lidarData, nombre_tours, resolution_degre, distance_infini):
     """
     Fichier avec la fonction qui génère les données. Le Lidar doit être instencié dans le main
 
-    :param distance_infini:
-    :param resolution_degre:
-    :param lidarData:
+    :param lidar: Le lidar utilisé
     :param nombre_tours: le nombre de tours qu'effectue le LiDAR
+    :param resolution: La résolution utilisée en DEGRES
     :return: data Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
     """
 

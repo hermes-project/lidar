@@ -1,6 +1,6 @@
 from math import pi
 
-from rplidar import RPLidar
+# from rplidar import RPLidar
 from time import sleep, time
 from csv import writer, reader
 

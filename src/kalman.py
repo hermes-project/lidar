@@ -1,6 +1,8 @@
-from numpy import array, eye
-from math import atan2, sqrt, pi, cos, sin
+from numpy import array, eye, set_printoptions
+from math import atan2, sqrt, pi
 from numpy.linalg import inv
+
+set_printoptions(suppress=True)
 
 
 def ekf(Te, y_k, x_kalm_prec, p_kalm_prec):
@@ -13,13 +15,14 @@ def ekf(Te, y_k, x_kalm_prec, p_kalm_prec):
     :param y_k: Le vecteur des mesures, sous la forme numpy.array([angle,distance])
     :param x_kalm_prec: Le vecteur position estimée précédent x_k-1|k-1, sous la forme numpy.array([x,vitesse_x,y,vitesse_y])
     :param p_kalm_prec: La matrice de covariance précédente p_k-1|k-1, sous la forme d'un array numpy de taille 4x4,
-    initialement c'est la matrice identité (numpy.eye(4)) ou nulle (numpy.zeros(4))
+    initialement c'est la matrice identité (numpy.eye(4))
     :return: x_kalm, p_kalm: Le couple du vecteur position estimé et la matrice de covariance estimée (x_k|k , p_k|k)
     """
     # Données utiles au filtrage kalman
-    sigmaQ = 15.  # Ecart type du modèle, on peut à priori le garder à 1, à tester
-    sigma_angle = 30.  # Ecart type sur la mesure de l'angle (on peut à priori la supposer nulle dans notre cas)
-    sigma_distance = 30.  # Ecart type sur la mesure de la distance (à mesurer)
+    sigmaQ = 1.  # Ecart type du modèle, on peut à priori le garder à 1, à tester
+    sigma_angle = pi / 360  # Ecart type sur la mesure de l'angle (on peut à priori la supposer nulle dans notre cas)
+    sigma_distance = 100.  # Ecart type sur la mesure de la distance (à mesurer)
+
     F = array([[1, Te, 0, 0],
                [0, 1, 0, 0],
                [0, 0, 1, Te],
@@ -33,14 +36,35 @@ def ekf(Te, y_k, x_kalm_prec, p_kalm_prec):
     R = array([[sigma_angle ** 2, 0],
                [0, sigma_distance ** 2]])
 
-    H = array([[1, 0, 0, 0], [0, 0, 1, 0]])
-
-    y_k=array([y_k[1]*cos(y_k[0]),y_k[1]*sin(y_k[0])])
-    # prediction: passage de x_k|k, p_k|k à x_k+1|k, p_k+1|k
+    # PREDICTION: passage de x_k|k, p_k|k à x_k+1|k, p_k+1|k
     x_predit = F.dot(x_kalm_prec)  # Etat prédit
     p_predit = F.dot(p_kalm_prec).dot(F.T) + Q  # Estimation prédite de la covariance
-    # mise à jour: passage de x_k+1|k, p_k+1|k à x_k+1|k+1, p_k+1|k+1
-    K = p_predit.dot(H.T).dot(inv(H.dot(p_predit).dot(H.T) + R))  # Gain de Kalman optimal
-    x_kalm = x_predit + K.dot(y_k - H.dot(x_predit))  # Etat mis à jour
-    p_kalm = (eye(4) - K.dot(H)).dot(p_predit)  # Mise à jour de la covariance
+
+    # Valeurs en x et y des positions prédites
+    x = x_predit[0]
+    y = x_predit[2]
+
+    # LINEARISATION des mesures autour du point prédit:(cf Taylor)
+    # Valeurs en a=x_predit des deux fonctions f et g
+    f_a = atan2(y, x)
+    g_a = sqrt((x ** 2) + (y ** 2))
+
+    # Gradients de f et g
+    diff_x_g = x / f_a
+    diff_y_g = y / f_a
+    diff_x_f = -y / ((x ** 2) + (y ** 2))
+    diff_y_f = x / ((x ** 2) + (y ** 2))
+
+    y_a = [f_a, g_a]
+
+    H = array([[diff_x_f, 0, diff_y_f, 0], [diff_x_g, 0, diff_y_g, 0]])  # Jacobien
+
+    # Gain de kalman
+    K = p_predit.dot(H.T).dot(inv(H.dot(p_predit).dot(H.T) + R))
+    y_k = y_k - y_a + H.dot(x_predit)  # Innovation
+
+    # MISE A JOUR: passage de x_k+1|k, p_k+1|k à x_k+1|k+1, p_k+1|k+1
+    x_kalm = x_predit + K.dot(y_k - H.dot(x_predit))  # Etat estimé mis à jour
+    p_kalm = (eye(4) - K.dot(H)).dot(p_predit)  # Matrice de covariance estimée mise à jour
+
     return x_kalm, p_kalm

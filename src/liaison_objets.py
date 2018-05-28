@@ -66,9 +66,8 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
                 angle_fin = round(angle_fin - 2 * pi, 4)
 
             # width = max(abs(xmax - xmin), abs(ymax - ymin)) # en degre
-            print(angle_debut,angle_fin)
-            # width = sqrt(dico[angle_debut] ** 2 + dico[angle_fin] ** 2 - 2 * dico[angle_debut] * dico[angle_fin] * cos(abs(angle_fin - angle_debut)))  # Al Kashi
-            width = 100
+            width = sqrt(dico[angle_debut] ** 2 + dico[angle_fin] ** 2 - 2 * dico[angle_debut] * dico[angle_fin] \
+                         * cos(abs(angle_fin - angle_debut)))  # Al Kashi
             # print("width: ", width)
 
             # # print("width: ", width)
@@ -114,7 +113,7 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
             else:
                 r = dico[center]
                 x_kalm_prec = np.array([r * cos(center), 0, r * sin(center), 0]).T
-                p_kalm_prec = np.zeros(4)
+                p_kalm_prec = np.identity(4)
                 obstacle_traite.set_predicted_kalman(x_kalm_prec, p_kalm_prec)  # Initialisation du
                 # Kalman à la 1ère position mesurée de l'obstacle
 
