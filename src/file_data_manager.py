@@ -1,4 +1,4 @@
-from libs.rplidar import RPLidar
+
 from csv import writer, reader
 from time import sleep, time
 
@@ -80,17 +80,4 @@ def cleanData(lidarData, resolution, nombre_tours):
         generated_data[int(i * (360. / resolution) + (angle / resolution))] = [distance, True]
     return fullData
 
-
-if __name__ == '__main__':
-    NB_TOURS = 0
-    NB_SECONDES = 10
-
-    FILE_PATH = "./scanData.csv"
-    lidar=RPLidar("/dev/ttyUSB0")
-    data = scanData(lidar, NB_SECONDES, NB_TOURS)
-    lidar.stop_motor()
-    lidar.stop()
-    lidar.disconnect()
-    print(data)
-    saveData(FILE_PATH, data)
 
