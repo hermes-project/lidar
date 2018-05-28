@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 from time import sleep, time
-
+from os.path import isdir
+from os import mkdir
 from src.HL_connection import hl_connected
 from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
@@ -9,6 +10,9 @@ from src.ThreadData import ThreadData
 from src.affichage import *
 from src.affichage import afficher_en_polaire
 from src.mesures import mesures
+
+if not isdir("./Logs/"):
+    mkdir("./Logs/")
 
 logging.config.fileConfig('./config_log.ini')
 _loggerPpl = logging.getLogger("ppl")
