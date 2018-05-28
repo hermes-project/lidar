@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 # coding: utf-8
-import pylab as pl
 import configparser
 from math import pi, cos, sin
+import logging.config
+
+import pylab as pl
+
+_loggerAffichage = logging.getLogger("affichage")
 
 # Recuperation de la config
 config = configparser.ConfigParser()
@@ -72,6 +76,7 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
         # Ajout de la position mesurée de l'obstacle
         angle = o.center
         r = dico[angle]
+        _loggerAffichage.debug("nb_obstacles: %s.", len(list_obstacles))
         circle = pl.Circle((r * cos(angle), -r * sin(angle)), radius=200, fc='orange')  # Attention: -y
         ax.add_artist(circle)
 
@@ -79,14 +84,13 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
         if o.get_predicted_kalman() is not None:
             x_kalman = o.get_predicted_kalman()[0][0]
             y_kalman = o.get_predicted_kalman()[0][2]
-            print("x_kalman : ", x_kalman)
-            print("y_kalman : ", y_kalman)
+            _loggerAffichage.debug("position kalman: x = %s et y = %s.", x_kalman, y_kalman)
             circle = pl.Circle((x_kalman, -y_kalman), radius=200, fc='crimson')  # Attention: -y
             ax.add_artist(circle)
 
         # Ajout des précédentes positions Kalman de l'obstacle
         if o.get_piste_obstacle() is not None:
-            print("piste : ", o.get_piste_obstacle())
+            _loggerAffichage.debug("piste : %s.", o.get_piste_obstacle())
             for elt_piste in o.get_piste_obstacle():
                 x_elt = elt_piste[0]
                 y_elt = elt_piste[1]
@@ -132,7 +136,7 @@ def affichage_polaire(limits, ax, list_obstacles, dico, fig):
         # Ajout de la position mesurée de l'obstacle
         angle = o.center
         r = dico[angle]
-        print("nb_obstacles: ", len(list_obstacles))
+        _loggerAffichage.debug("nb_obstacles: %s.", len(list_obstacles))
         circle = pl.Circle((r * cos(angle), -r * sin(angle)), o.width / 2, transform=ax.transData._b, color='m',
                            alpha=0.4)  # Attention: -y
         ax.add_artist(circle)
@@ -141,16 +145,14 @@ def affichage_polaire(limits, ax, list_obstacles, dico, fig):
         if o.get_predicted_kalman() is not None:
             x_kalman = o.get_predicted_kalman()[0][0]
             y_kalman = o.get_predicted_kalman()[0][2]
-            print("x_kalman : ", x_kalman)
-            print("y_kalman : ", y_kalman)
-            print("position kalman: ", x_kalman, " et ", y_kalman)
+            _loggerAffichage.debug("position kalman: x = %s et y = %s.", x_kalman, y_kalman)
             circle = pl.Circle((x_kalman, -y_kalman), o.width / 2, transform=ax.transData._b,
                                color='g', alpha=0.4)  # Attention: -y
             ax.add_artist(circle)
 
         # Ajout des précédentes positions Kalman de l'obstacle
         if o.get_piste_obstacle() is not None:
-            print("piste : ", o.get_piste_obstacle())
+            _loggerAffichage.debug("piste : %s.", o.get_piste_obstacle())
             for elt_piste in o.get_piste_obstacle():
                 x_elt = elt_piste[0]
                 y_elt = elt_piste[1]

@@ -5,16 +5,20 @@ from time import sleep, time
 from src.HL_connection import hl_connected
 from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
-
 from src.ThreadData import ThreadData
 from src.affichage import *
 from src.affichage import afficher_en_polaire
 from src.mesures import mesures
 
+logging.config.fileConfig('./config_log.ini')
+_loggerPpl = logging.getLogger("ppl")
+_loggerHl = logging.getLogger("hl")
+
 socket = None
 thread_data = None
 ax = None
 fig = None
+envoi = None
 
 try:
 
@@ -63,11 +67,11 @@ try:
             liste_envoyee = []
             for o in list_obstacles:
                 angle = o.center
-                r =  dico[angle]
+                r = dico[angle]
                 liste_envoyee.append(str((r, angle)))
                 envoi = ";".join(liste_envoyee)
                 envoi = envoi + "\n"
-            print("envoi au hl: ", envoi)
+            _loggerHl.debug("envoi au hl: %s.", envoi)
             socket.send(envoi.encode('ascii'))
 
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
@@ -79,18 +83,19 @@ try:
 
 except KeyboardInterrupt:
     # Arrêt du système
-    if hl_connected and socket is not None:
+    if hl_connected and socket:
         stop_com_hl(socket)
-    print("ARRET DEMANDE")
+    _loggerPpl.info("ARRET DEMANDE.")
     if thread_data:
         thread_data.stop_lidar()
         thread_data.join()
+        thread_data = None
 
 finally:
     # Arrêt du système
-    if hl_connected and socket is not None:
+    if hl_connected and socket:
         stop_com_hl(socket)
-    print("ARRET DEMANDE")
     if thread_data:
         thread_data.stop_lidar()
         thread_data.join()
+        thread_data = None

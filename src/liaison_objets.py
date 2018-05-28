@@ -18,6 +18,8 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, te, list_obst
     :return: list_obstacles: Liste d'objets de type Obstacle
     """
 
+    center = None
+    distance = None
     list_obstacles = []
     n = len(list_bounds)
 
@@ -63,7 +65,6 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, te, list_obst
             # width = max(abs(xmax - xmin), abs(ymax - ymin)) # en degre
             width = sqrt(dico[angle_debut]**2 + dico[angle_fin]**2 - 2 * dico[angle_debut] * dico[angle_fin]
                          * cos(abs(angle_fin - angle_debut)))  # Al Kashi
-            print("width: ", width)
 
         # Creation des objets de type Obstacle
         list_obstacles.append(Obstacle(width, center, dico[center]))

@@ -5,6 +5,9 @@ import queue
 from serial.tools.list_ports import comports
 from rplidar import RPLidar as Rp
 import configparser
+import logging.config
+
+_loggerRoot = logging.getLogger("ppl")
 
 config = configparser.ConfigParser()
 config.read('config.ini', encoding="utf-8")
@@ -15,12 +18,12 @@ nombre_tours = float(config['MESURES']['nombre_tours'])
 class ThreadData(Thread):
 
     def __init__(self):  # initialisation du LiDAR.
-        print("thread")
+        _loggerRoot.info("Lancement thread de récupération des données.")
         Thread.__init__(self)
         try:
             self.lidar = Rp(comports()[0].device)  # Tente de se connecter au premier port Serie disponible
         except IndexError:
-            print("ERREUR: Pas de connexion serie disponible")
+            _loggerRoot.error("Pas de connexion serie disponible.")
             exit()
         self.lidar.start_motor()
         self.lidar.start()

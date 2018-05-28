@@ -3,12 +3,14 @@
 import socket
 import configparser
 from time import sleep
+import logging.config
 
 config = configparser.ConfigParser()
 config.read('config.ini', encoding="utf-8")
 server = config['COMMUNICATION SOCKET']['server']
 port = int(config['COMMUNICATION SOCKET']['port'])
 hl_connected = config['COMMUNICATION SOCKET']['hl_connected'] == "True"
+_loggerHl = logging.getLogger("hl")
 
 
 def hl_socket():
@@ -17,13 +19,10 @@ def hl_socket():
 
     """
 
-    print("port: ", port, " et server: ", server)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print("ah!")
-    print("wants to connect")
-    sleep(4)
+    sleep(2)
     s.connect((server, port))
-    print("Connection on {}".format(port))
+    _loggerHl.info("Connexion sur port %s et server %s.", port, server)
 
     return s
 
@@ -34,5 +33,5 @@ def stop_com_hl(my_socket):
 
     """
 
-    print("Close")
     my_socket.close()
+    _loggerHl.info("Close socket.")
