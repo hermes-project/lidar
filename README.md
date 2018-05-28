@@ -8,12 +8,12 @@ Code of data treatment of the Hermes-LiDAR project.
 4) Install tk8.6 (yaourt -S tk).
 5) Enjoy !
 
-# Choice
+# Choice of application
 You can:
-*either show the obstacles on the screen ("hl_connected = False" in config.ini)
-*either connect with a java server that has launched the python main.py before ("hl_connected = True" in config.ini)
+- either show the obstacles on the screen ("hl_connected = False" in config.ini)
+- either connect with a java server that has launched the python main.py before ("hl_connected = True" in config.ini)
 
-## TODO
+# TODO
 
 - [x] Détection et affichage des obstacles
 - [x] Kalman
