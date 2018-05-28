@@ -57,7 +57,7 @@ try:
         # Attendre qu'au moins 1 scan soit effectué
         if not thread_data.is_ready():
             continue
-        sleep(0.1)
+        sleep(0.05)
 
         # Calcul du temps d'exécution : aussi utilisé pour le Kalman
         te = (time() - t)
