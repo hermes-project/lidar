@@ -1,31 +1,44 @@
+#!/usr/bin/env python3
+# coding: utf-8
 from threading import Thread
-
+import queue
 from serial.tools.list_ports import comports
-from rplidar import RPLidar as rp
+from libs.rplidar import RPLidar as Rp
+import configparser
+import logging.config
+
+_loggerRoot = logging.getLogger("ppl")
+
+config = configparser.ConfigParser()
+config.read('./configs/config.ini', encoding="utf-8")
+resolution_degre = float(config['MESURES']['resolution_degre'])
+nombre_tours = float(config['MESURES']['nombre_tours'])
 
 
 class ThreadData(Thread):
 
-    def __init__(self, resolution, nombre_tours):  # initialisation du LiDAR.
+    def __init__(self):  # initialisation du LiDAR.
+        _loggerRoot.info("Lancement thread de recuperation des donnees.")
         Thread.__init__(self)
-        if len(comports()) > 0:
-            self.lidar = rp(comports()[0].device)  # Tente de se connecter au premier port Serie disponible
-        else:
-            print("PAS DE PORT SERIE DISPONIBLE")
+        try:
+            self.lidar = Rp(comports()[0].device)  # Tente de se connecter au premier port Serie disponible
+        except IndexError:
+            _loggerRoot.error("Pas de connexion serie disponible.")
             exit()
         self.lidar.start_motor()
         self.lidar.start()
-        self.resolution = resolution
+        self.resolution = resolution_degre
         self.nombre_tours = nombre_tours
         self.running = True
         self.generated_data = []
+        self.readyData = queue.Queue(maxsize=10)
         self.ready = False
-        self.readyData = []
 
     def run(self):
         self.generated_data = [[0, False] for _ in range(int((360. / self.resolution) * float(
             self.nombre_tours)))]  # creation de la liste cyclique qui s'actualise tous les tours
-        i = 0  # on utilise un booleen pour verifier reinitialiser les valeurs non update sur un tour afin d'eviter de garder des valeurs obselete
+        i = 0  # on utilise un booleen pour verifier reinitialiser les valeurs non update sur un tour
+        # afin d'eviter de garder des valeurs obselete
         previous_bool = False
         around = self.resolution * 10
         for newTurn, quality, angle, distance in self.lidar.iter_measures():  # on recupere les valeurs du lidar
@@ -44,16 +57,22 @@ class ThreadData(Thread):
                 previous_bool = False
             angle = ((round(angle / around, 1) * around) % 360)
             # l'indice dans la liste determine l'angle du lidar, on reduit ainsi la liste.
-            self.generated_data[self.getIndex(angle, i)] = [distance, True]
+            self.generated_data[self.get_index(angle, i)] = [distance, True]
             if not self.running:
                 break
 
-    def getIndex(self, alpha, i):  # methode qui permet de donner l'indice de la liste à partir d'un angle
+    def get_index(self, alpha, i):  # methode qui permet de donner l'indice de la liste à partir d'un angle
         index = int(i * (360. / self.resolution) + (alpha / self.resolution))
         return index
 
-    def stopLidar(self):  # methode pour arreter le LiDAR
+    def stop_lidar(self):  # methode pour arreter le LiDAR
         self.running = False
         self.lidar.stop()
         self.lidar.stop_motor()
         self.lidar.disconnect()
+
+    def is_ready(self):
+        if self.ready:
+            self.ready = False
+            return True
+        return False

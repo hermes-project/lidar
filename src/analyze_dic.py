@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# coding: utf-8
 from math import cos, sqrt
 
 
@@ -8,31 +9,32 @@ def analyze_dic(raw_dict, distance_max, ecart_min_inter_objet):
 
     :param raw_dict: Dictionnaire au format {angle en radian:distance associée en mm}
     :param distance_max: distance sous laquelle on considère un obstacle (mm)
+    :param ecart_min_inter_objet: écart minimum pour considérer que 2 objets sont différents
     :return: list_bounds une liste contenant les angles ou couples d'angles (radians) associés aux objet détectés
     """
 
+    # Initialisations
     list_bounds = []
     item = False
     precedent = False
     to_delete = []
-
     list_angles = list(raw_dict.keys())
     dernier_angle_avant_0 = list_angles[-1]
+    first = None
 
     # On ignore les distances nulles, car absurdes
     for k, v in raw_dict.items():
         if v == 0:
             to_delete.append(k)
-
     for k in to_delete:
         del raw_dict[k]
 
+    # Angles et distances
     list_angles = list(raw_dict.keys())
     # print(raw_dict)
     # print(list_angles)
     last_angle = list_angles[-1]
     list_distances = list(raw_dict.values())
-    # print(list_distances[-1])
 
     if list_distances[0] <= distance_max:
         item = True
@@ -40,7 +42,7 @@ def analyze_dic(raw_dict, distance_max, ecart_min_inter_objet):
 
     for i, (angle, distance) in enumerate(raw_dict.items()):
         if i >= 0:
-            ecart_points = sqrt(distance ** 2 + list_distances[i - 1] ** 2 - 2 * distance * list_distances[i - 1] \
+            ecart_points = sqrt(distance ** 2 + list_distances[i - 1] ** 2 - 2 * distance * list_distances[i - 1]
                                 * cos(abs(list_angles[i - 1] - angle)))  # Al Kashi
 
             if not item and not precedent and distance <= distance_max:

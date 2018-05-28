@@ -1,131 +1,105 @@
 #!/usr/bin/env python3
+
 from time import sleep, time
-from math import cos, sin, pi
-
-from serial import SerialException
-from numpy import set_printoptions
-from src.analyze_dic import analyze_dic
-from src.data_cleaner import data_cleaner
-from src.liaison_objets import liaison_objets
+from os.path import isdir
+from os import mkdir
+from src.HL_connection import hl_connected
+from src.HL_connection import hl_socket
+from src.HL_connection import stop_com_hl
 from src.ThreadData import ThreadData
+from src.affichage import *
+from src.affichage import afficher_en_polaire
+from src.mesures import mesures
 
-import configparser
-import pylab as pl
-# option numpy pour éviter les écritures scientifiques dans les objets numpy
-set_printoptions(suppress=True)
+if not isdir("./Logs/"):
+    mkdir("./Logs/")
 
-# Nombre de tests, pour le calcul de temps moyens
-N_TESTS = 1
-affichage_continu = True
+logging.config.fileConfig('./configs/config_log.ini')
+_loggerPpl = logging.getLogger("ppl")
+_loggerHl = logging.getLogger("hl")
 
-Te = 1.  # Période d'échantillonnage pour le Kalman, à voir pour la mettre à jour en continu
-list_obstacles_precedente = []  # Liste des positions des anciens obstacles
-
-# Recuperationnage de la config
-config = configparser.ConfigParser()
-config.read('config.ini', encoding="utf-8")
-nombre_tours = float(config['MESURES']['nombre_tours'])
-resolution_degre = float(config['MESURES']['resolution_degre'])
-resolution = 0.5 * 2 * pi / 360  # en radian
-distance_max = int(config['DETECTION']['distance_max'])
-distance_infini = int(config['DETECTION']['distance_infini'])
-ecart_min_inter_objet = int(config['DETECTION']['ecart_min_inter_objet'])
-tolerance_predicted_fixe_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_r'])
-tolerance_predicted_fixe_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_theta'])
-tolerance_predicted_fixe = [tolerance_predicted_fixe_r, tolerance_predicted_fixe_theta]
-tolerance_kalman_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_r'])
-tolerance_kalman_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_kalman_theta'])
-tolerance_kalman = [tolerance_kalman_r, tolerance_kalman_theta]
-seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'])
-
-# Le thread qui recupère les données en continu
-threadData = ThreadData(resolution_degre, nombre_tours)
-
-
-def stop_handler(thread):
-    print("ARRET DEMANDE")
-    thread.stopLidar()
-    thread.join()
-
+socket = None
+thread_data = None
+ax = None
+fig = None
+envoi = None
 
 try:
-    # Le Thread recevant les donnees
-    threadData.start()
 
-    sleep(2)  # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
+    # Liste des positions des anciens obstacles
+    list_obstacles_precedente = []
 
-    pl.ion()
-    fig = pl.figure()
-    ax = fig.add_subplot(111, polar=True)  # polaire !
-    ax.set_xlim(0, 3 * distance_max)
-    ax.set_ylim(2 * pi)
-    ax.axhline(0, 0)
-    ax.axvline(0, 0)
+    # Creation de socket pour communiquer avec le HL
+    if hl_connected:
+        socket = hl_socket()
 
-    r = []
-    theta = []
-    ax.scatter(theta, r)
+    # Demarre le Thread recevant les donnees
+    thread_data = ThreadData()
+    thread_data.start()
 
-    # Variables de calcul du temps d'execution, pour le kalman
+    # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
+    sleep(2)
+
+    # Initialisation de l'affichage
+    if not hl_connected:
+        if afficher_en_polaire:
+            ax, fig = init_affichage_polaire()
+        else:
+            ax, fig = init_affichage_cartesien()
+
+    # Initialisation des valeurs pour le calcul du temps d'exécution
     t = time()
-    Te = t
+    te = t
 
-    while affichage_continu:
-        for i in range(N_TESTS):
-            # Attente d'un scan complet par le lidar, eventuellement juste mettre un sleep(0.01) pour aller plus vite, mais il y aura des scans incomplets
-            while not threadData.ready:
-                continue
-            Te = (time() - t)
-            t = time()
+    # Boucle de récupération,de traitement des données, d'envoi et d'affichage
+    while True:
 
-            # Copie de la liste des mesures du thread
-            lidarDataList = list(threadData.readyData)
-            threadData.ready = True
-            # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
-            dico = data_cleaner(lidarDataList, nombre_tours, resolution_degre, distance_infini)
+        # Attendre qu'au moins 1 scan soit effectué
+        if not thread_data.is_ready():
+            continue
+        sleep(0.05)
 
-            # Detection des bords d'obstacles
-            limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
-            # print("Ostacles détectés aux angles:", limits)
+        # Calcul du temps d'exécution : aussi utilisé pour le Kalman
+        te = (time() - t)
+        t = time()
 
-            # Mise a jour des obstacles detectes, incluant le filtre de kalman
-            list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association, Te, list_obstacles_precedente)
+        # On récupère les données du scan du LiDAR et on fait les traitements
+        dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
 
-            list_detected = []
-            for detected in limits:
-                for n in range(len(detected)):
-                    list_detected.append(detected[n])
-
-            ax.clear()
-            ax.set_xlim(0, 2 * pi)
-            ax.set_ylim(0, +distance_max)
-            ax.axhline(0, 0)
-            ax.axvline(0, 0)
-
+        # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
+        if hl_connected:
+            liste_envoyee = []
             for o in list_obstacles:
                 angle = o.center
                 r = dico[angle]
-                # print("nb_obstacles: ", len(list_obstacles))
-                circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g', alpha=0.4)
-                ax.add_artist(circle)
-                if o.get_predicted_kalman() is not None:
-                    x_kalman = o.get_predicted_kalman()[0][0]
-                    y_kalman = o.get_predicted_kalman()[0][2]
-                    # print("position kalman: ", x_kalman, " et ", y_kalman)
-                    circle = pl.Circle((x_kalman, y_kalman), o.width / 2, transform=ax.transData._b, color='b', alpha=0.4)
-                    ax.add_artist(circle)
+                liste_envoyee.append(str((r, angle)))
+                envoi = ";".join(liste_envoyee)
+                envoi = envoi + "\n"
+            _loggerHl.debug("envoi au hl: %s.", envoi)
+            socket.send(envoi.encode('ascii'))
 
-            # Listes des positions des obstacles à afficher
-            detected_r = [dico[detected] for detected in list_detected]
-            detected_theta = [detected for detected in list_detected]
+        # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
+        else:
+            if afficher_en_polaire:
+                affichage_polaire(limits, ax, list_obstacles, dico, fig)
+            else:
+                affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
-            # Listes des positions des points à afficher
-            r = [distance for distance in dico.values()]
-            theta = [angle for angle in dico.keys()]
+except KeyboardInterrupt:
+    # Arrêt du système
+    if hl_connected and socket:
+        stop_com_hl(socket)
+    _loggerPpl.info("ARRET DEMANDE.")
+    if thread_data:
+        thread_data.stop_lidar()
+        thread_data.join()
+        thread_data = None
 
-            pl.plot(theta, r, 'ro', markersize=0.6)
-            pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
-            pl.grid()
-            fig.canvas.draw()
 finally:
-    stop_handler(threadData)
+    # Arrêt du système
+    if hl_connected and socket:
+        stop_com_hl(socket)
+    if thread_data:
+        thread_data.stop_lidar()
+        thread_data.join()
+        thread_data = None
