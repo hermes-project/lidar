@@ -7,7 +7,7 @@ import configparser
 import logging.config
 
 config = configparser.ConfigParser()
-config.read('config.ini', encoding="utf-8")
+config.read('./configs/config.ini', encoding="utf-8")
 nombre_tours = float(config['MESURES']['nombre_tours'])
 resolution_degre = float(config['MESURES']['resolution_degre'])
 distance_max = int(config['DETECTION']['distance_max'])

@@ -10,7 +10,7 @@ _loggerAffichage = logging.getLogger("affichage")
 
 # Recuperation de la config
 config = configparser.ConfigParser()
-config.read('config.ini', encoding="utf-8")
+config.read('./configs/config.ini', encoding="utf-8")
 distance_max_x_cartesien = int(config['DETECTION']['distance_max_x_cartesien'])
 distance_max_y_cartesien = int(config['DETECTION']['distance_max_y_cartesien'])
 distance_max = int(config['DETECTION']['distance_max'])

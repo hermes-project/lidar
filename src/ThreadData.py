@@ -3,14 +3,14 @@
 from threading import Thread
 import queue
 from serial.tools.list_ports import comports
-from rplidar import RPLidar as Rp
+from lib.rplidar import RPLidar as Rp
 import configparser
 import logging.config
 
 _loggerRoot = logging.getLogger("ppl")
 
 config = configparser.ConfigParser()
-config.read('config.ini', encoding="utf-8")
+config.read('./configs/config.ini', encoding="utf-8")
 resolution_degre = float(config['MESURES']['resolution_degre'])
 nombre_tours = float(config['MESURES']['nombre_tours'])
 

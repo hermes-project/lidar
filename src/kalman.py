@@ -7,7 +7,7 @@ import configparser
 set_printoptions(suppress=True)
 
 config = configparser.ConfigParser()
-config.read('config.ini', encoding="utf-8")
+config.read('./configs/config.ini', encoding="utf-8")
 tolerance_predicted_fixe_r = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_r'])
 tolerance_predicted_fixe_theta = int(config['OBSTACLES FIXES OU MOBILES']['tolerance_predicted_fixe_theta'])
 tolerance_predicted_fixe = [tolerance_predicted_fixe_r, tolerance_predicted_fixe_theta]

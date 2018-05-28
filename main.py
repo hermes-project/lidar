@@ -14,7 +14,7 @@ from src.mesures import mesures
 if not isdir("./Logs/"):
     mkdir("./Logs/")
 
-logging.config.fileConfig('./config_log.ini')
+logging.config.fileConfig('./configs/config_log.ini')
 _loggerPpl = logging.getLogger("ppl")
 _loggerHl = logging.getLogger("hl")
 

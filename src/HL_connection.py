@@ -6,7 +6,7 @@ from time import sleep
 import logging.config
 
 config = configparser.ConfigParser()
-config.read('config.ini', encoding="utf-8")
+config.read('./configs/config.ini', encoding="utf-8")
 server = config['COMMUNICATION SOCKET']['server']
 port = int(config['COMMUNICATION SOCKET']['port'])
 hl_connected = config['COMMUNICATION SOCKET']['hl_connected'] == "True"
