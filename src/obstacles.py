@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
+# coding: utf-8
+from collections import deque
 import numpy
+
 
 class Obstacle:
     """"
@@ -12,12 +15,12 @@ class Obstacle:
         self.predictedPosition = numpy.array([0, 0])  # [distance, angle] avec la distance en mm  et l'angle en radian
         self.ancienPredictedKalman = None
         self.predictedKalman = None
-        self.pisteObstacle = []  # Les positions precedentes de l'objet en mouvement
+        self.pisteObstacle = deque()  # Les positions precedentes de l'objet en mouvement
         self.updated = False
         self.ancienObstacle = None
         self.width = width  # distance en mm
         self.center = center  # valeur de milieu de l'objet, exprimé grâce à un angle en radian
-        self.distance = distance #distance du milieu de l'objet
+        self.distance = distance  # distance du milieu de l'objet
 
     def get_is_moving(self):
         return self.isMoving
@@ -81,7 +84,8 @@ class Obstacle:
         """
         Position suivante de l'objet, predite avec Kalman
 
-        :param predicted_kalman: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
+        :param predicted_kalman_x: vecteur de position et vitesse
+        :param predicted_kalman_p: matrice de covariance de l'erreur
         :return:
         """
         self.predictedKalman = [predicted_kalman_x, predicted_kalman_p]
@@ -90,7 +94,7 @@ class Obstacle:
         """
         Position suivante de l'objet, predite avec Kalman
 
-        :param predicted_kalman: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
+        :param ancien_predicted_kalman: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
         :return:
         """
         self.ancienPredictedKalman = ancien_predicted_kalman
@@ -103,6 +107,23 @@ class Obstacle:
         :return:
         """
         self.pisteObstacle.append(new_position_piste)
+
+    def remove_point_piste(self):
+        """
+        Enlève la valeur à gauche dans la liste de positions precedentes (piste)
+
+        :return:
+        """
+        self.pisteObstacle.popleft()
+
+    def set_position_piste(self, position_piste):
+        """
+        Met à jour la liste de positions precedentes
+
+        :param position_piste: liste de positions
+        :return:
+        """
+        self.pisteObstacle = position_piste
 
     def set_width(self, width):
         """
@@ -123,7 +144,7 @@ class Obstacle:
     def set_distance(self, distance):
         """
 
-        :param center: tuple (angle en RADIAN)
+        :param distance: tuple (distance en mm)
         :return:
         """
         self.distance = distance
