@@ -3,7 +3,7 @@
 from threading import Thread
 import queue
 from serial.tools.list_ports import comports
-from lib.rplidar import RPLidar as Rp
+from libs.rplidar import RPLidar as Rp
 import configparser
 import logging.config
 
