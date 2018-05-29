@@ -3,7 +3,7 @@
 
 from src.obstacles import Obstacle
 from math import cos, sin, pi, sqrt
-from src.kalman import ekf
+from src.kalman import kalman
 import numpy as np
 
 
@@ -106,9 +106,9 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, Te, list_obst
             # x_kalm_prec: ancienne sortie du Kalman
             # p_kalm_prec: ancienne sortie du Kalman
             if obstacle_traite.get_predicted_kalman() is not None:
-                x_kalm_prec, p_kalm_prec = ekf(Te, np.array([center, dico[center]]),
-                                               obstacle_traite.get_predicted_kalman()[0],
-                                               obstacle_traite.get_predicted_kalman()[1])
+                x_kalm_prec, p_kalm_prec = kalman(Te, np.array([center, dico[center]]),
+                                                  obstacle_traite.get_predicted_kalman()[0],
+                                                  obstacle_traite.get_predicted_kalman()[1])
                 obstacle_traite.set_predicted_kalman(x_kalm_prec, p_kalm_prec)
             else:
                 r = dico[center]

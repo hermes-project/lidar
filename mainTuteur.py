@@ -54,10 +54,10 @@ try:
     list_obstacles_precedente = []  # Liste des positions des anciens obstacles
     for i in range(len(data)):
         currentData = data[i]
-        Te = (time() - last_time) * 8.
+        Te = (time() - last_time)
         last_time = time()
         # A ~10Hz, pour coller aux mesures du LiDAR
-        sleep(0.1)
+        sleep(0.05)
 
         # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
         dico = data_cleaner(currentData, nombre_tours, resolution_degre, distance_infini)
@@ -84,7 +84,7 @@ try:
             r = dico[angle]
             circle = pl.Circle((r * cos(angle), r * sin(angle)), o.width / 2, transform=ax.transData._b, color='g',
                                alpha=0.4)
-            ax.add_artist(circle)
+            # ax.add_artist(circle)
 
             if o.get_predicted_kalman() is not None:
                 x_kalman = o.get_predicted_kalman()[0][0]
