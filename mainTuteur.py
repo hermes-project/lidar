@@ -13,7 +13,7 @@ pl.switch_backend('TkAgg')
 
 # Recuperationnage de la config
 config = configparser.ConfigParser()
-config.read('config.ini', encoding="utf-8")
+config.read('./configs/config.ini', encoding="utf-8")
 nombre_tours = float(config['MESURES']['nombre_tours'])
 resolution_degre = float(config['MESURES']['resolution_degre'])
 resolution = 0.5 * 2 * pi / 360  # en radian
@@ -59,8 +59,9 @@ try:
         # A ~10Hz, pour coller aux mesures du LiDAR
         sleep(0.05)
 
-        # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les distances si il y a plusieurs tours effectues
-        dico = data_cleaner(currentData, nombre_tours, resolution_degre, distance_infini)
+        # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee, et moyennant les
+        # distances si il y a plusieurs tours effectues
+        dico = data_cleaner(currentData, nombre_tours)
         # Detection des bords d'obstacles
         limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
         # Mise a jour des obstacles detectes, incluant le filtre de kalman
@@ -99,10 +100,11 @@ try:
         # Listes des positions des points à afficher
         r = [distance for distance in dico.values()]
         theta = [angle for angle in dico.keys()]
-        # pl.plot(theta, r, 'ro', markersize=0.6)
-        # pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
+        pl.plot(theta, r, 'ro', markersize=0.6)
+        pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
         pl.grid()
         fig.canvas.draw()
+
 except KeyboardInterrupt:
     print("ARRET DEMANDE")
     pl.close()

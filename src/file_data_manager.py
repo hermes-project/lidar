@@ -1,8 +1,6 @@
-from math import pi
 
-# from rplidar import RPLidar
-from time import sleep, time
 from csv import writer, reader
+from time import sleep, time
 
 
 def scanData(lidar, seconds=10, turns=0):
@@ -57,8 +55,9 @@ def readData(path):
             dataToReturn.append([row[0] == "True", int(row[1]), float(row[2]), float(row[3])])
     return dataToReturn
 
-def cleanData(lidarData,resolution,nombre_tours):
-    fullData=[] #Contient chaque scan du fichier
+
+def cleanData(lidarData, resolution, nombre_tours):
+    fullData = []  #Contient chaque scan du fichier
     generated_data = [[0, False] for _ in range(int((360. / resolution) * float(nombre_tours)))]
     i = 0
     previous_bool = False
@@ -81,17 +80,4 @@ def cleanData(lidarData,resolution,nombre_tours):
         generated_data[int(i * (360. / resolution) + (angle / resolution))] = [distance, True]
     return fullData
 
-
-if __name__ == '__main__':
-    NB_TOURS = 0
-    NB_SECONDES = 10
-
-    FILE_PATH = "./scanData.csv"
-    lidar=RPLidar("/dev/ttyUSB0")
-    data = scanData(lidar,NB_SECONDES,NB_TOURS)
-    lidar.stop_motor()
-    lidar.stop()
-    lidar.disconnect()
-    print(data)
-    saveData(FILE_PATH, data)
 
