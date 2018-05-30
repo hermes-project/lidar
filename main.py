@@ -69,13 +69,11 @@ try:
         liste_envoyee = []
         envoi = None
         for o in list_obstacles:
-            # _loggerPpl.debug("center : %s", o.center)
             angle = o.center
             r = dico[angle]
             liste_envoyee.append(str((r, angle)))
             envoi = ";".join(liste_envoyee)
             envoi = envoi + "\n"
-        #_loggerPpl.debug("FIN LISTE OBSTACLES")
         _loggerHl.debug("envoi au hl: %s.", envoi)
         if hl_connected:
             socket.send(envoi.encode('ascii'))
