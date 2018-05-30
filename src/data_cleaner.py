@@ -40,6 +40,7 @@ def data_cleaner(lidar_data, resolution_degre):
         if distance < 10:
             data[angle] = data[last_angle]
         last_angle = angle
+    print("FINICLEANER")
     return data
 
 
