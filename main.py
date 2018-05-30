@@ -73,7 +73,7 @@ try:
             r = dico[angle]
             liste_envoyee.append(str((r, angle)))
             envoi = ";".join(liste_envoyee)
-            envoi = envoi + "\n"
+            envoi = envoi + '\n'
         _loggerHl.debug("envoi au hl: %s.", envoi)
         if hl_connected:
             socket.send(envoi.encode('ascii'))
