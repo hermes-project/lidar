@@ -22,7 +22,7 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, te, list_obst
 
     for o in list_obstacles_precedente:
         _loggerPpl.debug("center : %s", o.center)
-
+    _loggerPpl.debug("FIN LISTEEEEEEEEEE")
     center = None
     distance = None
     list_obstacles = []

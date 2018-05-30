@@ -75,7 +75,7 @@ try:
             liste_envoyee.append(str((r, angle)))
             envoi = ";".join(liste_envoyee)
             envoi = envoi + "\n"
-        _loggerPpl.debug("FIN LISTE OBSTACLES")
+        #_loggerPpl.debug("FIN LISTE OBSTACLES")
         _loggerHl.debug("envoi au hl: %s.", envoi)
         if hl_connected:
             socket.send(envoi.encode('ascii'))
