@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
+from collections import OrderedDict
 from math import pi
 
 
@@ -12,7 +13,7 @@ def data_cleaner(lidar_data, resolution_degre):
     :return: data Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs
     """
 
-    data = {}
+    data = OrderedDict()
     to_radian = pi / 180.
 
     for indice in range(len(lidar_data)):
