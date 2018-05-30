@@ -31,7 +31,8 @@ class ThreadData(Thread):
         self.nombre_tours = nombre_tours
         self.running = True
         self.generated_data = []
-        self.readyData = queue.Queue(maxsize=10)
+        self.readyData = []
+        self.outputData = []
         self.ready = False
 
     def run(self):
@@ -52,6 +53,7 @@ class ThreadData(Thread):
                     else:
                         x = [0, False]
                     self.readyData.append(x[0])
+                self.outputData = self.readyData.copy()
                 self.ready = True
             elif not newTurn:
                 previous_bool = False

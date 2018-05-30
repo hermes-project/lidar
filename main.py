@@ -42,6 +42,7 @@ try:
 
     # Initialisation de l'affichage
     if not hl_connected:
+        print("Affichage init")
         if afficher_en_polaire:
             ax, fig = init_affichage_polaire()
         else:
@@ -53,16 +54,16 @@ try:
 
     # Boucle de récupération,de traitement des données, d'envoi et d'affichage
     while True:
+        # Aucun interet à spammer, on a moins de chance de bloquer l'execution du thread temporairement
+        sleep(0.01)
 
         # Attendre qu'au moins 1 scan soit effectué
         if not thread_data.is_ready():
             continue
-        sleep(0.05)
-
         # Calcul du temps d'exécution : aussi utilisé pour le Kalman
         te = (time() - t)
         t = time()
-
+        print(te)
         # On récupère les données du scan du LiDAR et on fait les traitements
         dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
 
