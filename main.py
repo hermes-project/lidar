@@ -69,7 +69,7 @@ try:
         liste_envoyee = []
         envoi = None
         for o in list_obstacles:
-            _loggerPpl.debug("center : %s", o.center)
+            # _loggerPpl.debug("center : %s", o.center)
             angle = o.center
             r = dico[angle]
             liste_envoyee.append(str((r, angle)))
