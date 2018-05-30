@@ -25,7 +25,7 @@ def mesures(te, list_obstacles_precedente, thread_data):
     """
 
     # Copie de la liste des mesures du thread
-    lidar_data_list = list(thread_data.readyData)
+    lidar_data_list = thread_data.outputData.copy()
 
     # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee,
     # et moyennant les distances si il y a plusieurs tours effectues
