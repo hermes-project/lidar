@@ -28,6 +28,7 @@ def mesures(te, list_obstacles_precedente, thread_data):
 
     # Copie de la liste des mesures du thread
     lidar_data_list = thread_data.outputData.copy()
+    _loggerPpl.debug("liste : %s", lidar_data_list)
 
     # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee,
     # et moyennant les distances si il y a plusieurs tours effectues
@@ -35,7 +36,7 @@ def mesures(te, list_obstacles_precedente, thread_data):
 
     # Detection des bords d'obstacles
     limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
-    _loggerPpl.info("Ostacles détectés aux angles:", limits)
+    # _loggerAffichage.info("Ostacles détectés aux angles:", limits)
 
     # Mise a jour des obstacles detectes, incluant le filtre de kalman
     list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
