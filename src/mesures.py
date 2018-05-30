@@ -17,6 +17,8 @@ seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'
 _loggerRoot = logging.getLogger("ppl")
 _loggerAffichage = logging.getLogger("affichage")
 
+import logging
+_loggerPpl = logging.getLogger("ppl")
 
 def mesures(te, list_obstacles_precedente, thread_data):
     """
@@ -33,7 +35,7 @@ def mesures(te, list_obstacles_precedente, thread_data):
 
     # Detection des bords d'obstacles
     limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
-    # _loggerAffichage.info("Ostacles détectés aux angles:", limits)
+    _loggerPpl.info("Ostacles détectés aux angles:", limits)
 
     # Mise a jour des obstacles detectes, incluant le filtre de kalman
     list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,

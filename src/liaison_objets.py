@@ -5,8 +5,6 @@ from math import cos, sin, pi, sqrt
 from src.kalman import ekf
 import numpy as np
 
-import logging
-_loggerPpl = logging.getLogger("ppl")
 
 def liaison_objets(dico, list_bounds, seuil_association_cartesien, te, list_obstacles_precedente):
     """
@@ -20,9 +18,6 @@ def liaison_objets(dico, list_bounds, seuil_association_cartesien, te, list_obst
     :return: list_obstacles: Liste d'objets de type Obstacle
     """
 
-    for o in list_obstacles_precedente:
-        _loggerPpl.debug("center : %s", o.center)
-    _loggerPpl.debug("FIN LISTEEEEEEEEEE")
     center = None
     distance = None
     list_obstacles = []
