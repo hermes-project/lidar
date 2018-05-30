@@ -42,7 +42,6 @@ try:
 
     # Initialisation de l'affichage
     if not hl_connected:
-        print("Affichage init")
         if afficher_en_polaire:
             ax, fig = init_affichage_polaire()
         else:
@@ -63,7 +62,6 @@ try:
         # Calcul du temps d'exécution : aussi utilisé pour le Kalman
         te = (time() - t)
         t = time()
-        print(te)
         # On récupère les données du scan du LiDAR et on fait les traitements
         dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
 
@@ -82,9 +80,9 @@ try:
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         else:
             if afficher_en_polaire:
-                affichage_polaire(limits, ax, list_obstacles, dico, fig)
+                pass# affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
-                affichage_cartesien(limits, ax, list_obstacles, dico, fig)
+                pass# affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
 except KeyboardInterrupt:
     # Arrêt du système
