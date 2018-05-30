@@ -80,9 +80,9 @@ try:
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         else:
             if afficher_en_polaire:
-                pass# affichage_polaire(limits, ax, list_obstacles, dico, fig)
+                affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
-                pass# affichage_cartesien(limits, ax, list_obstacles, dico, fig)
+                affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
 except KeyboardInterrupt:
     # Arrêt du système
