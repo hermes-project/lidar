@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
+from asyncio import Semaphore
 from threading import Thread
 import queue
 from serial.tools.list_ports import comports
@@ -34,14 +35,17 @@ class ThreadData(Thread):
         self.readyData = []
         self.outputData = []
         self.ready = False
+        self.semaphore = Semaphore(0)
 
     def run(self):
+
         self.generated_data = [[0, False] for _ in range(int((360. / self.resolution) * float(
             self.nombre_tours)))]  # creation de la liste cyclique qui s'actualise tous les tours
         i = 0  # on utilise un booleen pour verifier reinitialiser les valeurs non update sur un tour
         # afin d'eviter de garder des valeurs obselete
         previous_bool = False
         around = self.resolution * 10
+
         for newTurn, quality, angle, distance in self.lidar.iter_measures():  # on recupere les valeurs du lidar
             if newTurn and not previous_bool:  # Si True precede d un False, on est sur un nouveau tour
                 i = int((i + 1) % self.nombre_tours)
@@ -55,6 +59,7 @@ class ThreadData(Thread):
                     self.readyData.append(x[0])
                 self.outputData = self.readyData.copy()
                 self.ready = True
+                self.semaphore.release()
             elif not newTurn:
                 previous_bool = False
             angle = ((round(angle / around, 1) * around) % 360)
@@ -73,8 +78,5 @@ class ThreadData(Thread):
         self.lidar.stop_motor()
         self.lidar.disconnect()
 
-    def is_ready(self):
-        if self.ready:
-            self.ready = False
-            return True
-        return False
+    def wait_until_ready(self):
+        self.semaphore.acquire()

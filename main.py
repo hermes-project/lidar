@@ -52,12 +52,8 @@ try:
 
     # Boucle de récupération,de traitement des données, d'envoi et d'affichage
     while True:
-        # Aucun interet à spammer, on a moins de chance de bloquer l'execution du thread temporairement
-        sleep(0.05)
-
         # Attendre qu'au moins 1 scan soit effectué
-        if not thread_data.is_ready():
-            continue
+        thread_data.wait_until_ready()
 
         # Calcul du temps d'exécution : aussi utilisé pour le Kalman
         te = (time() - t)
