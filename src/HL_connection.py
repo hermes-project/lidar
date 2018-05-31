@@ -20,7 +20,6 @@ def hl_socket():
     """
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sleep(2)
     s.connect((server, port))
     _loggerHl.info("Connexion sur port %s et server %s.", port, server)
 
