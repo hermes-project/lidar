@@ -37,7 +37,7 @@ try:
     thread_data.start()
 
     # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
-    sleep(2)
+    sleep(1)
 
     # Initialisation de l'affichage
     if affichage:
@@ -79,7 +79,6 @@ try:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
-        sleep(0.05)
 
 except Exception:
     # Arrêt du système
