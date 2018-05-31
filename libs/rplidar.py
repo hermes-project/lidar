@@ -390,7 +390,6 @@ class RPLidar(object):
             dsize = self.scanning[1]
             if max_buf_meas:
                 data_in_buf = self._serial.inWaiting()
-                print("AAAAAAH", self._serial.inWaiting())
                 if data_in_buf > max_buf_meas:
                     self.logger.warning(
                         'Too many bytes in the input buffer: %d/%d. '
