@@ -19,6 +19,7 @@ _loggerAffichage = logging.getLogger("affichage")
 
 _loggerPpl = logging.getLogger("ppl")
 
+
 def mesures(te, list_obstacles_precedente, thread_data):
     """
     Récupération et traitements de données.

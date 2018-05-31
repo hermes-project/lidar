@@ -71,7 +71,7 @@ try:
             envoi = ";".join(liste_envoyee)
             envoi = envoi + "\n"
         _loggerHl.debug("envoi au hl: %s.", envoi)
-        if hl_connected:
+        if hl_connected & envoi:
             socket.send(envoi.encode('ascii'))
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         if affichage:
