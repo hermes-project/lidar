@@ -74,6 +74,7 @@ try:
         _loggerHl.debug("envoi au hl: %s.", envoi)
         if hl_connected:
             socket.send(envoi.encode('ascii'))
+        thread_data.lidar.clean_input()
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         if affichage:
             if afficher_en_polaire:
