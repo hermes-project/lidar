@@ -54,7 +54,6 @@ try:
     while True:
 
         # Attendre qu'au moins 1 scan soit effectué
-
         thread_data.wait_until_ready()
 
         # Calcul du temps d'exécution : aussi utilisé pour le Kalman
