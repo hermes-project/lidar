@@ -62,7 +62,7 @@ try:
         te = (time() - t)
         t = time()
         # On récupère les données du scan du LiDAR et on fait les traitements
-        thread_data.wait_until_ready()
+
         dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
 
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
