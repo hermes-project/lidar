@@ -45,7 +45,6 @@ class ThreadData(Thread):
             if newTurn and not previous_bool:  # Si True precede d un False, on est sur un nouveau tour
                 previous_bool = True
                 # On enregistre le tour scanne dans la queue, sous forme de liste de distances
-                print("NEW DATA")
                 self.readyData.put(self.generated_data.copy())
             elif not newTurn:
                 previous_bool = False

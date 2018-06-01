@@ -39,7 +39,7 @@ try:
     thread_data.start()
 
     # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
-    sleep(2)
+    sleep(1)
 
     # Initialisation de l'affichage
     if not hl_connected and affichage:
@@ -56,7 +56,6 @@ try:
     # Boucle de récupération,de traitement des données, d'envoi et d'affichage
     while True:
         # Aucun interet à spammer, on a moins de chance de bloquer l'execution du thread temporairement
-        sleep(0.1)
 
         # Calcul du temps d'exécution : aussi utilisé pour le Kalman
         te = (time() - t)
@@ -84,8 +83,6 @@ try:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
-        sleep(0.1)
-
 
 except KeyboardInterrupt:
     # Arrêt du système
