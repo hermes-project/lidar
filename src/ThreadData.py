@@ -39,30 +39,34 @@ class ThreadData(Thread):
 
     def run(self):
 
-        self.generated_data = [0 for _ in range(int((360. / self.resolution) * float(
+        self.generated_data = [[0, False] for _ in range(int((360. / self.resolution) * float(
             self.nombre_tours)))]  # creation de la liste cyclique qui s'actualise tous les tours
         i = 0  # on utilise un booleen pour verifier reinitialiser les valeurs non update sur un tour
         # afin d'eviter de garder des valeurs obselete
         previous_bool = False
         around = self.resolution * 10
 
-        while True:
-            retour = self.lidar.iter_measures()
-            for newTurn, quality, angle, distance in retour:  # on recupere les valeurs du lidar
-                if newTurn and not previous_bool:  # Si True precede d un False, on est sur un nouveau tour
-                    # i = int((i + 1) % self.nombre_tours)
-                    previous_bool = True
-                    self.outputData = self.generated_data.copy()
-                    self.semaphore.release()
-                    for x in self.generated_data:
-                        x = 0
-                elif not newTurn:
-                    previous_bool = False
-                angle = ((round(angle / around, 1) * around) % 360)
-                # l'indice dans la liste determine l'angle du lidar, on reduit ainsi la liste.
-                self.generated_data[self.get_index(angle, i)] = distance
-                if not self.running:
-                    return
+        for newTurn, quality, angle, distance in self.lidar.iter_measures():  # on recupere les valeurs du lidar
+            if newTurn and not previous_bool:  # Si True precede d un False, on est sur un nouveau tour
+                i = int((i + 1) % self.nombre_tours)
+                previous_bool = True
+                self.readyData = []
+                for x in self.generated_data:
+                    if x[1]:
+                        x[1] = False
+                    else:
+                        x = [0, False]
+                    self.readyData.append(x[0])
+                self.outputData = self.readyData.copy()
+                self.ready = True
+                self.semaphore.release()
+            elif not newTurn:
+                previous_bool = False
+            angle = ((round(angle / around, 1) * around) % 360)
+            # l'indice dans la liste determine l'angle du lidar, on reduit ainsi la liste.
+            self.generated_data[self.get_index(angle, i)] = [distance, True]
+            if not self.running:
+                break
 
     def get_index(self, alpha, i):  # methode qui permet de donner l'indice de la liste à partir d'un angle
         index = int(i * (360. / self.resolution) + (alpha / self.resolution))
