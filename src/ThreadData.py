@@ -44,6 +44,7 @@ class ThreadData(Thread):
             for _, angle, distance in scans:
                 angle = ((round(angle / around, 1) * around) % 360)
                 self.generated_data[self.get_index(angle)] = distance
+            self.readyData.put(self.generated_data.copy())
             if not self.running:
                 break
 

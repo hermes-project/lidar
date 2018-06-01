@@ -61,9 +61,7 @@ try:
         te = (time() - t)
         t = time()
         # On récupère les données du scan du LiDAR et on fait les traitements
-
         dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
-
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
 
         liste_envoyee = []
@@ -76,7 +74,6 @@ try:
         _loggerHl.debug("envoi au hl: %s.", envoi)
         if hl_connected:
             socket.send(envoi.encode('ascii'))
-        print("ENVOYEE")
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         if affichage:
             if afficher_en_polaire:
