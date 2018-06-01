@@ -79,7 +79,6 @@ try:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
-        sleep(0.05)
 
 except Exception:
     # Arrêt du système
