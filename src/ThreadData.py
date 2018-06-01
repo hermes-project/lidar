@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
 # coding: utf-8
 from threading import Thread
-from queue import Queue
 from serial.tools.list_ports import comports
 from libs.rplidar import RPLidar as Rp
 import configparser
 import logging.config
 
-_loggerRoot = logging.getLogger("ppl")
 
-config = configparser.ConfigParser()
-config.read('./configs/config.ini', encoding="utf-8")
-resolution_degre = float(config['MESURES']['resolution_degre'])
 
 
 class ThreadData(Thread):

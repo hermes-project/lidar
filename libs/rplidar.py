@@ -395,10 +395,8 @@ class RPLidar(object):
                         'Too many bytes in the input buffer: %d/%d. '
                         'Cleaning buffer...',
                         data_in_buf, max_buf_meas)
-                    self._serial.flushInput()
-                    #self.stop()
-                    #self.start(self.scanning[2])
-                self._semaphore.release()
+                    self.stop()
+                    self.start(self.scanning[2])
 
             if self.scanning[2] == 'normal':
                 raw = self._read_response(dsize)
