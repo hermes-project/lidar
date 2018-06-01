@@ -7,9 +7,9 @@ from src.HL_connection import hl_connected
 from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
 from src.ThreadData import ThreadData
-from src.affichage import *
-from src.affichage import afficher_en_polaire
+from src.affichage import afficher_en_polaire, affichage, affichage_cartesien, affichage_polaire, init_affichage_cartesien, init_affichage_polaire
 from src.mesures import mesures
+import logging.config
 
 if not isdir("./Logs/"):
     mkdir("./Logs/")
@@ -41,7 +41,7 @@ try:
     sleep(2)
 
     # Initialisation de l'affichage
-    if not hl_connected:
+    if not hl_connected and affichage:
         print("Affichage init")
         if afficher_en_polaire:
             ax, fig = init_affichage_polaire()
@@ -81,7 +81,7 @@ try:
 
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         else:
-            if afficher_en_polaire:
+            if afficher_en_polaire and affichage:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
