@@ -35,28 +35,24 @@ class ThreadData(Thread):
 
     def run(self):
         # Liste contenant les donnees d'un scan entier = un tour
-        self.generated_data = [0 for _ in range(int((360. / self.resolution)))]
         i = 0  # on utilise un booleen pour verifier reinitialiser les valeurs non update sur un tour
         # afin d'eviter de garder des valeurs obselete
-        previous_bool = False
         around = self.resolution * 10
 
-        for newTurn, quality, angle, distance in self.lidar.iter_measures():  # on recupere les valeurs du lidar
-            if newTurn and not previous_bool:  # Si True precede d un False, on est sur un nouveau tour
-                previous_bool = True
-                # On enregistre le tour scanne dans la queue, sous forme de liste de distances
-                self.readyData.put(self.generated_data.copy())
-            elif not newTurn:
-                previous_bool = False
-            angle = ((round(angle / around, 1) * around) % 360.)
-            # l'indice dans la liste determine l'angle du lidar, on reduit ainsi la liste.
-            self.generated_data[int(angle/self.resolution)] = distance
+        for scans in self.lidar.iter_scans():
+            self.generated_data = [0 for _ in range(int((360. / self.resolution)))]
+            for _, angle, distance in scans:
+                angle = ((round(angle / around, 1) * around) % 360)
+                self.generated_data[self.get_index(angle)] = distance
             if not self.running:
                 break
+
+    def get_index(self, alpha):  # methode qui permet de donner l'indice de la liste à partir d'un angle
+        index = int(alpha / self.resolution)
+        return index
 
     def stop_lidar(self):  # methode pour arreter le LiDAR
         self.running = False
         self.lidar.stop()
         self.lidar.stop_motor()
         self.lidar.disconnect()
-
