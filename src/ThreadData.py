@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # coding: utf-8
-from asyncio import Semaphore
 from threading import Thread
 from queue import Queue
 from serial.tools.list_ports import comports
@@ -30,7 +29,8 @@ class ThreadData(Thread):
         self.resolution = resolution_degre
         self.running = True
         self.generated_data = []
-        self.readyData = Queue()
+        self.readyData = []
+        self.ready = False
 
     def run(self):
         # Liste contenant les donnees d'un scan entier = un tour
@@ -44,13 +44,14 @@ class ThreadData(Thread):
             if newTurn and not previous_bool:  # Si True precede d un False, on est sur un nouveau tour
                 previous_bool = True
                 # On enregistre le tour scanne dans la queue, sous forme de liste de distances
-                print("NEW DATA")
-                self.readyData.put(self.generated_data.copy())
+                self.readyData = self.generated_data.copy()
+                print("DATA:",self.readyData)
+                self.ready = True
             elif not newTurn:
                 previous_bool = False
             angle = ((round(angle / around, 1) * around) % 360.)
             # l'indice dans la liste determine l'angle du lidar, on reduit ainsi la liste.
-            self.generated_data[int(angle/self.resolution)] = distance
+            self.generated_data[int(angle / self.resolution)] = distance
             if not self.running:
                 break
 
@@ -60,5 +61,8 @@ class ThreadData(Thread):
         self.lidar.stop_motor()
         self.lidar.disconnect()
 
-    def get_data(self):
-        return self.readyData.get()
+    def is_ready(self):
+        if self.ready:
+            self.ready = False
+            return True
+        return False

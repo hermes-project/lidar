@@ -54,13 +54,15 @@ try:
     # Boucle de récupération,de traitement des données, d'envoi et d'affichage
     while True:
         # Tentative bloquante de recuperation de donnees de lidar
-        lidar_data = thread_data.get_data()
-        print(lidar_data,"\nlen:",thread_data.readyData.qsize())
+        sleep(0.05)
+        if not thread_data.is_ready():
+            continue
 
+        lidar_data = thread_data.readyData.copy()
+        print(lidar_data)
         # Calcul du temps d'echantillonnage utilisé pour le Kalman
         te = (time() - t)
         t = time()
-        traitement=time()
         # On récupère les données du scan du LiDAR et on fait les traitements
         dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, lidar_data)
 
@@ -82,7 +84,6 @@ try:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
-        print(time()-traitement)
 
 except Exception:
     # Arrêt du système
