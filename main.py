@@ -80,8 +80,8 @@ try:
             socket.send(envoi.encode('ascii'))
 
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
-        else:
-            if afficher_en_polaire and affichage:
+        elif affichage:
+            if afficher_en_polaire:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
