@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
-from time import sleep, time
-from os.path import isdir
 from os import mkdir
+from os.path import isdir
+from time import sleep, time
+
 from src.HL_connection import hl_connected
 from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
 from src.ThreadData import ThreadData
 from src.affichage import *
-from src.affichage import afficher_en_polaire
 from src.mesures import mesures
 
 if not isdir("./Logs/"):
@@ -22,7 +22,6 @@ socket = None
 thread_data = None
 ax = None
 fig = None
-envoi = None
 
 try:
 
@@ -41,7 +40,7 @@ try:
     sleep(2)
 
     # Initialisation de l'affichage
-    if not hl_connected:
+    if affichage:
         if afficher_en_polaire:
             ax, fig = init_affichage_polaire()
         else:
@@ -55,6 +54,7 @@ try:
     while True:
 
         # Attendre qu'au moins 1 scan soit effectué
+
         thread_data.wait_until_ready()
 
         # Calcul du temps d'exécution : aussi utilisé pour le Kalman
@@ -64,19 +64,20 @@ try:
         dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
 
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
+        liste_envoyee = []
+        envoi = None
+        for o in list_obstacles:
+            angle = o.center
+            r = dico[angle]
+            liste_envoyee.append(str((r, angle)))
+            envoi = ";".join(liste_envoyee)
+            envoi = envoi + "\n"
+        _loggerHl.debug("envoi au hl: %s.", envoi)
         if hl_connected:
-            liste_envoyee = []
-            for o in list_obstacles:
-                angle = o.center
-                r = dico[angle]
-                liste_envoyee.append(str((r, angle)))
-                envoi = ";".join(liste_envoyee)
-                envoi = envoi + "\n"
-            _loggerHl.debug("envoi au hl: %s.", envoi)
             socket.send(envoi.encode('ascii'))
 
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
-        else:
+        if affichage:
             if afficher_en_polaire:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:

@@ -17,6 +17,7 @@ seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'
 _loggerRoot = logging.getLogger("ppl")
 _loggerAffichage = logging.getLogger("affichage")
 
+_loggerPpl = logging.getLogger("ppl")
 
 def mesures(te, list_obstacles_precedente, thread_data):
     """
@@ -30,6 +31,7 @@ def mesures(te, list_obstacles_precedente, thread_data):
     # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee,
     # et moyennant les distances si il y a plusieurs tours effectues
     dico = data_cleaner(lidar_data_list, resolution_degre)
+    _loggerPpl.debug("dico : %s        ", dico)
 
     # Detection des bords d'obstacles
     limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
