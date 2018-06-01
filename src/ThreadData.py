@@ -27,6 +27,7 @@ class ThreadData(Thread):
             _loggerRoot.error("Pas de connexion serie disponible.")
             exit()
         self.lidar.start_motor()
+        self.lidar._set_pwm(350)
         self.lidar.start()
         self.resolution = resolution_degre
         self.nombre_tours = nombre_tours
