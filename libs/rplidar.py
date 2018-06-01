@@ -26,10 +26,14 @@ import logging
 import sys
 import time
 import codecs
+from threading import Semaphore
+
 import serial
 import struct
 
 from collections import namedtuple
+
+
 
 SYNC_BYTE = b'\xA5'
 SYNC_BYTE2 = b'\x5A'
@@ -121,6 +125,7 @@ class RPLidar(object):
             Logger instance, if none is provided new instance is created
         '''
         self._serial = None
+        self._semaphore=Semaphore(0)
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -390,8 +395,10 @@ class RPLidar(object):
                         'Too many bytes in the input buffer: %d/%d. '
                         'Cleaning buffer...',
                         data_in_buf, max_buf_meas)
-                    self.stop()
-                    self.start(self.scanning[2])
+                    self._serial.flushInput()
+                    #self.stop()
+                    #self.start(self.scanning[2])
+                self._semaphore.release()
 
             if self.scanning[2] == 'normal':
                 raw = self._read_response(dsize)

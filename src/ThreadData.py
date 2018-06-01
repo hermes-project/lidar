@@ -45,7 +45,7 @@ class ThreadData(Thread):
                 previous_bool = True
                 # On enregistre le tour scanne dans la queue, sous forme de liste de distances
                 self.readyData = self.generated_data.copy()
-                print("DATA:",self.readyData)
+                print("DATA:", self.readyData)
                 self.ready = True
             elif not newTurn:
                 previous_bool = False
@@ -54,6 +54,7 @@ class ThreadData(Thread):
             self.generated_data[int(angle / self.resolution)] = distance
             if not self.running:
                 break
+            self.lidar._semaphore.acquire()
 
     def stop_lidar(self):  # methode pour arreter le LiDAR
         self.running = False
