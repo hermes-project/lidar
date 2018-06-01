@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
-import logging.config
-from os import mkdir
-from os.path import isdir
-from time import sleep, time
 
+from time import sleep, time
+from os.path import isdir
+from os import mkdir
 from src.HL_connection import hl_connected
 from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
-from src.affichage import init_affichage_polaire, init_affichage_cartesien, affichage_polaire, affichage_cartesien, \
-    affichage, afficher_en_polaire
+from src.ThreadData import ThreadData
+from src.affichage import *
+from src.affichage import afficher_en_polaire
 from src.mesures import mesures
-from libs import rplidar
-from serial.tools.list_ports import comports
-
 
 if not isdir("./Logs/"):
     mkdir("./Logs/")
@@ -25,6 +22,7 @@ socket = None
 thread_data = None
 ax = None
 fig = None
+envoi = None
 
 try:
 
@@ -35,16 +33,16 @@ try:
     if hl_connected:
         socket = hl_socket()
 
-    try:
-        lidar = rplidar.RPLidar(comports()[0].device)  # Tente de se connecter au premier port Serie disponible
-    except IndexError:
-        _loggerPpl.error("Pas de connexion serie disponible.")
-        exit()
+    # Demarre le Thread recevant les donnees
+    thread_data = ThreadData()
+    thread_data.start()
+
     # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
-    sleep(1)
+    sleep(2)
 
     # Initialisation de l'affichage
-    if affichage:
+    if not hl_connected:
+        print("Affichage init")
         if afficher_en_polaire:
             ax, fig = init_affichage_polaire()
         else:
@@ -56,34 +54,39 @@ try:
 
     # Boucle de récupération,de traitement des données, d'envoi et d'affichage
     while True:
-        # Tentative bloquante de recuperation de donnees de lidar
+        # Aucun interet à spammer, on a moins de chance de bloquer l'execution du thread temporairement
+        sleep(0.01)
 
-        # Calcul du temps d'echantillonnage utilisé pour le Kalman
+        # Attendre qu'au moins 1 scan soit effectué
+        if not thread_data.is_ready():
+            continue
+        # Calcul du temps d'exécution : aussi utilisé pour le Kalman
         te = (time() - t)
         t = time()
+        print(te)
         # On récupère les données du scan du LiDAR et on fait les traitements
-        dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, lidar)
+        dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
 
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
-        liste_envoyee = []
-        envoi = None
-        for o in list_obstacles:
-            angle = o.center
-            r = dico[angle]
-            liste_envoyee.append(str((r, angle)))
-            envoi = ";".join(liste_envoyee)
-            envoi = envoi + "\n"
-        _loggerHl.debug("envoi au hl: %s.", envoi)
-        if hl_connected and envoi:
+        if hl_connected:
+            liste_envoyee = []
+            for o in list_obstacles:
+                angle = o.center
+                r = dico[angle]
+                liste_envoyee.append(str((r, angle)))
+                envoi = ";".join(liste_envoyee)
+                envoi = envoi + "\n"
+            _loggerHl.debug("envoi au hl: %s.", envoi)
             socket.send(envoi.encode('ascii'))
+
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
-        if affichage:
+        else:
             if afficher_en_polaire:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
-except Exception:
+except KeyboardInterrupt:
     # Arrêt du système
     if hl_connected and socket:
         stop_com_hl(socket)
@@ -92,7 +95,6 @@ except Exception:
         thread_data.stop_lidar()
         thread_data.join()
         thread_data = None
-    _loggerPpl.exception("Erreur lors de l'execution du programme, arret total")
 
 finally:
     # Arrêt du système
