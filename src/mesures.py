@@ -20,18 +20,14 @@ _loggerAffichage = logging.getLogger("affichage")
 _loggerPpl = logging.getLogger("ppl")
 
 
-def mesures(te, list_obstacles_precedente, thread_data):
+def mesures(te, list_obstacles_precedente, lidar_data):
     """
     Récupération et traitements de données.
 
     """
-
-    # Copie de la liste des mesures du thread
-    lidar_data_list = thread_data.outputData.copy()
-
     # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee,
     # et moyennant les distances si il y a plusieurs tours effectues
-    dico = data_cleaner(lidar_data_list, resolution_degre)
+    dico = data_cleaner(lidar_data, resolution_degre)
     _loggerPpl.debug("dico : %s        ", dico)
 
     # Detection des bords d'obstacles

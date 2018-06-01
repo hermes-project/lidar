@@ -2,7 +2,7 @@
 # coding: utf-8
 from asyncio import Semaphore
 from threading import Thread
-import queue
+from queue import Queue
 from serial.tools.list_ports import comports
 from libs.rplidar import RPLidar as Rp
 import configparser
@@ -13,7 +13,6 @@ _loggerRoot = logging.getLogger("ppl")
 config = configparser.ConfigParser()
 config.read('./configs/config.ini', encoding="utf-8")
 resolution_degre = float(config['MESURES']['resolution_degre'])
-nombre_tours = float(config['MESURES']['nombre_tours'])
 
 
 class ThreadData(Thread):
@@ -29,18 +28,13 @@ class ThreadData(Thread):
         self.lidar.start_motor()
         self.lidar.start()
         self.resolution = resolution_degre
-        self.nombre_tours = nombre_tours
         self.running = True
         self.generated_data = []
-        self.readyData = []
-        self.outputData = []
-        self.ready = False
-        self.semaphore = Semaphore(0)
+        self.readyData = Queue()
 
     def run(self):
-
-        self.generated_data = [[0, False] for _ in range(int((360. / self.resolution) * float(
-            self.nombre_tours)))]  # creation de la liste cyclique qui s'actualise tous les tours
+        # Liste contenant les donnees d'un scan entier = un tour
+        self.generated_data = [0 for _ in range(int((360. / self.resolution)))]
         i = 0  # on utilise un booleen pour verifier reinitialiser les valeurs non update sur un tour
         # afin d'eviter de garder des valeurs obselete
         previous_bool = False
@@ -48,28 +42,17 @@ class ThreadData(Thread):
 
         for newTurn, quality, angle, distance in self.lidar.iter_measures():  # on recupere les valeurs du lidar
             if newTurn and not previous_bool:  # Si True precede d un False, on est sur un nouveau tour
-                i = int((i + 1) % self.nombre_tours)
                 previous_bool = True
-                self.readyData = []
-                for x in self.generated_data:
-                    if x[1]:
-                        x[1] = False
-                    else:
-                        x = [0, False]
-                    self.readyData.append(x[0])
-                self.outputData = self.readyData.copy()
-                self.semaphore.release()
+                # On enregistre le tour scanne dans la queue, sous forme de liste de distances
+                print("NEW DATA")
+                self.readyData.put(self.generated_data.copy())
             elif not newTurn:
                 previous_bool = False
-            angle = ((round(angle / around, 1) * around) % 360)
+            angle = ((round(angle / around, 1) * around) % 360.)
             # l'indice dans la liste determine l'angle du lidar, on reduit ainsi la liste.
-            self.generated_data[self.get_index(angle, i)] = [distance, True]
+            self.generated_data[int(angle/self.resolution)] = distance
             if not self.running:
                 break
-
-    def get_index(self, alpha, i):  # methode qui permet de donner l'indice de la liste à partir d'un angle
-        index = int(i * (360. / self.resolution) + (alpha / self.resolution))
-        return index
 
     def stop_lidar(self):  # methode pour arreter le LiDAR
         self.running = False
@@ -77,5 +60,5 @@ class ThreadData(Thread):
         self.lidar.stop_motor()
         self.lidar.disconnect()
 
-    def wait_until_ready(self):
-        self.semaphore.acquire()
+    def get_data(self):
+        return self.readyData.get()

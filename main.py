@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-
 from os import mkdir
 from os.path import isdir
 from time import sleep, time
+
+import logging.config
 
 from src.HL_connection import hl_connected
 from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
 from src.ThreadData import ThreadData
-from src.affichage import *
+from src.affichage import init_affichage_polaire, init_affichage_cartesien, affichage_polaire, affichage_cartesien, affichage, afficher_en_polaire
 from src.mesures import mesures
 
 if not isdir("./Logs/"):
@@ -52,14 +53,16 @@ try:
 
     # Boucle de récupération,de traitement des données, d'envoi et d'affichage
     while True:
-        # Attendre qu'au moins 1 scan soit effectué
-        thread_data.wait_until_ready()
+        # Tentative bloquante de recuperation de donnees de lidar
+        lidar_data = thread_data.get_data()
+        print(lidar_data,"\nlen:",thread_data.readyData.qsize())
 
-        # Calcul du temps d'exécution : aussi utilisé pour le Kalman
+        # Calcul du temps d'echantillonnage utilisé pour le Kalman
         te = (time() - t)
         t = time()
+        traitement=time()
         # On récupère les données du scan du LiDAR et on fait les traitements
-        dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
+        dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, lidar_data)
 
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
         liste_envoyee = []
@@ -79,6 +82,7 @@ try:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
+        print(time()-traitement)
 
 except Exception:
     # Arrêt du système
