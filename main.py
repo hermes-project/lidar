@@ -66,19 +66,20 @@ try:
         dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
 
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
+
+        liste_envoyee = []
+        for o in list_obstacles:
+            angle = o.center
+            r = dico[angle]
+            liste_envoyee.append(str((r, angle)))
+            envoi = ";".join(liste_envoyee)
+            envoi = envoi + "\n"
         if hl_connected:
-            liste_envoyee = []
-            for o in list_obstacles:
-                angle = o.center
-                r = dico[angle]
-                liste_envoyee.append(str((r, angle)))
-                envoi = ";".join(liste_envoyee)
-                envoi = envoi + "\n"
-            _loggerHl.debug("envoi au hl: %s.", envoi)
             socket.send(envoi.encode('ascii'))
+        _loggerHl.debug("envoi au hl: %s.", envoi)
 
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
-        elif affichage:
+        if affichage:
             if afficher_en_polaire:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
