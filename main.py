@@ -58,9 +58,6 @@ try:
         # Aucun interet à spammer, on a moins de chance de bloquer l'execution du thread temporairement
         sleep(0.1)
 
-        # Attendre qu'au moins 1 scan soit effectué
-        if not thread_data.is_ready():
-            continue
         # Calcul du temps d'exécution : aussi utilisé pour le Kalman
         te = (time() - t)
         t = time()
