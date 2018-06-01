@@ -52,7 +52,6 @@ try:
 
     # Boucle de récupération,de traitement des données, d'envoi et d'affichage
     while True:
-
         # Attendre qu'au moins 1 scan soit effectué
         thread_data.wait_until_ready()
 
@@ -74,15 +73,15 @@ try:
         _loggerHl.debug("envoi au hl: %s.", envoi)
         if hl_connected & envoi:
             socket.send(envoi.encode('ascii'))
-
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         if affichage:
             if afficher_en_polaire:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
+        sleep(0.05)
 
-except KeyboardInterrupt:
+except Exception:
     # Arrêt du système
     if hl_connected and socket:
         stop_com_hl(socket)
@@ -91,6 +90,7 @@ except KeyboardInterrupt:
         thread_data.stop_lidar()
         thread_data.join()
         thread_data = None
+    _loggerPpl.exception("Erreur lors de l'execution du programme, arret total")
 
 finally:
     # Arrêt du système
