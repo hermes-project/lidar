@@ -15,6 +15,7 @@ distance_max_x_cartesien = int(config['DETECTION']['distance_max_x_cartesien'])
 distance_max_y_cartesien = int(config['DETECTION']['distance_max_y_cartesien'])
 distance_max = int(config['DETECTION']['distance_max'])
 afficher_en_polaire = config['AFFICHAGE']['afficher_en_polaire'] == "True"
+affichage = config['COMMUNICATION SOCKET']['affichage'] == "True"
 
 
 def init_affichage_cartesien():
