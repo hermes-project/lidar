@@ -31,7 +31,7 @@ def mesures(te, list_obstacles_precedente, thread_data):
     # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee,
     # et moyennant les distances si il y a plusieurs tours effectues
 
-    lidar_data=thread_data.outputData.copy()
+    lidar_data=thread_data.readyData.copy()
 
     dico = data_cleaner(lidar_data, resolution_degre)
     _loggerPpl.debug("dico : %s        ", dico)

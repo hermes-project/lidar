@@ -55,7 +55,6 @@ class ThreadData(Thread):
                     else:
                         x = [0, False]
                     self.readyData.append(x[0])
-                self.outputData = self.readyData.copy()
                 self.ready = True
                 self.semaphore.release()
             elif not newTurn:
