@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # coding: utf-8
-from threading import Thread
-import queue
-from serial.tools.list_ports import comports
-from libs.rplidar import RPLidar as Rp
 import configparser
 import logging.config
-import threading
+import queue
+from threading import Thread
+from time import time
+
+from serial.tools.list_ports import comports
+
+from libs.rplidar import RPLidar as Rp
 
 _loggerRoot = logging.getLogger("ppl")
 
@@ -40,11 +42,13 @@ class ThreadData(Thread):
         around = self.resolution * 10
 
         for scans in self.lidar.iter_scans():
+            t=time()
             self.generated_data = [0 for _ in range(int((360. / self.resolution)))]
             for _, angle, distance in scans:
                 angle = ((round(angle / around, 1) * around) % 360)
                 self.generated_data[self.get_index(angle)] = distance
             self.readyData.put(self.generated_data.copy())
+            print("T_thread:", time()-t)
             if not self.running:
                 break
 
