@@ -26,7 +26,7 @@ class ThreadData(Thread):
         except IndexError:
             _loggerRoot.error("Pas de connexion serie disponible.")
             exit()
-        self.lidar._motor_speed=300
+        self.lidar._motor_speed=1000
         self.lidar.start_motor()
         self.lidar.start()
         self.resolution = resolution_degre
