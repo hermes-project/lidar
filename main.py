@@ -73,10 +73,10 @@ try:
             liste_envoyee.append(str((r, angle)))
             envoi = ";".join(liste_envoyee)
             envoi = envoi + "\n"
+        _loggerHl.debug("envoi au hl: %s.", envoi)
         if hl_connected:
             socket.send(envoi.encode('ascii'))
-        _loggerHl.debug("envoi au hl: %s.", envoi)
-
+        print("ENVOYEE")
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         if affichage:
             if afficher_en_polaire:
