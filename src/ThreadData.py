@@ -6,6 +6,7 @@ from serial.tools.list_ports import comports
 from libs.rplidar import RPLidar as Rp
 import configparser
 import logging.config
+import threading
 
 _loggerRoot = logging.getLogger("ppl")
 
@@ -34,6 +35,7 @@ class ThreadData(Thread):
         self.readyData = []
         self.outputData = []
         self.ready = False
+        self.semaphore = threading.Semaphore(0)
 
     def run(self):
         self.generated_data = [[0, False] for _ in range(int((360. / self.resolution) * float(
@@ -55,6 +57,7 @@ class ThreadData(Thread):
                     self.readyData.append(x[0])
                 self.outputData = self.readyData.copy()
                 self.ready = True
+                self.semaphore.release()
             elif not newTurn:
                 previous_bool = False
             angle = ((round(angle / around, 1) * around) % 360)
@@ -73,8 +76,5 @@ class ThreadData(Thread):
         self.lidar.stop_motor()
         self.lidar.disconnect()
 
-    def is_ready(self):
-        if self.ready:
-            self.ready = False
-            return True
-        return False
+    def wait_until_ready(self):
+        self.semaphore.acquire()

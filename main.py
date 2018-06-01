@@ -11,6 +11,7 @@ from src.affichage import afficher_en_polaire, affichage, affichage_cartesien, a
 from src.mesures import mesures
 import logging.config
 
+
 if not isdir("./Logs/"):
     mkdir("./Logs/")
 
@@ -55,7 +56,7 @@ try:
     # Boucle de récupération,de traitement des données, d'envoi et d'affichage
     while True:
         # Aucun interet à spammer, on a moins de chance de bloquer l'execution du thread temporairement
-        sleep(0.05)
+        sleep(0.1)
 
         # Attendre qu'au moins 1 scan soit effectué
         if not thread_data.is_ready():
@@ -64,6 +65,7 @@ try:
         te = (time() - t)
         t = time()
         # On récupère les données du scan du LiDAR et on fait les traitements
+        thread_data.wait_until_ready()
         dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
 
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
@@ -84,7 +86,7 @@ try:
                 affichage_polaire(limits, ax, list_obstacles, dico, fig)
             else:
                 affichage_cartesien(limits, ax, list_obstacles, dico, fig)
-        sleep(0.05)
+        sleep(0.1)
 
 
 except KeyboardInterrupt:
