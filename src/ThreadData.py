@@ -44,7 +44,7 @@ class ThreadData(Thread):
         # afin d'eviter de garder des valeurs obselete
         previous_bool = False
         around = self.resolution * 10
-        for newTurn, quality, angle, distance in self.lidar.iter_measures():  # on recupere les valeurs du lidar
+        for newTurn, quality, angle, distance in self.lidar.iter_measures(max_buf_meas=None):  # on recupere les valeurs du lidar
             if newTurn and not previous_bool:  # Si True precede d un False, on est sur un nouveau tour
                 i = int((i + 1) % self.nombre_tours)
                 previous_bool = True
