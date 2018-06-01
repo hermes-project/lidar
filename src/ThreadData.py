@@ -42,13 +42,11 @@ class ThreadData(Thread):
         around = self.resolution * 10
 
         for scans in self.lidar.iter_scans():
-            t2=time()
             self.generated_data = [0 for _ in range(int((360. / self.resolution)))]
             for _, angle, distance in scans:
                 angle = ((round(angle / around, 1) * around) % 360)
                 self.generated_data[self.get_index(angle)] = distance
             self.readyData.put(self.generated_data.copy())
-            t1=time()-t
             if not self.running:
                 break
 
