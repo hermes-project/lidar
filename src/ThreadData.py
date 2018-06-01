@@ -48,7 +48,8 @@ class ThreadData(Thread):
                 angle = ((round(angle / around, 1) * around) % 360)
                 self.generated_data[self.get_index(angle)] = distance
             self.readyData.put(self.generated_data.copy())
-            print("T_thread:", time()-t)
+            t=time()-t
+            print("T_thread:", t)
             if not self.running:
                 break
 
