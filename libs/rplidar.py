@@ -449,13 +449,10 @@ class RPLidar(object):
         '''
         scan_list = []
         iterator = self.iter_measures(scan_type, max_buf_meas)
-        t=time.time()
         for new_scan, quality, angle, distance in iterator:
 
             if new_scan:
                 if len(scan_list) > min_len:
-                    print(time.time() - t)
-                    t = time.time()
                     yield scan_list
                 scan_list = []
             if distance > 0:
