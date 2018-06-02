@@ -395,7 +395,6 @@ class RPLidar(object):
                         'Too many bytes in the input buffer: %d/%d. '
                         'Cleaning buffer...',
                         data_in_buf, max_buf_meas)
-                    print("AAAAAAAAAH")
                     self.stop()
                     self.start(self.scanning[2])
 
