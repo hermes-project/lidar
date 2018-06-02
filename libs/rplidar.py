@@ -304,13 +304,11 @@ class RPLidar(object):
     def stop(self):
         '''Stops scanning process, disables laser diode and the measurement
         system, moves sensor to the idle state.'''
-        t=time.time()
         self.logger.info('Stopping scanning')
         self._send_cmd(STOP_BYTE)
         time.sleep(.005)
         self.scanning[0] = False
         self.clean_input()
-        print("STOP:",time.time()-t)
 
     def start(self, scan_type='normal'):
         '''Start the scanning process
@@ -319,7 +317,6 @@ class RPLidar(object):
         ----------
         scan : normal, force or express.
         '''
-        t=time.time()
         if self.scanning[0]:
             return 'Scanning already running !'
         '''Start the scanning process, enable laser diode and the
@@ -354,7 +351,6 @@ class RPLidar(object):
         # if dtype != _SCAN_TYPE[scan_type]['response']:
         #     raise RPLidarException('Wrong response data type')
         self.scanning = [True, dsize, scan_type]
-        print("START:",time.time()-t)
 
     def reset(self):
         '''Resets sensor core, reverting it to a similar state as it has
