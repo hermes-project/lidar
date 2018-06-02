@@ -308,7 +308,9 @@ class RPLidar(object):
         self._send_cmd(STOP_BYTE)
         time.sleep(.1)
         self.scanning[0] = False
+        t=time.time()
         self.clean_input()
+        print(time.time()-t)
 
     def start(self, scan_type='normal'):
         '''Start the scanning process
