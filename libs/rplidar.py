@@ -305,8 +305,8 @@ class RPLidar(object):
         '''Stops scanning process, disables laser diode and the measurement
         system, moves sensor to the idle state.'''
         self.logger.info('Stopping scanning')
-        #self._send_cmd(STOP_BYTE)
-        #time.sleep(.1)
+        self._send_cmd(STOP_BYTE)
+        time.sleep(.01)
         self.scanning[0] = False
         t=time.time()
         self.clean_input()
