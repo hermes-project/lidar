@@ -40,7 +40,7 @@ class ThreadData(Thread):
         i = 0  # on utilise un booleen pour verifier reinitialiser les valeurs non update sur un tour
         # afin d'eviter de garder des valeurs obselete
         around = self.resolution * 10
-        for scans in self.lidar.iter_scans(max_buf_meas=1000):
+        for scans in self.lidar.iter_scans(max_buf_meas=4000):
             self.generated_data = [0 for _ in range(int((360. / self.resolution)))]
             for _, angle, distance in scans:
                 angle = ((round(angle / around, 1) * around) % 360)
