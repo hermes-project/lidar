@@ -307,7 +307,7 @@ class RPLidar(object):
         t=time.time()
         self.logger.info('Stopping scanning')
         self._send_cmd(STOP_BYTE)
-        time.sleep(.01)
+        time.sleep(.001)
         self.scanning[0] = False
         self.clean_input()
         print("STOP:",time.time()-t)
