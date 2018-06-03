@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+from collections import OrderedDict
+from random import randint
 from time import sleep, time
 from os.path import isdir
 from os import mkdir
@@ -10,23 +11,26 @@ from src.ThreadData import ThreadData
 from src.affichage import afficher_en_polaire, affichage, affichage_cartesien, affichage_polaire, init_affichage_cartesien, init_affichage_polaire
 from src.mesures import mesures
 import logging.config
-
+from csv import writer
 
 if not isdir("./Logs/"):
     mkdir("./Logs/")
 
+
 logging.config.fileConfig('./configs/config_log.ini')
 _loggerPpl = logging.getLogger("ppl")
 _loggerHl = logging.getLogger("hl")
-
+data_file=open("Logs/RawData.logs","a")
+data_writer=writer(data_file,delimiter=" ")
+data_writer.writerow(["#NEW"])
 socket = None
 thread_data = None
 ax = None
 fig = None
 envoi = None
 
-try:
 
+try:
     # Liste des positions des anciens obstacles
     list_obstacles_precedente = []
 
@@ -72,6 +76,7 @@ try:
             envoi = ";".join(liste_envoyee)
             envoi = envoi + "\n"
         _loggerHl.debug("envoi au hl: %s.", envoi)
+        data_writer.writerow(dico.values())
         if hl_connected:
             socket.send(envoi.encode('ascii'))
         thread_data.lidar.clean_input()
@@ -100,3 +105,5 @@ finally:
         thread_data.stop_lidar()
         thread_data.join()
         thread_data = None
+    data_file.close()
+
