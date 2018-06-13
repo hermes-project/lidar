@@ -3,14 +3,13 @@ import logging.config
 from csv import writer
 from os import mkdir
 from os.path import isdir
-from time import sleep, time
+from time import sleep
 
+from libs.serial import *
 from src.HL_connection import hl_connected
 from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
 from src.ThreadData import ThreadData
-from src.affichage import afficher_en_polaire, affichage, affichage_cartesien, affichage_polaire, \
-    init_affichage_cartesien, init_affichage_polaire
 from src.mesures import mesures
 
 if not isdir("./Logs/"):
@@ -45,14 +44,6 @@ try:
     # Attente de quelques tours pour que le lidar prenne sa pleine vitesse et envoie assez de points
     sleep(1)
 
-    # Initialisation de l'affichage
-    if not hl_connected and affichage:
-        print("Affichage init")
-        if afficher_en_polaire:
-            ax, fig = init_affichage_polaire()
-        else:
-            ax, fig = init_affichage_cartesien()
-
     # Initialisation des valeurs pour le calcul du temps d'exécution
     t = time()
     te = t
@@ -80,12 +71,6 @@ try:
         if hl_connected:
             socket.send(envoi.encode('ascii'))
         thread_data.lidar.clean_input()
-        # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
-        if affichage:
-            if afficher_en_polaire:
-                affichage_polaire(limits, ax, list_obstacles, dico, fig)
-            else:
-                affichage_cartesien(limits, ax, list_obstacles, dico, fig)
 
 except KeyboardInterrupt:
     # Arrêt du système

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from time import time
+
+import configparser
+import logging.config
 
 from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
-import configparser
-import logging.config
 
 config = configparser.ConfigParser()
 config.read('./configs/config.ini', encoding="utf-8")
@@ -30,7 +30,7 @@ def mesures(te, list_obstacles_precedente, thread_data):
     """
     # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee,
     # et moyennant les distances si il y a plusieurs tours effectues
-    lidar_data=thread_data.readyData.get()
+    lidar_data = thread_data.readyData.get()
     dico = data_cleaner(lidar_data, resolution_degre)
     # _loggerPpl.debug("dico : %s        ", dico)
 
