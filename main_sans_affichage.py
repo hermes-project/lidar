@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import logging.config
+from libs.logging import config, getLogger
 from csv import writer
 from os import mkdir
 from os.path import isdir
@@ -16,9 +16,9 @@ if not isdir("./Logs/"):
     mkdir("./Logs/")
 
 
-logging.config.fileConfig('./configs/config_log.ini')
-_loggerPpl = logging.getLogger("ppl")
-_loggerHl = logging.getLogger("hl")
+config.fileConfig('./configs/config_log.ini')
+_loggerPpl = getLogger("ppl")
+_loggerHl = getLogger("hl")
 data_file = open("Logs/RawData.logs", "a")
 data_writer = writer(data_file, delimiter=" ")
 data_writer.writerow(["#NEW"])

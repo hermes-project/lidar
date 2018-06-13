@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import configparser
-import logging.config
+from libs.logging import config, getLogger
 import queue
 from threading import Thread
-from time import time
 
 from serial.tools.list_ports import comports
 
 from libs.rplidar import RPLidar as Rp
 
-_loggerRoot = logging.getLogger("ppl")
+_loggerRoot = getLogger("ppl")
 
-config = configparser.ConfigParser()
-config.read('./configs/config.ini', encoding="utf-8")
+configuration = configparser.ConfigParser()
+configuration.read('./configs/config.ini', encoding="utf-8")
 resolution_degre = float(config['MESURES']['resolution_degre'])
 nombre_tours = float(config['MESURES']['nombre_tours'])
 
