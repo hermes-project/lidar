@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import configparser
-from libs.logging import config, getLogger
+import logging.config
 
 from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
 from src.liaison_objets import liaison_objets
 
-configuration = configparser.ConfigParser()
-configuration.read('./configs/config.ini', encoding="utf-8")
+config = configparser.ConfigParser()
+config.read('./configs/config.ini', encoding="utf-8")
 nombre_tours = float(config['MESURES']['nombre_tours'])
 resolution_degre = float(config['MESURES']['resolution_degre'])
 distance_max = int(config['DETECTION']['distance_max'])
@@ -17,10 +17,10 @@ distance_infini = int(config['DETECTION']['distance_infini'])
 ecart_min_inter_objet = int(config['DETECTION']['ecart_min_inter_objet'])
 seuil_association = int(config['OBSTACLES FIXES OU MOBILES']['seuil_association'])
 
-_loggerRoot = getLogger("ppl")
-_loggerAffichage = getLogger("affichage")
+_loggerRoot = logging.getLogger("ppl")
+_loggerAffichage = logging.getLogger("affichage")
 
-_loggerPpl = getLogger("ppl")
+_loggerPpl = logging.getLogger("ppl")
 
 
 def mesures(te, list_obstacles_precedente, thread_data):

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import configparser
-from libs.logging import config, getLogger
+import logging.config
 import socket
 
-configuration = configparser.ConfigParser()
-configuration.read('./configs/config.ini', encoding="utf-8")
+config = configparser.ConfigParser()
+config.read('./configs/config.ini', encoding="utf-8")
 server = config['COMMUNICATION SOCKET']['server']
 port = int(config['COMMUNICATION SOCKET']['port'])
 hl_connected = config['COMMUNICATION SOCKET']['hl_connected'] == "True"
-_loggerHl = getLogger("hl")
+_loggerHl = logging.getLogger("hl")
 
 
 def hl_socket():
