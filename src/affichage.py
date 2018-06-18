@@ -97,16 +97,16 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
                 circle = pl.Circle((x_elt, -y_elt), radius=20, fc='black')  # Attention: -y
                 ax.add_artist(circle)
 
-    # Listes des positions des obstacles à afficher
-    detected_x = [dico[detected] * cos(detected) for detected in list_detected]
-    detected_y = [-dico[detected] * sin(detected) for detected in list_detected]  # Attention: -y
-
-    # Listes des positions des points à afficher
-    x = [distance * cos(angle) for distance, angle in zip(dico.values(), dico.keys())]
-    y = [-distance * sin(angle) for distance, angle in zip(dico.values(), dico.keys())]  # Attention: -y
-
-    pl.plot(detected_x, detected_y, 'bo', markersize=1.8)
-    pl.plot(x, y, 'ro', markersize=0.6)
+    # # Listes des positions des obstacles à afficher
+    # detected_x = [dico[detected] * cos(detected) for detected in list_detected]
+    # detected_y = [-dico[detected] * sin(detected) for detected in list_detected]  # Attention: -y
+    #
+    # # Listes des positions des points à afficher
+    # x = [distance * cos(angle) for distance, angle in zip(dico.values(), dico.keys())]
+    # y = [-distance * sin(angle) for distance, angle in zip(dico.values(), dico.keys())]  # Attention: -y
+    #
+    # pl.plot(detected_x, detected_y, 'bo', markersize=1.8)
+    # pl.plot(x, y, 'ro', markersize=0.6)
 
     # Affichage
     fig.canvas.draw()
@@ -160,16 +160,16 @@ def affichage_polaire(limits, ax, list_obstacles, dico, fig):
                                    color='darkolivegreen', alpha=0.4)
                 ax.add_artist(circle)
 
-    # Listes des positions des obstacles à afficher
-    detected_r = [dico[detected] for detected in list_detected]
-    detected_theta = [-detected for detected in list_detected]  # Attention: -theta
-
-    # Listes des positions des points à afficher
-    r = [distance for distance in dico.values()]
-    theta = [-angle for angle in dico.keys()]  # Attention: -theta
-
-    pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
-    pl.plot(theta, r, 'ro', markersize=0.6)
+    # # Listes des positions des obstacles à afficher
+    # detected_r = [dico[detected] for detected in list_detected]
+    # detected_theta = [-detected for detected in list_detected]  # Attention: -theta
+    #
+    # # Listes des positions des points à afficher
+    # r = [distance for distance in dico.values()]
+    # theta = [-angle for angle in dico.keys()]  # Attention: -theta
+    #
+    # pl.plot(detected_theta, detected_r, 'bo', markersize=1.8)
+    # pl.plot(theta, r, 'ro', markersize=0.6)
 
     # Affichage
     pl.grid()
