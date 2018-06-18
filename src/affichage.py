@@ -77,7 +77,7 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
         angle = o.center
         r = dico[angle]
         _loggerAffichage.debug("nb_obstacles: %s.", len(list_obstacles))
-        circle = pl.Circle((r * cos(angle), -r * sin(angle)), radius=200, fc='orange')  # Attention: -y
+        circle = pl.Circle((r * cos(angle), -r * sin(angle)), radius=o.width/2, fc='orange')  # Attention: -y
         ax.add_artist(circle)
 
         # Ajout de la position Kalman de l'obstacle
@@ -85,7 +85,7 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
             x_kalman = o.get_predicted_kalman()[0][0]
             y_kalman = o.get_predicted_kalman()[0][2]
             _loggerAffichage.debug("position kalman: x = %s et y = %s.", x_kalman, y_kalman)
-            circle = pl.Circle((x_kalman, -y_kalman), radius=200, fc='crimson')  # Attention: -y
+            circle = pl.Circle((x_kalman, -y_kalman), radius=o.width/2, fc='crimson')  # Attention: -y
             ax.add_artist(circle)
 
         # Ajout des précédentes positions Kalman de l'obstacle
@@ -94,7 +94,7 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
             for elt_piste in o.get_piste_obstacle():
                 x_elt = elt_piste[0]
                 y_elt = elt_piste[1]
-                circle = pl.Circle((x_elt, -y_elt), radius=20, fc='black')  # Attention: -y
+                circle = pl.Circle((x_elt, -y_elt), radius=8, fc='black')  # Attention: -y
                 ax.add_artist(circle)
 
     # # Listes des positions des obstacles à afficher
