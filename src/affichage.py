@@ -87,7 +87,7 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
             y_kalman = o.get_predicted_kalman()[0][2]
             _loggerAffichage.debug("position kalman: x = %s et y = %s.", x_kalman, y_kalman)
             circle = pl.Circle((x_kalman, -y_kalman), radius=200, fc='crimson')  # Attention: -y
-            #ax.add_artist(circle)
+            ax.add_artist(circle)
 
         # Ajout des précédentes positions Kalman de l'obstacle
         if o.get_piste_obstacle() is not None:
@@ -96,7 +96,7 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
                 x_elt = elt_piste[0]
                 y_elt = elt_piste[1]
                 circle = pl.Circle((x_elt, -y_elt), radius=20, fc='black')  # Attention: -y
-                #ax.add_artist(circle)
+                ax.add_artist(circle)
 
     # Listes des positions des obstacles à afficher
     detected_x = [dico[detected] * cos(detected) for detected in list_detected]
