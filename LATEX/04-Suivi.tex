@@ -2,10 +2,10 @@
 
 \subsection{Association d'objets}
 \tab À ce stade, notre système est en mesure de nous fournir à un instant t donné / à une itération donnée, une liste d'obstacles qui ont été détectés par le LiDAR sur cette itération. Nous pourrions tout à fait nous en contenter mais l'objectif ici est d'essayer de soutirer un maximum d'informations sur nos obstacles à partir de leur position à cet instant. Concrètement, si nous sommes en mesures de savoir où cet obstacle se trouvait à l'instant précédent, nous pouvons en déduire sa vitesse instantanée. Supposons que l'on arrive à le suivre pendant plusieurs secondes, nous pouvons très bien imaginer une spéculation sur la trajectoire que va suivre l'obstacle et donc anticiper sa position sur l'itération d'après. \\
-Notre problème ici est alors dans le fait d'associer les mesures entre deux instants. Comment savoir si l'obstacle X mesuré à l'instant t correspond à l'obstacle Y mesuré à l'instant $t+\Delta t$. Notre démarche a été de prendre la méthode la plus simple possible et d'essayer si cela ne suffisait pas une méthode plus complexe et plus élaborée.
+Notre problème ici est alors dans le fait d'associer les mesures entre deux instants. Comment savoir si l'obstacle X mesuré à l'instant t correspond à l'obstacle Y mesuré à l'instant $t+\Delta t$. Notre démarche a été de prendre la méthode la plus simple possible et d'essayer si cela ne suffisait pas une méthode plus complexe et plus élaborée. \cite{LIDAR2D} \cite{tutoSLAM} \cite{memoire1} \cite{MCMC-SLAM}
 
 \subsubsection{Méthode d'association d'objet}
-\tab L'association d'objet est le coeur de notre problème et de notre projet, c'est cette association qui conditionne le bon déroulement de la suite et qui conditionne la véracité de l'analyse des données du LiDAR. Notre algorithme procède donc de la façon suivante:
+\tab L'association d'objet est le cœur de notre problème et de notre projet, c'est cette association qui conditionne le bon déroulement de la suite et qui conditionne la véracité de l'analyse des données du LiDAR. Notre algorithme procède donc de la façon suivante:
 
 \begin{enumerate}
     \item Pour chaque obstacle crée à l'itération i-1 :
@@ -18,20 +18,24 @@ Notre problème ici est alors dans le fait d'associer les mesures entre deux ins
     \item Si l'itération i possède plus d'obstacles que l'itération i-1, on aura des obstacles sans association, ce sont donc de nouveaux obstacles que l'on créé. 
     \item À l'inverse, si l'itération i possède moins d'obstacles que l'itération i-1, des obstacles déjà créés vont être dépourvus d'association. Cela signifie que l'obstacle n'a pas été vu à l'itération i donc que l'obstacle n'est plus présent. On détruit alors ces obstacles.
 \end{enumerate}
-\tab De cette façon, nous sommes en mesure d'actualiser en temps réel la position de nos obstacles. C'est cette association qui va nous permettre de suivre les obstacles. Notre expérience sur la mise en place d'associations montre que l'utilisation de simples distances entre obstacles fonctionne plutôt bien. Il existe d'autres méthodes qui n'ont pas été développées ici mais qui sont envisageables pour améliorer le système comme l'algorithme de Kuhn-Munkres (aussi appelé algorithme hongrois) qui est un algorithme d'optimisation combinatoire et se prête bien à notre problème. Cet algorithme est notamment utilisé en surveillance pour suivre des personnes sur un flux vidéo.
+\tab De cette façon, nous sommes en mesure d'actualiser en temps réel la position de nos obstacles.\cite{multi-target-lidar} C'est cette association qui va nous permettre de suivre les obstacles. Notre expérience sur la mise en place d'associations montre que l'utilisation de simples distances entre obstacles fonctionne plutôt bien. Il existe d'autres méthodes qui n'ont pas été développées ici mais qui sont envisageables pour améliorer le système comme l'algorithme de Kuhn-Munkres (aussi appelé algorithme hongrois) qui est un algorithme d'optimisation combinatoire et se prête bien à notre problème. Cet algorithme est notamment utilisé en surveillance pour suivre des personnes sur un flux vidéo.
 %peut être parler d'un futur algo hongrois, sinon distance simple comme on l'a fait
 
 \subsection{Détection de murs}
-\tab Nous avons déterminé que les objets que nous estimons “d’intérêt” sont en réalité les murs, puisque ce sont des éléments fixes qui permettent de se repérer dans l’espace, et ainsi de les séparer des obstacles mobiles qui seront aussi à éviter. La détection de murs est aussi un élément essentiel d'algorithmes tels que SLAM. Un algorithme de \textit{RANSAC} (RANdom SAmple Consensus) nous a permis de détecter ces murs afin de les rendre utilisables par d’autres algorithmes dans le cas où la plateforme robotique qui supportera notre LiDAR en aurait besoin.
+\tab Nous avons déterminé que les objets que nous estimons “d’intérêt” sont en réalité les murs, puisque ce sont des éléments fixes qui permettent de se repérer dans l’espace, et ainsi de les séparer des obstacles mobiles qui seront aussi à éviter. La détection de murs est aussi un élément essentiel d'algorithmes tels que SLAM. Un algorithme de \textit{RANSAC} (pour \textit{RANdom SAmple Consensus}) nous a permis de détecter ces murs afin de les rendre utilisables par d’autres algorithmes dans le cas où la plateforme robotique qui supportera notre LiDAR en aurait besoin.
+
+% expliciter l'algorithme RANSAC en pseudo-langage
 
 Cet algorithme est très efficace pour faire un traitement rapide d'images et obtenir rapidement les éléments linéaires d'un nuage de points, mais il a l'énorme inconvénient de ne pas être déterministe, et dans notre cas on observait qu'environ 1 fois sur 4 l'algorithme ne détectait pas certains murs, ce qui peut être risqué dans une application comme la notre. Nous avons donc décidé de ne pas l'utiliser pour le moment, et de considérer les lignes comme des obstacles comme les autres. De plus, notre objectif n'étant pas un SLAM mais seulement une localisation d'obstacles, cet algorithme n'était en aucun point essentiel.
 
 D'autres algorithmes existent, par exemple ceux utilisant la \textit{transformée de Hough}, permettant de détecter toutes les structures linéaires dans un nuage de point. Cet algorithme, bien que plus lent, serait parfait pour notre application. Une parallélisation sur un Thread à part permettrait de continuer de traiter les données, et périodiquement récupérer les éléments linéaires des nuages de points.
 
+% expliciter l'algorithme de Hough en pseudo-langage
+
 %insérer image RANSAC
 \subsection{Filtre de Kalman}
- % détailler un peu l'aspect mathématique, ça pourrait être sympa je pense. Du moins de manière très succinte
-\tab Une tâche, effectuée en parallèle avec la détection de murs, a été l'implémentation d'un Filtre de Kalman. C'est un algorithme de filtrage de données très populaire car très puissant. Il est utilisé dans toute application requérant un suivi de mesures sur une cible récupérées d'un capteur très bruité.
+% détailler un peu l'aspect mathématique, ça pourrait être sympa je pense. Du moins de manière très succinte
+\tab Une tâche, effectuée en parallèle avec la détection de murs, a été l'implémentation d'un Filtre de Kalman. C'est un algorithme de filtrage de données très populaire car très puissant. Il est utilisé dans toute application requérant un suivi de mesures sur une cible récupérées d'un capteur très bruité.\cite{efk}
 Il comprend deux étapes qui se succèdent à chaque mise à jour des données:
 \tab \begin{enumerate}
             \item \textit{Prédiction}: On utilise l'état actuel de l'objet mesuré, si il existe, pour essayer de prédire sa prochaine position réelle. On essaye aussi de prédire la matrice de covariance de l'erreur, un élément essentiel du filtre estimant entre autres la précision de l'état estimé.
