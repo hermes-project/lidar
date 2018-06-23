@@ -43,6 +43,10 @@ Cela nous aura également donné l’occasion de faire un affichage ressemblant 
 
 \tab En définitive, le problème de l'acquisition des mesures pour la détection d'obstacle se fait de la façon la plus simple possible : on remplit progressivement une queue Python contenant les distances de chaque angle reçu, dans le sens anti-trigonométrique, chaque indice étant associé à un angle à 0.5 degré près. Le Thread principal, de traitement de données, récupère alors des éléments dans cette queue dès qu'il en a besoin. Au départ, l'idée était d'utiliser des sémaphores pour gérer l'accès à une liste, mais en utilisant des queues Python nous n'avons plus besoin de ces sémaphores explicites.
 
+% Faire un cadre qui explique la notion de queue en Python
+
+% Parler des threads en Python. Parler des problèmes rencontrés avec elles et les solutions proposées.
+
 \tab Ainsi, même si on peut supposer que l'on perd en fiabilité dû au fait qu'on ne réalise plus une moyenne sur plusieurs valeurs ou bien que l'on acquiert pas nécessairement une valeur à chaque tour pour chaque angle, le gain en réactivité et la perte d'obstacles rémanents contrebalancent complètement cette perte. D'autant plus que cette perte de fiabilité, en supposant qu'elle existe, sera grandement corrigée par le traitement des obstacles, notamment avec le filtrage de Kalman.
 
 %parler des sémaphores.  -> On s'en sert pas vraiment directement
