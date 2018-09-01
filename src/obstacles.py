@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 # coding: utf-8
+
+"""
+Les obstacles sont pistés par l'angle par rapport au LIDAR, sa distance et
+
+"""
+
 from collections import deque
 import numpy
 
@@ -10,35 +16,35 @@ class Obstacle:
     """
 
     def __init__(self, width, center, distance):
-        self.isMoving = False
+        self.is_moving = False
         self.speed = 0.  # necessite que ce soit des vecteurs # TODO
-        self.predictedPosition = numpy.array([0, 0])  # [distance, angle] avec la distance en mm  et l'angle en radian
-        self.ancienPredictedKalman = None
-        self.predictedKalman = None
-        self.pisteObstacle = deque()  # Les positions precedentes de l'objet en mouvement
+        self.predicted_position = numpy.array([0, 0])  # [distance, angle] avec la distance en mm  et l'angle en radian
+        self.previous_predicted_kalman = None
+        self.current_predicted_kalman = None
+        self.obstacle_track = deque()  # Les positions precedentes de l'objet en mouvement
         self.updated = False
-        self.ancienObstacle = None
+        self.previous_associated_obstacle = None
         self.width = width  # distance en mm
         self.center = center  # valeur de milieu de l'objet, exprimé grâce à un angle en radian
         self.distance = distance  # distance du milieu de l'objet
 
     def get_is_moving(self):
-        return self.isMoving
+        return self.is_moving
 
     def get_speed(self):
         return self.speed
 
     def get_predicted_position(self):
-        return self.predictedPosition
+        return self.predicted_position
 
     def get_predicted_kalman(self):
-        return self.predictedKalman
+        return self.current_predicted_kalman
 
-    def get_ancien_predicted_kalman(self):
-        return self.ancienPredictedKalman
+    def get_previous_predicted_kalman(self):
+        return self.previous_predicted_kalman
 
-    def get_piste_obstacle(self):
-        return self.pisteObstacle
+    def get_obstacle_track(self):
+        return self.obstacle_track
 
     def get_width(self):
         return self.width
@@ -52,8 +58,8 @@ class Obstacle:
     def get_updated(self):
         return self.updated
 
-    def get_ancien_obst_associe(self):
-        return self.ancienObstacle
+    def get_previous_associated_obstacle(self):
+        return self.previous_associated_obstacle
 
     def set_is_moving(self, is_moving):
         """
@@ -61,15 +67,15 @@ class Obstacle:
         :param is_moving: bool
         :return:
         """
-        self.isMoving = is_moving
+        self.is_moving = is_moving
 
-    def set_speed(self, vitesse):
+    def set_speed(self, speed):
         """
 
-        :param vitesse: Vec
+        :param speed: Vec
         :return:
         """
-        self.speed = vitesse
+        self.speed = speed
 
     def set_predicted_position(self, predicted_position):
         """
@@ -78,7 +84,7 @@ class Obstacle:
         :param predicted_position: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
         :return:
         """
-        self.predictedPosition = predicted_position
+        self.predicted_position = predicted_position
 
     def set_predicted_kalman(self, predicted_kalman_x, predicted_kalman_p):
         """
@@ -88,42 +94,42 @@ class Obstacle:
         :param predicted_kalman_p: matrice de covariance de l'erreur
         :return:
         """
-        self.predictedKalman = [predicted_kalman_x, predicted_kalman_p]
+        self.current_predicted_kalman = [predicted_kalman_x, predicted_kalman_p]
 
-    def set_ancien_predicted_kalman(self, ancien_predicted_kalman):
+    def set_previous_predicted_kalman(self, previous_predicted_kalman):
         """
         Position suivante de l'objet, predite avec Kalman
 
-        :param ancien_predicted_kalman: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
+        :param previous_predicted_kalman: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
         :return:
         """
-        self.ancienPredictedKalman = ancien_predicted_kalman
+        self.previous_predicted_kalman = previous_predicted_kalman
 
-    def set_new_position_piste(self, new_position_piste):
+    def append_new_associated_obstacle(self, new_associated_obstacle):
         """
         Ajoute la derniere position de l'objet a sa liste de positions precedentes
 
-        :param new_position_piste: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
+        :param new_associated_obstacle: tuple ([distance, angle] avec l'angle en RADIAN et la distance en mm)
         :return:
         """
-        self.pisteObstacle.append(new_position_piste)
+        self.obstacle_track.append(new_associated_obstacle)
 
-    def remove_point_piste(self):
+    def remove_track_obstacle(self):
         """
         Enlève la valeur à gauche dans la liste de positions precedentes (piste)
 
         :return:
         """
-        self.pisteObstacle.popleft()
+        self.obstacle_track.popleft()
 
-    def set_position_piste(self, position_piste):
+    def set_obstacle_track(self, position_piste):
         """
         Met à jour la liste de positions precedentes
 
         :param position_piste: liste de positions
         :return:
         """
-        self.pisteObstacle = position_piste
+        self.obstacle_track = position_piste
 
     def set_width(self, width):
         """
@@ -157,9 +163,9 @@ class Obstacle:
         """
         self.updated = updated
 
-    def set_ancien_obst_associe(self, ancien_obst_associe):
+    def set_previous_associated_obstacle(self, previous_associated_obstacle):
         """
-        :param ancien_obst_associe: objet de type Obstacle
+        :param previous_associated_obstacle: objet de type Obstacle
         :return:
         """
-        self.ancienObstacle = ancien_obst_associe
+        self.previous_associated_obstacle = previous_associated_obstacle

@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Précise les conditions des mesures faites par le RADAR
+"""
+
 import configparser
 import logging.config
 
 from src.analyze_dic import analyze_dic
 from src.data_cleaner import data_cleaner
-from src.liaison_objets import liaison_objets
+from src.liaison_objets import associate_obstacles
+from src.ThreadData import ThreadData
 
 config = configparser.ConfigParser()
 config.read('./configs/config.ini', encoding="utf-8")
@@ -23,23 +28,27 @@ _loggerAffichage = logging.getLogger("affichage")
 _loggerPpl = logging.getLogger("ppl")
 
 
-def mesures(te, list_obstacles_precedente, thread_data):
+def mesures(measure_period: float, previous_obstacles: list, thread_data: ThreadData):
     """
     Récupération et traitements de données.
 
+    :param measure_period:
+    :param previous_obstacles:
+    :param thread_data:
+    :return:
     """
     # Mise en forme des donnees, avec un dictionnaire liant angles a la distance associee,
     # et moyennant les distances si il y a plusieurs tours effectues
     lidar_data = thread_data.readyData.get()
-    dico = data_cleaner(lidar_data, resolution_degre)
-    # _loggerPpl.debug("dico : %s        ", dico)
+    cleaned_data = data_cleaner(lidar_data, resolution_degre)
+    # _loggerPpl.debug("cleaned_data : %s        ", cleaned_data)
 
     # Detection des bords d'obstacles
-    limits = analyze_dic(dico, distance_max, ecart_min_inter_objet)
+    limits = analyze_dic(cleaned_data, distance_max, ecart_min_inter_objet)
     # _loggerAffichage.info("Ostacles détectés aux angles:", limits)
 
     # Mise a jour des obstacles detectes, incluant le filtre de kalman
-    list_obstacles, list_obstacles_precedente = liaison_objets(dico, limits, seuil_association,
-                                                               te, list_obstacles_precedente)
+    obstacles, previous_obstacles = associate_obstacles(cleaned_data, limits, seuil_association,
+                                                        measure_period, previous_obstacles)
 
-    return dico, limits, list_obstacles, list_obstacles_precedente
+    return cleaned_data, limits, obstacles, previous_obstacles

@@ -90,9 +90,9 @@ def affichage_cartesien(limits, ax, list_obstacles, dico, fig):
             ax.add_artist(circle)
 
         # Ajout des précédentes positions Kalman de l'obstacle
-        if o.get_piste_obstacle() is not None:
-            _loggerAffichage.debug("piste : %s.", o.get_piste_obstacle())
-            for elt_piste in o.get_piste_obstacle():
+        if o.get_obstacle_track() is not None:
+            _loggerAffichage.debug("piste : %s.", o.get_obstacle_track())
+            for elt_piste in o.get_obstacle_track():
                 x_elt = elt_piste[0]
                 y_elt = elt_piste[1]
                 circle = pl.Circle((x_elt, -y_elt), radius=20, fc='black')  # Attention: -y
@@ -152,9 +152,9 @@ def affichage_polaire(limits, ax, list_obstacles, dico, fig):
             ax.add_artist(circle)
 
         # Ajout des précédentes positions Kalman de l'obstacle
-        if o.get_piste_obstacle() is not None:
-            _loggerAffichage.debug("piste : %s.", o.get_piste_obstacle())
-            for elt_piste in o.get_piste_obstacle():
+        if o.get_obstacle_track() is not None:
+            _loggerAffichage.debug("piste : %s.", o.get_obstacle_track())
+            for elt_piste in o.get_obstacle_track():
                 x_elt = elt_piste[0]
                 y_elt = elt_piste[1]
                 circle = pl.Circle((x_elt, -y_elt), 8, transform=ax.transData._b,
