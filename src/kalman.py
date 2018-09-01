@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 # coding: utf-8
+
+"""
+
+Cours sur le filtrage de Kalman spécialement conçu pour INTech :
+https://club-intech.minet.net/images/e/e6/Cours_filtrage_de_kalman.pdf
+"""
+
 from numpy import array, eye, set_printoptions
 from math import cos, sin
 from numpy.linalg import inv
@@ -21,13 +28,13 @@ sigma_distance = float(config['KALMAN']['sigma_distance'])  # Ecart type sur la 
 facteur_temps = float(config['KALMAN']['facteur_temps'])  # Ecart type sur la mesure de la distance
 
 
-def ekf(te, y_k, x_kalm_prec, p_kalm_prec):
+def ekf(period, y_k, x_kalm_prec, p_kalm_prec):
     """
     Extended Kalman Filter:
     Applique le filtre de kalman éendu, fournissant la position estimée x_k|k,
     à partir de la mesure y_k et la position estimée précédente x_k-1|k-1
     Met aussi à jours la matrice de covariances estimée
-    :param te: Temps écoulé depuis la dernière mesures
+    :param period: Temps écoulé depuis la dernière mesure
     :param y_k: Le vecteur des mesures, sous la forme numpy.array([angle,distance])
     :param x_kalm_prec: Le vecteur position estimée précédent x_k-1|k-1,
     sous la forme numpy.array([x,vitesse_x,y,vitesse_y])
@@ -36,17 +43,17 @@ def ekf(te, y_k, x_kalm_prec, p_kalm_prec):
     :return: x_kalm, p_kalm: Le couple du vecteur position estimé et la matrice de covariance estimée (x_k|k , p_k|k)
     """
 
-    te = facteur_temps*te
+    period = facteur_temps * period
 
-    f = array([[1, te, 0, 0],
+    f = array([[1, period, 0, 0],
                [0, 1, 0, 0],
-               [0, 0, 1, te],
+               [0, 0, 1, period],
                [0, 0, 0, 1]])
 
-    q = sigma_q * array([[(te ** 3) / 3, (te ** 2) / 2, 0, 0],
-                        [(te ** 2) / 2, te, 0, 0],
-                        [0, 0, (te ** 3) / 3, (te ** 2) / 2],
-                        [0, 0, (te ** 2) / 2, te]])
+    q = sigma_q * array([[(period ** 3) / 3, (period ** 2) / 2, 0, 0],
+                         [(period ** 2) / 2, period, 0, 0],
+                         [0, 0, (period ** 3) / 3, (period ** 2) / 2],
+                         [0, 0, (period ** 2) / 2, period]])
 
     r = array([[sigma_angle ** 2, 0],
                [0, sigma_distance ** 2]])

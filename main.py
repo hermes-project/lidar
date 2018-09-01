@@ -11,7 +11,7 @@ from src.HL_connection import stop_com_hl
 from src.ThreadData import ThreadData
 from src.affichage import afficher_en_polaire, affichage, affichage_cartesien, affichage_polaire, \
     init_affichage_cartesien, init_affichage_polaire
-from src.mesures import mesures
+from src.mesures import compute_measures
 
 if not isdir("./Logs/"):
     mkdir("./Logs/")
@@ -27,12 +27,12 @@ socket = None
 thread_data = None
 ax = None
 fig = None
-envoi = None
+message = None
 
 
 try:
     # Liste des positions des anciens obstacles
-    list_obstacles_precedente = []
+    previous_obstacles = []
 
     # Creation de socket pour communiquer avec le HL
     if hl_connected:
@@ -65,27 +65,27 @@ try:
         te = (time() - t)
         t = time()
         # On récupère les données du scan du LiDAR et on fait les traitements
-        dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
+        measures, limits, obstacles, previous_obstacles = compute_measures(te, previous_obstacles, thread_data)
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
 
-        liste_envoyee = []
-        for o in list_obstacles:
+        sent_list = []
+        for o in obstacles:
             angle = o.center
-            r = dico[angle]
-            liste_envoyee.append(str((r, angle)))
-            envoi = ";".join(liste_envoyee)
-            envoi = envoi + "\n"
-        _loggerHl.debug("envoi au hl: %s.", envoi)
-        data_writer.writerow(dico.values())
+            r = measures[angle]
+            sent_list.append(str((r, angle)))
+            message = ";".join(sent_list)
+            message = message + "\n"
+        _loggerHl.debug("envoi au hl: %s.", message)
+        data_writer.writerow(measures.values())
         if hl_connected:
-            socket.send(envoi.encode('ascii'))
+            socket.send(message.encode('ascii'))
         thread_data.lidar.clean_input()
         # Affichage des obstacles, de la position Kalman, et des points détectés dans chaque obstacle
         if affichage:
             if afficher_en_polaire:
-                affichage_polaire(limits, ax, list_obstacles, dico, fig)
+                affichage_polaire(limits, ax, obstacles, measures, fig)
             else:
-                affichage_cartesien(limits, ax, list_obstacles, dico, fig)
+                affichage_cartesien(limits, ax, obstacles, measures, fig)
 
 except KeyboardInterrupt:
     # Arrêt du système

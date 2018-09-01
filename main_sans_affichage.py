@@ -10,7 +10,7 @@ from src.HL_connection import hl_connected
 from src.HL_connection import hl_socket
 from src.HL_connection import stop_com_hl
 from src.ThreadData import ThreadData
-from src.mesures import mesures
+from src.mesures import compute_measures
 
 if not isdir("./Logs/"):
     mkdir("./Logs/")
@@ -56,7 +56,7 @@ try:
         te = (time() - t)
         t = time()
         # On récupère les données du scan du LiDAR et on fait les traitements
-        dico, limits, list_obstacles, list_obstacles_precedente = mesures(te, list_obstacles_precedente, thread_data)
+        dico, limits, list_obstacles, list_obstacles_precedente = compute_measures(te, list_obstacles_precedente, thread_data)
         # Envoi de la position du centre de l'obstacle détécté pour traitement par le pathfinding
 
         liste_envoyee = []

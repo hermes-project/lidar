@@ -28,7 +28,7 @@ _loggerAffichage = logging.getLogger("affichage")
 _loggerPpl = logging.getLogger("ppl")
 
 
-def mesures(measure_period: float, previous_obstacles: list, thread_data: ThreadData):
+def compute_measures(measure_period: float, previous_obstacles: list, thread_data: ThreadData):
     """
     Récupération et traitements de données.
 
