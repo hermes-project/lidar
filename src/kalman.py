@@ -31,7 +31,7 @@ facteur_temps = float(config['KALMAN']['facteur_temps'])  # Ecart type sur la me
 def ekf(period, y_k, x_kalm_prec, p_kalm_prec):
     """
     Extended Kalman Filter:
-    Applique le filtre de kalman éendu, fournissant la position estimée x_k|k,
+    Applique le filtre de kalman étendu, fournissant la position estimée x_k|k,
     à partir de la mesure y_k et la position estimée précédente x_k-1|k-1
     Met aussi à jours la matrice de covariances estimée
     :param period: Temps écoulé depuis la dernière mesure
