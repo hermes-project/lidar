@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 # coding: utf-8
+
+"""
+Thread s'occupant de la récupération des données mesurées par le LIDAR.
+"""
+
+
 import configparser
 import logging.config
 import queue
@@ -18,7 +24,9 @@ nombre_tours = float(config['MESURES']['nombre_tours'])
 
 
 class ThreadData(Thread):
-
+    """
+    ThreadData hérite de Thread
+    """
     def __init__(self):  # initialisation du LiDAR.
         _loggerRoot.info("Lancement thread de recuperation des donnees.")
         Thread.__init__(self)
