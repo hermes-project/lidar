@@ -1,0 +1,7 @@
+affichage module
+================
+
+.. automodule:: affichage
+    :members:
+    :undoc-members:
+    :show-inheritance:

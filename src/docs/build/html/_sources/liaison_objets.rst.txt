@@ -1,0 +1,7 @@
+liaison\_objets module
+======================
+
+.. automodule:: liaison_objets
+    :members:
+    :undoc-members:
+    :show-inheritance:

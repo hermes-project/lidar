@@ -1,0 +1,270 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>affichage &#8212; lidar 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for affichage</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># coding: utf-8</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span>
+<span class="kn">import</span> <span class="nn">logging.config</span>
+
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">pl</span>
+
+<span class="n">_loggerAffichage</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;affichage&quot;</span><span class="p">)</span>
+
+<span class="c1"># Recuperation de la config</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+<span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;./configs/config.ini&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+<span class="c1"># distance_max_x_cartesien = int(config[&#39;DETECTION&#39;][&#39;distance_max_x_cartesien&#39;])</span>
+<span class="c1"># distance_max_y_cartesien = int(config[&#39;DETECTION&#39;][&#39;distance_max_y_cartesien&#39;])</span>
+<span class="c1"># distance_max = int(config[&#39;DETECTION&#39;][&#39;distance_max&#39;])</span>
+<span class="c1"># afficher_en_polaire = config[&#39;AFFICHAGE&#39;][&#39;afficher_en_polaire&#39;] == &quot;True&quot;</span>
+<span class="c1"># affichage = config[&#39;COMMUNICATION SOCKET&#39;][&#39;affichage&#39;] == &quot;True&quot;</span>
+
+
+<div class="viewcode-block" id="init_affichage_cartesien"><a class="viewcode-back" href="../src.html#affichage.init_affichage_cartesien">[docs]</a><span class="k">def</span> <span class="nf">init_affichage_cartesien</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialisation de l&#39;affichage.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pl</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="n">distance_max_x_cartesien</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">distance_max_x_cartesien</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">distance_max_y_cartesien</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">distance_max_y_cartesien</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="init_affichage_polaire"><a class="viewcode-back" href="../src.html#affichage.init_affichage_polaire">[docs]</a><span class="k">def</span> <span class="nf">init_affichage_polaire</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialisation de l&#39;affichage.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pl</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">distance_max</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="affichage_cartesien"><a class="viewcode-back" href="../src.html#affichage.affichage_cartesien">[docs]</a><span class="k">def</span> <span class="nf">affichage_cartesien</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">list_obstacles</span><span class="p">,</span> <span class="n">dico</span><span class="p">,</span> <span class="n">fig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Affichage.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Liste des points détectés aux extrémités d&#39;un obstacle</span>
+    <span class="n">list_detected</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">detected</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">detected</span><span class="p">)):</span>
+            <span class="n">list_detected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detected</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+
+    <span class="c1"># Mise en place du graphe</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="n">distance_max_x_cartesien</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">distance_max_x_cartesien</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">distance_max_y_cartesien</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">distance_max_y_cartesien</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">pl</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">list_obstacles</span><span class="p">:</span>
+
+        <span class="c1"># Ajout de la position mesurée de l&#39;obstacle</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">center</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">dico</span><span class="p">[</span><span class="n">angle</span><span class="p">]</span>
+        <span class="n">_loggerAffichage</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;nb_obstacles: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_obstacles</span><span class="p">))</span>
+        <span class="n">circle</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="n">r</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="o">-</span><span class="n">r</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)),</span> <span class="n">radius</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>  <span class="c1"># Attention: -y</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+        <span class="c1"># Ajout de la position Kalman de l&#39;obstacle</span>
+        <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x_kalman</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y_kalman</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">_loggerAffichage</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;position kalman: x = </span><span class="si">%s</span><span class="s2"> et y = </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">x_kalman</span><span class="p">,</span> <span class="n">y_kalman</span><span class="p">)</span>
+            <span class="n">circle</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="n">x_kalman</span><span class="p">,</span> <span class="o">-</span><span class="n">y_kalman</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">)</span>  <span class="c1"># Attention: -y</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+        <span class="c1"># Ajout des précédentes positions Kalman de l&#39;obstacle</span>
+        <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">get_piste_obstacle</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_loggerAffichage</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;piste : </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">get_piste_obstacle</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">elt_piste</span> <span class="ow">in</span> <span class="n">o</span><span class="o">.</span><span class="n">get_piste_obstacle</span><span class="p">():</span>
+                <span class="n">x_elt</span> <span class="o">=</span> <span class="n">elt_piste</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">y_elt</span> <span class="o">=</span> <span class="n">elt_piste</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">circle</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="n">x_elt</span><span class="p">,</span> <span class="o">-</span><span class="n">y_elt</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>  <span class="c1"># Attention: -y</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+    <span class="c1"># Listes des positions des obstacles à afficher</span>
+    <span class="n">detected_x</span> <span class="o">=</span> <span class="p">[</span><span class="n">dico</span><span class="p">[</span><span class="n">detected</span><span class="p">]</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">detected</span><span class="p">)</span> <span class="k">for</span> <span class="n">detected</span> <span class="ow">in</span> <span class="n">list_detected</span><span class="p">]</span>
+    <span class="n">detected_y</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">dico</span><span class="p">[</span><span class="n">detected</span><span class="p">]</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">detected</span><span class="p">)</span> <span class="k">for</span> <span class="n">detected</span> <span class="ow">in</span> <span class="n">list_detected</span><span class="p">]</span>  <span class="c1"># Attention: -y</span>
+
+    <span class="c1"># Listes des positions des points à afficher</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">distance</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="k">for</span> <span class="n">distance</span><span class="p">,</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dico</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dico</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">distance</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="k">for</span> <span class="n">distance</span><span class="p">,</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dico</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dico</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>  <span class="c1"># Attention: -y</span>
+
+    <span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">detected_x</span><span class="p">,</span> <span class="n">detected_y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mf">1.8</span><span class="p">)</span>
+    <span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;ro&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+
+    <span class="c1"># Affichage</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="affichage_polaire"><a class="viewcode-back" href="../src.html#affichage.affichage_polaire">[docs]</a><span class="k">def</span> <span class="nf">affichage_polaire</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">list_obstacles</span><span class="p">,</span> <span class="n">dico</span><span class="p">,</span> <span class="n">fig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Affichage.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Liste des points détectés aux extrémités d&#39;un obstacle</span>
+    <span class="n">list_detected</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">detected</span> <span class="ow">in</span> <span class="n">limits</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">detected</span><span class="p">)):</span>
+            <span class="n">list_detected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detected</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+
+    <span class="c1"># Mise en place du graphe</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">+</span><span class="n">distance_max</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">list_obstacles</span><span class="p">:</span>
+
+        <span class="c1"># Ajout de la position mesurée de l&#39;obstacle</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">center</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">dico</span><span class="p">[</span><span class="n">angle</span><span class="p">]</span>
+        <span class="n">_loggerAffichage</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;nb_obstacles: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_obstacles</span><span class="p">))</span>
+        <span class="n">circle</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="n">r</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="o">-</span><span class="n">r</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)),</span> <span class="n">o</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">_b</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span>
+                           <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>  <span class="c1"># Attention: -y</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+        <span class="c1"># Ajout de la position Kalman de l&#39;obstacle</span>
+        <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x_kalman</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y_kalman</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">_loggerAffichage</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;position kalman: x = </span><span class="si">%s</span><span class="s2"> et y = </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">x_kalman</span><span class="p">,</span> <span class="n">y_kalman</span><span class="p">)</span>
+            <span class="n">circle</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="n">x_kalman</span><span class="p">,</span> <span class="o">-</span><span class="n">y_kalman</span><span class="p">),</span> <span class="n">o</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">_b</span><span class="p">,</span>
+                               <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>  <span class="c1"># Attention: -y</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+        <span class="c1"># Ajout des précédentes positions Kalman de l&#39;obstacle</span>
+        <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">get_piste_obstacle</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_loggerAffichage</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;piste : </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">get_piste_obstacle</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">elt_piste</span> <span class="ow">in</span> <span class="n">o</span><span class="o">.</span><span class="n">get_piste_obstacle</span><span class="p">():</span>
+                <span class="n">x_elt</span> <span class="o">=</span> <span class="n">elt_piste</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">y_elt</span> <span class="o">=</span> <span class="n">elt_piste</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">circle</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="n">x_elt</span><span class="p">,</span> <span class="o">-</span><span class="n">y_elt</span><span class="p">),</span> <span class="mi">8</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">_b</span><span class="p">,</span>
+                                   <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkolivegreen&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+    <span class="c1"># Listes des positions des obstacles à afficher</span>
+    <span class="n">detected_r</span> <span class="o">=</span> <span class="p">[</span><span class="n">dico</span><span class="p">[</span><span class="n">detected</span><span class="p">]</span> <span class="k">for</span> <span class="n">detected</span> <span class="ow">in</span> <span class="n">list_detected</span><span class="p">]</span>
+    <span class="n">detected_theta</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">detected</span> <span class="k">for</span> <span class="n">detected</span> <span class="ow">in</span> <span class="n">list_detected</span><span class="p">]</span>  <span class="c1"># Attention: -theta</span>
+
+    <span class="c1"># Listes des positions des points à afficher</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">distance</span> <span class="k">for</span> <span class="n">distance</span> <span class="ow">in</span> <span class="n">dico</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">angle</span> <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">dico</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>  <span class="c1"># Attention: -theta</span>
+
+    <span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">detected_theta</span><span class="p">,</span> <span class="n">detected_r</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mf">1.8</span><span class="p">)</span>
+    <span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="s1">&#39;ro&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+
+    <span class="c1"># Affichage</span>
+    <span class="n">pl</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Marwana4850.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

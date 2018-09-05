@@ -1,0 +1,601 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>src package &#8212; lidar 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="src-package">
+<h1>src package<a class="headerlink" href="#src-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src.docs.html">src.docs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.docs.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src.docs.source.html">src.docs.source package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.docs.source.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.docs.source.html#module-src.docs.source.conf">src.docs.source.conf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.docs.source.html#module-src.docs.source">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="src.docs.html#module-src.docs">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-HL_connection">
+<span id="src-hl-connection-module"></span><h2>src.HL_connection module<a class="headerlink" href="#module-HL_connection" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="HL_connection.hl_socket">
+<code class="descclassname">HL_connection.</code><code class="descname">hl_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/HL_connection.html#hl_socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#HL_connection.hl_socket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creation d’un socket de communication avec le HL du robot.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="HL_connection.stop_com_hl">
+<code class="descclassname">HL_connection.</code><code class="descname">stop_com_hl</code><span class="sig-paren">(</span><em>my_socket</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HL_connection.html#stop_com_hl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#HL_connection.stop_com_hl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creation d’un socket de communication avec le HL du robot.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ThreadData">
+<span id="src-threaddata-module"></span><h2>src.ThreadData module<a class="headerlink" href="#module-ThreadData" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ThreadData.ThreadData">
+<em class="property">class </em><code class="descclassname">ThreadData.</code><code class="descname">ThreadData</code><a class="reference internal" href="_modules/ThreadData.html#ThreadData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ThreadData.ThreadData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Thread" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></a></p>
+<dl class="method">
+<dt id="ThreadData.ThreadData.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ThreadData.html#ThreadData.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ThreadData.ThreadData.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This constructor should always be called with keyword arguments. Arguments are:</p>
+<p><em>group</em> should be None; reserved for future extension when a ThreadGroup
+class is implemented.</p>
+<p><em>target</em> is the callable object to be invoked by the run()
+method. Defaults to None, meaning nothing is called.</p>
+<p><em>name</em> is the thread name. By default, a unique name is constructed of
+the form “Thread-N” where N is a small decimal number.</p>
+<p><em>args</em> is the argument tuple for the target invocation. Defaults to ().</p>
+<p><em>kwargs</em> is a dictionary of keyword arguments for the target
+invocation. Defaults to {}.</p>
+<p>If a subclass overrides the constructor, it must make sure to invoke
+the base class constructor (Thread.__init__()) before doing anything
+else to the thread.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ThreadData.ThreadData.get_index">
+<code class="descname">get_index</code><span class="sig-paren">(</span><em>alpha</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ThreadData.html#ThreadData.get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ThreadData.ThreadData.get_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ThreadData.ThreadData.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ThreadData.html#ThreadData.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ThreadData.ThreadData.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method representing the thread’s activity.</p>
+<p>You may override this method in a subclass. The standard run() method
+invokes the callable object passed to the object’s constructor as the
+target argument, if any, with sequential and keyword arguments taken
+from the args and kwargs arguments, respectively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ThreadData.ThreadData.stop_lidar">
+<code class="descname">stop_lidar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ThreadData.html#ThreadData.stop_lidar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ThreadData.ThreadData.stop_lidar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-affichage">
+<span id="src-affichage-module"></span><h2>src.affichage module<a class="headerlink" href="#module-affichage" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="affichage.affichage_cartesien">
+<code class="descclassname">affichage.</code><code class="descname">affichage_cartesien</code><span class="sig-paren">(</span><em>limits</em>, <em>ax</em>, <em>list_obstacles</em>, <em>dico</em>, <em>fig</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/affichage.html#affichage_cartesien"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#affichage.affichage_cartesien" title="Permalink to this definition">¶</a></dt>
+<dd><p>Affichage.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="affichage.affichage_polaire">
+<code class="descclassname">affichage.</code><code class="descname">affichage_polaire</code><span class="sig-paren">(</span><em>limits</em>, <em>ax</em>, <em>list_obstacles</em>, <em>dico</em>, <em>fig</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/affichage.html#affichage_polaire"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#affichage.affichage_polaire" title="Permalink to this definition">¶</a></dt>
+<dd><p>Affichage.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="affichage.init_affichage_cartesien">
+<code class="descclassname">affichage.</code><code class="descname">init_affichage_cartesien</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/affichage.html#init_affichage_cartesien"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#affichage.init_affichage_cartesien" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialisation de l’affichage.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="affichage.init_affichage_polaire">
+<code class="descclassname">affichage.</code><code class="descname">init_affichage_polaire</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/affichage.html#init_affichage_polaire"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#affichage.init_affichage_polaire" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialisation de l’affichage.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-analyze_dic">
+<span id="src-analyze-dic-module"></span><h2>src.analyze_dic module<a class="headerlink" href="#module-analyze_dic" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="analyze_dic.analyze_dic">
+<code class="descclassname">analyze_dic.</code><code class="descname">analyze_dic</code><span class="sig-paren">(</span><em>raw_dict</em>, <em>distance_max</em>, <em>ecart_min_inter_objet</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analyze_dic.html#analyze_dic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#analyze_dic.analyze_dic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fonction d’analyse de dictionnaire de valuers</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>raw_dict</strong> – Dictionnaire au format {angle en radian:distance associée en mm}</li>
+<li><strong>distance_max</strong> – distance sous laquelle on considère un obstacle (mm)</li>
+<li><strong>ecart_min_inter_objet</strong> – écart minimum pour considérer que 2 objets sont différents</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list_bounds une liste contenant les angles ou couples d’angles (radians) associés aux objet détectés</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-data_cleaner">
+<span id="src-data-cleaner-module"></span><h2>src.data_cleaner module<a class="headerlink" href="#module-data_cleaner" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="data_cleaner.average">
+<code class="descclassname">data_cleaner.</code><code class="descname">average</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_cleaner.html#average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_cleaner.average" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="data_cleaner.data_cleaner">
+<code class="descclassname">data_cleaner.</code><code class="descname">data_cleaner</code><span class="sig-paren">(</span><em>lidar_data</em>, <em>resolution_degre</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_cleaner.html#data_cleaner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_cleaner.data_cleaner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fichier avec la fonction qui génère les données. Le Lidar doit être instencié dans le main</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lidar_data</strong> – données brutes du LiDAR</li>
+<li><strong>resolution_degre</strong> – La résolution utilisée en DEGRES</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">data Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="data_cleaner.standard_deviation">
+<code class="descclassname">data_cleaner.</code><code class="descname">standard_deviation</code><span class="sig-paren">(</span><em>array</em>, <em>m</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_cleaner.html#standard_deviation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_cleaner.standard_deviation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-kalman">
+<span id="src-kalman-module"></span><h2>src.kalman module<a class="headerlink" href="#module-kalman" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="kalman.ekf">
+<code class="descclassname">kalman.</code><code class="descname">ekf</code><span class="sig-paren">(</span><em>te</em>, <em>y_k</em>, <em>x_kalm_prec</em>, <em>p_kalm_prec</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kalman.html#ekf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kalman.ekf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extended Kalman Filter:
+Applique le filtre de kalman éendu, fournissant la position estimée x_k|k,
+à partir de la mesure y_k et la position estimée précédente x_k-1|k-1
+Met aussi à jours la matrice de covariances estimée
+:param te: Temps écoulé depuis la dernière mesures
+:param y_k: Le vecteur des mesures, sous la forme numpy.array([angle,distance])
+:param x_kalm_prec: Le vecteur position estimée précédent x_k-1|k-1,
+sous la forme numpy.array([x,vitesse_x,y,vitesse_y])
+:param p_kalm_prec: La matrice de covariance précédente p_k-1|k-1, sous la forme d’un array numpy de taille 4x4,
+initialement c’est la matrice identité (numpy.eye(4)) ou nulle (numpy.zeros(4))
+:return: x_kalm, p_kalm: Le couple du vecteur position estimé et la matrice de covariance estimée (x_k|k , p_k|k)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-liaison_objets">
+<span id="src-liaison-objets-module"></span><h2>src.liaison_objets module<a class="headerlink" href="#module-liaison_objets" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="liaison_objets.liaison_objets">
+<code class="descclassname">liaison_objets.</code><code class="descname">liaison_objets</code><span class="sig-paren">(</span><em>dico</em>, <em>list_bounds</em>, <em>seuil_association_cartesien</em>, <em>te</em>, <em>list_obstacles_precedente</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/liaison_objets.html#liaison_objets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#liaison_objets.liaison_objets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fonction qui créé des objets de type Obstacle et retourne une liste de ces obstacles</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dico</strong> – Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs</li>
+<li><strong>list_bounds</strong> – Liste de listes de format [angle début obstacle,angle fin obstacle]</li>
+<li><strong>seuil_association_cartesien</strong> – Tolerance pour savoir si un nouvel objet est un ancien objet qui s’est déplacé</li>
+<li><strong>te</strong> – écart entre 2 scans (en ms ?)</li>
+<li><strong>list_obstacles_precedente</strong> – Liste d’objets de type Obstacle</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list_obstacles: Liste d’objets de type Obstacle</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mesures">
+<span id="src-mesures-module"></span><h2>src.mesures module<a class="headerlink" href="#module-mesures" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="mesures.mesures">
+<code class="descclassname">mesures.</code><code class="descname">mesures</code><span class="sig-paren">(</span><em>te</em>, <em>list_obstacles_precedente</em>, <em>thread_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mesures.html#mesures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mesures.mesures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Récupération et traitements de données.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-obstacles">
+<span id="src-obstacles-module"></span><h2>src.obstacles module<a class="headerlink" href="#module-obstacles" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="obstacles.Obstacle">
+<em class="property">class </em><code class="descclassname">obstacles.</code><code class="descname">Obstacle</code><span class="sig-paren">(</span><em>width</em>, <em>center</em>, <em>distance</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>”
+Classe permettant de créer des obstacles</p>
+<dl class="method">
+<dt id="obstacles.Obstacle.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>width</em>, <em>center</em>, <em>distance</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_ancien_obst_associe">
+<code class="descname">get_ancien_obst_associe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_ancien_obst_associe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_ancien_obst_associe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_ancien_predicted_kalman">
+<code class="descname">get_ancien_predicted_kalman</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_ancien_predicted_kalman"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_ancien_predicted_kalman" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_center">
+<code class="descname">get_center</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_center" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_distance">
+<code class="descname">get_distance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_is_moving">
+<code class="descname">get_is_moving</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_is_moving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_is_moving" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_piste_obstacle">
+<code class="descname">get_piste_obstacle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_piste_obstacle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_piste_obstacle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_predicted_kalman">
+<code class="descname">get_predicted_kalman</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_predicted_kalman"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_predicted_kalman" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_predicted_position">
+<code class="descname">get_predicted_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_predicted_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_predicted_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_speed">
+<code class="descname">get_speed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_speed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_speed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_updated">
+<code class="descname">get_updated</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_updated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_updated" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.get_width">
+<code class="descname">get_width</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.get_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.get_width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.remove_point_piste">
+<code class="descname">remove_point_piste</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.remove_point_piste"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.remove_point_piste" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enlève la valeur à gauche dans la liste de positions precedentes (piste)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_ancien_obst_associe">
+<code class="descname">set_ancien_obst_associe</code><span class="sig-paren">(</span><em>ancien_obst_associe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_ancien_obst_associe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_ancien_obst_associe" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ancien_obst_associe</strong> – objet de type Obstacle</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_ancien_predicted_kalman">
+<code class="descname">set_ancien_predicted_kalman</code><span class="sig-paren">(</span><em>ancien_predicted_kalman</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_ancien_predicted_kalman"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_ancien_predicted_kalman" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position suivante de l’objet, predite avec Kalman</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ancien_predicted_kalman</strong> – tuple ([distance, angle] avec l’angle en RADIAN et la distance en mm)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_center">
+<code class="descname">set_center</code><span class="sig-paren">(</span><em>center</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_center" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>center</strong> – tuple (angle en RADIAN)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_distance">
+<code class="descname">set_distance</code><span class="sig-paren">(</span><em>distance</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_distance" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>distance</strong> – tuple (distance en mm)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_is_moving">
+<code class="descname">set_is_moving</code><span class="sig-paren">(</span><em>is_moving</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_is_moving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_is_moving" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>is_moving</strong> – bool</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_new_position_piste">
+<code class="descname">set_new_position_piste</code><span class="sig-paren">(</span><em>new_position_piste</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_new_position_piste"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_new_position_piste" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ajoute la derniere position de l’objet a sa liste de positions precedentes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_position_piste</strong> – tuple ([distance, angle] avec l’angle en RADIAN et la distance en mm)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_position_piste">
+<code class="descname">set_position_piste</code><span class="sig-paren">(</span><em>position_piste</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_position_piste"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_position_piste" title="Permalink to this definition">¶</a></dt>
+<dd><p>Met à jour la liste de positions precedentes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>position_piste</strong> – liste de positions</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_predicted_kalman">
+<code class="descname">set_predicted_kalman</code><span class="sig-paren">(</span><em>predicted_kalman_x</em>, <em>predicted_kalman_p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_predicted_kalman"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_predicted_kalman" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position suivante de l’objet, predite avec Kalman</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>predicted_kalman_x</strong> – vecteur de position et vitesse</li>
+<li><strong>predicted_kalman_p</strong> – matrice de covariance de l’erreur</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_predicted_position">
+<code class="descname">set_predicted_position</code><span class="sig-paren">(</span><em>predicted_position</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_predicted_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_predicted_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position suivante de l’objet, predite si cet objet est suppose fixe</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>predicted_position</strong> – tuple ([distance, angle] avec l’angle en RADIAN et la distance en mm)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_speed">
+<code class="descname">set_speed</code><span class="sig-paren">(</span><em>vitesse</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_speed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_speed" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vitesse</strong> – Vec</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_updated">
+<code class="descname">set_updated</code><span class="sig-paren">(</span><em>updated</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_updated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_updated" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>updated</strong> – bool</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obstacles.Obstacle.set_width">
+<code class="descname">set_width</code><span class="sig-paren">(</span><em>width</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/obstacles.html#Obstacle.set_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#obstacles.Obstacle.set_width" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>width</strong> – tuple</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Marwana4850.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/src.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

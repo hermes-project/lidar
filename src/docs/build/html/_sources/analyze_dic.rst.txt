@@ -1,0 +1,7 @@
+analyze\_dic module
+===================
+
+.. automodule:: analyze_dic
+    :members:
+    :undoc-members:
+    :show-inheritance:

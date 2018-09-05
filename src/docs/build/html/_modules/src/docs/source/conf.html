@@ -1,0 +1,280 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>src.docs.source.conf &#8212; lidar 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for src.docs.source.conf</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1"># Configuration file for the Sphinx documentation builder.</span>
+<span class="c1">#</span>
+<span class="c1"># This file does only contain a selection of the most common options. For a</span>
+<span class="c1"># full list see the documentation:</span>
+<span class="c1"># http://www.sphinx-doc.org/en/master/config</span>
+
+<span class="c1"># -- Path setup --------------------------------------------------------------</span>
+
+<span class="c1"># If extensions (or modules to document with autodoc) are in another directory,</span>
+<span class="c1"># add these directories to sys.path here. If the directory is relative to the</span>
+<span class="c1"># documentation root, use os.path.abspath to make it absolute, like shown here.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../../..&#39;</span><span class="p">))</span>
+
+<span class="c1"># Sort members by type</span>
+<span class="n">autodoc_member_order</span> <span class="o">=</span> <span class="s1">&#39;groupwise&#39;</span>
+
+<span class="c1"># Ensure that the __init__ method gets documented.</span>
+<div class="viewcode-block" id="skip"><a class="viewcode-back" href="../../../../src.docs.source.html#src.docs.source.conf.skip">[docs]</a><span class="k">def</span> <span class="nf">skip</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">what</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">skip</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;__init__&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">skip</span></div>
+
+<div class="viewcode-block" id="setup"><a class="viewcode-back" href="../../../../src.docs.source.html#src.docs.source.conf.setup">[docs]</a><span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;autodoc-skip-member&quot;</span><span class="p">,</span> <span class="n">skip</span><span class="p">)</span></div>
+
+<span class="c1"># Ignore packages</span>
+
+<span class="kn">import</span> <span class="nn">mock</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="n">MOCK_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;serial&#39;</span><span class="p">,</span><span class="s1">&#39;pylab&#39;</span><span class="p">,</span> <span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;numpy.linalg&#39;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">mod_name</span> <span class="ow">in</span> <span class="n">MOCK_MODULES</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">mod_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">Mock</span><span class="p">()</span>
+
+<span class="c1"># -- Project information -----------------------------------------------------</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="s1">&#39;lidar&#39;</span>
+<span class="n">copyright</span> <span class="o">=</span> <span class="s1">&#39;2018, Marwana4850&#39;</span>
+<span class="n">author</span> <span class="o">=</span> <span class="s1">&#39;Marwana4850&#39;</span>
+
+<span class="c1"># The short X.Y version</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+<span class="c1"># The full version, including alpha/beta/rc tags</span>
+<span class="n">release</span> <span class="o">=</span> <span class="s1">&#39;1.0.0&#39;</span>
+
+
+<span class="c1"># -- General configuration ---------------------------------------------------</span>
+
+<span class="c1"># If your documentation needs a minimal Sphinx version, state it here.</span>
+<span class="c1">#</span>
+<span class="c1"># needs_sphinx = &#39;1.0&#39;</span>
+
+<span class="c1"># Add any Sphinx extension module names here, as strings. They can be</span>
+<span class="c1"># extensions coming with Sphinx (named &#39;sphinx.ext.*&#39;) or your custom</span>
+<span class="c1"># ones.</span>
+<span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;sphinx.ext.autodoc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sphinx.ext.intersphinx&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sphinx.ext.mathjax&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sphinx.ext.ifconfig&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sphinx.ext.viewcode&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sphinx.ext.githubpages&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Add any paths that contain templates here, relative to this directory.</span>
+<span class="n">templates_path</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_templates&#39;</span><span class="p">]</span>
+
+<span class="c1"># The suffix(es) of source filenames.</span>
+<span class="c1"># You can specify multiple suffix as a list of string:</span>
+<span class="c1">#</span>
+<span class="c1"># source_suffix = [&#39;.rst&#39;, &#39;.md&#39;]</span>
+<span class="n">source_suffix</span> <span class="o">=</span> <span class="s1">&#39;.rst&#39;</span>
+
+<span class="c1"># The master toctree document.</span>
+<span class="n">master_doc</span> <span class="o">=</span> <span class="s1">&#39;index&#39;</span>
+
+<span class="c1"># The language for content autogenerated by Sphinx. Refer to documentation</span>
+<span class="c1"># for a list of supported languages.</span>
+<span class="c1">#</span>
+<span class="c1"># This is also used if you do content translation via gettext catalogs.</span>
+<span class="c1"># Usually you set &quot;language&quot; from the command line for these cases.</span>
+<span class="n">language</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># List of patterns, relative to source directory, that match files and</span>
+<span class="c1"># directories to ignore when looking for source files.</span>
+<span class="c1"># This pattern also affects html_static_path and html_extra_path .</span>
+<span class="n">exclude_patterns</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># The name of the Pygments (syntax highlighting) style to use.</span>
+<span class="n">pygments_style</span> <span class="o">=</span> <span class="s1">&#39;sphinx&#39;</span>
+
+
+<span class="c1"># -- Options for HTML output -------------------------------------------------</span>
+
+<span class="c1"># The theme to use for HTML and HTML Help pages.  See the documentation for</span>
+<span class="c1"># a list of builtin themes.</span>
+<span class="c1">#</span>
+<span class="n">html_theme</span> <span class="o">=</span> <span class="s1">&#39;alabaster&#39;</span>
+
+<span class="c1"># Theme options are theme-specific and customize the look and feel of a theme</span>
+<span class="c1"># further.  For a list of options available for each theme, see the</span>
+<span class="c1"># documentation.</span>
+<span class="c1">#</span>
+<span class="c1"># html_theme_options = {}</span>
+
+<span class="c1"># Add any paths that contain custom static files (such as style sheets) here,</span>
+<span class="c1"># relative to this directory. They are copied after the builtin static files,</span>
+<span class="c1"># so a file named &quot;default.css&quot; will overwrite the builtin &quot;default.css&quot;.</span>
+<span class="n">html_static_path</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_static&#39;</span><span class="p">]</span>
+
+<span class="c1"># Custom sidebar templates, must be a dictionary that maps document names</span>
+<span class="c1"># to template names.</span>
+<span class="c1">#</span>
+<span class="c1"># The default sidebars (for documents that don&#39;t match any pattern) are</span>
+<span class="c1"># defined by theme itself.  Builtin themes are using these templates by</span>
+<span class="c1"># default: ``[&#39;localtoc.html&#39;, &#39;relations.html&#39;, &#39;sourcelink.html&#39;,</span>
+<span class="c1"># &#39;searchbox.html&#39;]``.</span>
+<span class="c1">#</span>
+<span class="c1"># html_sidebars = {}</span>
+
+
+<span class="c1"># -- Options for HTMLHelp output ---------------------------------------------</span>
+
+<span class="c1"># Output file base name for HTML help builder.</span>
+<span class="n">htmlhelp_basename</span> <span class="o">=</span> <span class="s1">&#39;lidardoc&#39;</span>
+
+
+<span class="c1"># -- Options for LaTeX output ------------------------------------------------</span>
+
+<span class="n">latex_elements</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># The paper size (&#39;letterpaper&#39; or &#39;a4paper&#39;).</span>
+    <span class="c1">#</span>
+    <span class="c1"># &#39;papersize&#39;: &#39;letterpaper&#39;,</span>
+
+    <span class="c1"># The font size (&#39;10pt&#39;, &#39;11pt&#39; or &#39;12pt&#39;).</span>
+    <span class="c1">#</span>
+    <span class="c1"># &#39;pointsize&#39;: &#39;10pt&#39;,</span>
+
+    <span class="c1"># Additional stuff for the LaTeX preamble.</span>
+    <span class="c1">#</span>
+    <span class="c1"># &#39;preamble&#39;: &#39;&#39;,</span>
+
+    <span class="c1"># Latex figure (float) alignment</span>
+    <span class="c1">#</span>
+    <span class="c1"># &#39;figure_align&#39;: &#39;htbp&#39;,</span>
+<span class="p">}</span>
+
+<span class="c1"># Grouping the document tree into LaTeX files. List of tuples</span>
+<span class="c1"># (source start file, target name, title,</span>
+<span class="c1">#  author, documentclass [howto, manual, or own class]).</span>
+<span class="n">latex_documents</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">master_doc</span><span class="p">,</span> <span class="s1">&#39;lidar.tex&#39;</span><span class="p">,</span> <span class="s1">&#39;lidar Documentation&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;Marwana4850&#39;</span><span class="p">,</span> <span class="s1">&#39;manual&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+
+
+<span class="c1"># -- Options for manual page output ------------------------------------------</span>
+
+<span class="c1"># One entry per manual page. List of tuples</span>
+<span class="c1"># (source start file, name, description, authors, manual section).</span>
+<span class="n">man_pages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">master_doc</span><span class="p">,</span> <span class="s1">&#39;lidar&#39;</span><span class="p">,</span> <span class="s1">&#39;lidar Documentation&#39;</span><span class="p">,</span>
+     <span class="p">[</span><span class="n">author</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">]</span>
+
+
+<span class="c1"># -- Options for Texinfo output ----------------------------------------------</span>
+
+<span class="c1"># Grouping the document tree into Texinfo files. List of tuples</span>
+<span class="c1"># (source start file, target name, title, author,</span>
+<span class="c1">#  dir menu entry, description, category)</span>
+<span class="n">texinfo_documents</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">master_doc</span><span class="p">,</span> <span class="s1">&#39;lidar&#39;</span><span class="p">,</span> <span class="s1">&#39;lidar Documentation&#39;</span><span class="p">,</span>
+     <span class="n">author</span><span class="p">,</span> <span class="s1">&#39;lidar&#39;</span><span class="p">,</span> <span class="s1">&#39;One line description of project.&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;Miscellaneous&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+
+
+<span class="c1"># -- Extension configuration -------------------------------------------------</span>
+
+<span class="c1"># -- Options for intersphinx extension ---------------------------------------</span>
+
+<span class="c1"># Example configuration for intersphinx: refer to the Python standard library.</span>
+<span class="n">intersphinx_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;https://docs.python.org/&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Marwana4850.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

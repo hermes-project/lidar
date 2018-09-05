@@ -1,0 +1,7 @@
+HL\_connection module
+=====================
+
+.. automodule:: HL_connection
+    :members:
+    :undoc-members:
+    :show-inheritance:

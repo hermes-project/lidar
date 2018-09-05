@@ -1,0 +1,7 @@
+obstacles module
+================
+
+.. automodule:: obstacles
+    :members:
+    :undoc-members:
+    :show-inheritance:

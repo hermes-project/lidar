@@ -1,0 +1,7 @@
+mesures module
+==============
+
+.. automodule:: mesures
+    :members:
+    :undoc-members:
+    :show-inheritance:

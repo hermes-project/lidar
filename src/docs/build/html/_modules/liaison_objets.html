@@ -1,0 +1,217 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>liaison_objets &#8212; lidar 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for liaison_objets</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># from src.obstacles import Obstacle</span>
+<span class="c1"># from math import cos, sin, pi, sqrt</span>
+<span class="c1"># from src.kalman import ekf</span>
+<span class="c1"># import numpy as np</span>
+
+
+<div class="viewcode-block" id="liaison_objets"><a class="viewcode-back" href="../src.html#liaison_objets.liaison_objets">[docs]</a><span class="k">def</span> <span class="nf">liaison_objets</span><span class="p">(</span><span class="n">dico</span><span class="p">,</span> <span class="n">list_bounds</span><span class="p">,</span> <span class="n">seuil_association_cartesien</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">list_obstacles_precedente</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fonction qui créé des objets de type Obstacle et retourne une liste de ces obstacles</span>
+
+<span class="sd">    :param dico: Dictionnaire avec les angles discrétisés en key et les tuples de distance en valeurs</span>
+<span class="sd">    :param list_bounds: Liste de listes de format [angle début obstacle,angle fin obstacle]</span>
+<span class="sd">    :param seuil_association_cartesien: Tolerance pour savoir si un nouvel objet est un ancien objet qui s&#39;est déplacé</span>
+<span class="sd">    :param te: écart entre 2 scans (en ms ?)</span>
+<span class="sd">    :param list_obstacles_precedente: Liste d&#39;objets de type Obstacle</span>
+<span class="sd">    :return: list_obstacles: Liste d&#39;objets de type Obstacle</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">center</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">list_obstacles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_bounds</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">new_obstacle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+
+        <span class="n">distance_min</span> <span class="o">=</span> <span class="mi">12000</span>
+        <span class="n">distance_max</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">dist_min_ancien_new_obst</span> <span class="o">=</span> <span class="n">distance_min</span>
+        <span class="n">ancien_obst_associe</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Calcul milieu obstacles et largeur</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_bounds</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">angle_debut</span> <span class="o">=</span> <span class="n">list_bounds</span><span class="p">[</span><span class="n">new_obstacle</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">angle_fin</span> <span class="o">=</span> <span class="n">list_bounds</span><span class="p">[</span><span class="n">new_obstacle</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">angle_fin</span> <span class="o">&lt;</span> <span class="n">angle_debut</span><span class="p">:</span>
+                <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">angle_debut</span> <span class="o">+</span> <span class="n">angle_fin</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">center</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle_debut</span> <span class="o">+</span> <span class="n">angle_fin</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">center</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">center</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dico</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">dico</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">angle_fin</span> <span class="o">&lt;</span> <span class="n">angle_debut</span><span class="p">:</span>
+                        <span class="n">angle_fin</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span>
+
+                    <span class="k">if</span> <span class="n">angle_debut</span> <span class="o">&lt;=</span> <span class="n">angle</span> <span class="o">&lt;=</span> <span class="n">angle_fin</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">angle</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">:</span>
+                            <span class="n">distance</span> <span class="o">=</span> <span class="n">dico</span><span class="p">[</span><span class="n">angle</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">angle</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">:</span>
+                            <span class="n">distance</span> <span class="o">=</span> <span class="n">dico</span><span class="p">[</span><span class="n">angle</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="n">distance_max</span><span class="p">:</span>
+                            <span class="n">distance_max</span> <span class="o">=</span> <span class="n">distance</span>
+                        <span class="k">if</span> <span class="n">distance</span> <span class="o">&lt;</span> <span class="n">distance_min</span><span class="p">:</span>
+                            <span class="n">distance_min</span> <span class="o">=</span> <span class="n">distance</span>
+
+                <span class="n">dico</span><span class="p">[</span><span class="n">center</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">distance_max</span> <span class="o">+</span> <span class="n">distance_min</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+            <span class="k">if</span> <span class="n">angle_fin</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">:</span>
+                <span class="n">angle_fin</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">angle_fin</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+            <span class="c1"># width = max(abs(xmax - xmin), abs(ymax - ymin)) # en degre</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">dico</span><span class="p">[</span><span class="n">angle_debut</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dico</span><span class="p">[</span><span class="n">angle_fin</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dico</span><span class="p">[</span><span class="n">angle_debut</span><span class="p">]</span> <span class="o">*</span> <span class="n">dico</span><span class="p">[</span><span class="n">angle_fin</span><span class="p">]</span>
+                         <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">angle_fin</span> <span class="o">-</span> <span class="n">angle_debut</span><span class="p">)))</span>  <span class="c1"># Al Kashi</span>
+
+        <span class="c1"># Creation des objets de type Obstacle</span>
+        <span class="n">list_obstacles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Obstacle</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">dico</span><span class="p">[</span><span class="n">center</span><span class="p">]))</span>
+        <span class="n">obstacle_traite</span> <span class="o">=</span> <span class="n">list_obstacles</span><span class="p">[</span><span class="n">new_obstacle</span><span class="p">]</span>
+
+        <span class="c1"># Association des anciens obstacles avec les nouveaux obstacles</span>
+        <span class="k">if</span> <span class="n">list_obstacles_precedente</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">precedent_obstacle</span> <span class="ow">in</span> <span class="n">list_obstacles_precedente</span><span class="p">:</span>
+                <span class="n">a1</span> <span class="o">=</span> <span class="n">center</span>
+                <span class="n">r1</span> <span class="o">=</span> <span class="n">dico</span><span class="p">[</span><span class="n">a1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">():</span>
+                    <span class="n">a2</span> <span class="o">=</span> <span class="n">precedent_obstacle</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">r2</span> <span class="o">=</span> <span class="n">precedent_obstacle</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">a2</span> <span class="o">=</span> <span class="n">precedent_obstacle</span><span class="o">.</span><span class="n">get_center</span><span class="p">()</span>
+                    <span class="n">r2</span> <span class="o">=</span> <span class="n">precedent_obstacle</span><span class="o">.</span><span class="n">get_distance</span><span class="p">()</span>
+                <span class="n">distance_entre_objets</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">r1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">r2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r1</span> <span class="o">*</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">a2</span> <span class="o">-</span> <span class="n">a1</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">distance_entre_objets</span> <span class="o">&lt;</span> <span class="n">dist_min_ancien_new_obst</span><span class="p">:</span>  <span class="c1"># Distance entre le dernier kalman estimé</span>
+                    <span class="c1"># et la position mesurée du nvel objet</span>
+                    <span class="n">dist_min_ancien_new_obst</span> <span class="o">=</span> <span class="n">distance_entre_objets</span>
+                    <span class="n">ancien_obst_associe</span> <span class="o">=</span> <span class="n">precedent_obstacle</span>
+
+            <span class="k">if</span> <span class="n">dist_min_ancien_new_obst</span> <span class="o">&lt;</span> <span class="n">seuil_association_cartesien</span><span class="p">:</span>
+                <span class="n">ancien_obst_associe</span><span class="o">.</span><span class="n">set_updated</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">set_ancien_obst_associe</span><span class="p">(</span><span class="n">ancien_obst_associe</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ancien_obst_associe</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># On récupère la valeur de l&#39;ancien objet</span>
+                    <span class="c1"># car les 2 objets sont en fait les mêmes</span>
+                    <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">set_predicted_kalman</span><span class="p">(</span><span class="n">ancien_obst_associe</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
+                                                         <span class="n">ancien_obst_associe</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">piste</span> <span class="o">=</span> <span class="n">ancien_obst_associe</span><span class="o">.</span><span class="n">get_piste_obstacle</span><span class="p">()</span>
+                    <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">set_position_piste</span><span class="p">(</span><span class="n">piste</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">piste</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">piste</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+                            <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">remove_point_piste</span><span class="p">()</span>
+                    <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">set_new_position_piste</span><span class="p">([</span><span class="n">ancien_obst_associe</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                                            <span class="n">ancien_obst_associe</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]])</span>
+
+            <span class="c1"># Kalman</span>
+            <span class="c1"># y_k: derniere mesure faite avec le lidar -&gt; [obstacle_traite.get_center, dico[center]]</span>
+            <span class="c1"># x_kalm_prec: ancienne sortie du Kalman</span>
+            <span class="c1"># p_kalm_prec: ancienne sortie du Kalman</span>
+            <span class="k">if</span> <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">x_kalm_prec</span><span class="p">,</span> <span class="n">p_kalm_prec</span> <span class="o">=</span> <span class="n">ekf</span><span class="p">(</span><span class="n">te</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">center</span><span class="p">,</span> <span class="n">dico</span><span class="p">[</span><span class="n">center</span><span class="p">]]),</span>
+                                               <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
+                                               <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">get_predicted_kalman</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">set_predicted_kalman</span><span class="p">(</span><span class="n">x_kalm_prec</span><span class="p">,</span> <span class="n">p_kalm_prec</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">dico</span><span class="p">[</span><span class="n">center</span><span class="p">]</span>
+                <span class="n">x_kalm_prec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">center</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">r</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">center</span><span class="p">),</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+                <span class="n">p_kalm_prec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+                <span class="n">obstacle_traite</span><span class="o">.</span><span class="n">set_predicted_kalman</span><span class="p">(</span><span class="n">x_kalm_prec</span><span class="p">,</span> <span class="n">p_kalm_prec</span><span class="p">)</span>  <span class="c1"># Initialisation du</span>
+                <span class="c1"># Kalman à la 1ère position mesurée de l&#39;obstacle</span>
+
+    <span class="n">list_obstacles_precedente</span> <span class="o">=</span> <span class="n">list_obstacles</span>
+
+    <span class="k">return</span> <span class="n">list_obstacles</span><span class="p">,</span> <span class="n">list_obstacles_precedente</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Marwana4850.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

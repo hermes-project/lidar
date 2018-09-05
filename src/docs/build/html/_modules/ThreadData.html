@@ -1,0 +1,152 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ThreadData &#8212; lidar 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ThreadData</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># coding: utf-8</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">logging.config</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Thread</span>
+
+<span class="c1"># from serial.tools.list_ports import comports</span>
+<span class="c1">#</span>
+<span class="c1"># from libs.rplidar import RPLidar as Rp</span>
+
+<span class="n">_loggerRoot</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ppl&quot;</span><span class="p">)</span>
+
+<span class="c1"># config = configparser.ConfigParser()</span>
+<span class="c1"># config.read(&#39;./configs/config.ini&#39;, encoding=&quot;utf-8&quot;)</span>
+<span class="c1"># resolution_degre = float(config[&#39;MESURES&#39;][&#39;resolution_degre&#39;])</span>
+<span class="c1"># nombre_tours = float(config[&#39;MESURES&#39;][&#39;nombre_tours&#39;])</span>
+
+
+<div class="viewcode-block" id="ThreadData"><a class="viewcode-back" href="../src.html#ThreadData.ThreadData">[docs]</a><span class="k">class</span> <span class="nc">ThreadData</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ThreadData.__init__"><a class="viewcode-back" href="../src.html#ThreadData.ThreadData.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># initialisation du LiDAR.</span>
+        <span class="n">_loggerRoot</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Lancement thread de recuperation des donnees.&quot;</span><span class="p">)</span>
+        <span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lidar</span> <span class="o">=</span> <span class="n">Rp</span><span class="p">(</span><span class="n">comports</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># Tente de se connecter au premier port Serie disponible</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">_loggerRoot</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Pas de connexion serie disponible.&quot;</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">start_motor</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution_degre</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generated_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">readyData</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ThreadData.run"><a class="viewcode-back" href="../src.html#ThreadData.ThreadData.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Liste contenant les donnees d&#39;un scan entier = un tour</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># on utilise un booleen pour verifier reinitialiser les valeurs non update sur un tour</span>
+        <span class="c1"># afin d&#39;eviter de garder des valeurs obselete</span>
+        <span class="n">around</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">*</span> <span class="mi">10</span>
+        <span class="k">for</span> <span class="n">scans</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">iter_scans</span><span class="p">(</span><span class="n">max_buf_meas</span><span class="o">=</span><span class="mi">3500</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generated_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="mf">360.</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">)))]</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">distance</span> <span class="ow">in</span> <span class="n">scans</span><span class="p">:</span>
+                <span class="n">angle</span> <span class="o">=</span> <span class="p">((</span><span class="nb">round</span><span class="p">(</span><span class="n">angle</span> <span class="o">/</span> <span class="n">around</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">around</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generated_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_index</span><span class="p">(</span><span class="n">angle</span><span class="p">)]</span> <span class="o">=</span> <span class="n">distance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readyData</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generated_data</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+                <span class="k">break</span></div>
+
+<div class="viewcode-block" id="ThreadData.get_index"><a class="viewcode-back" href="../src.html#ThreadData.ThreadData.get_index">[docs]</a>    <span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>  <span class="c1"># methode qui permet de donner l&#39;indice de la liste à partir d&#39;un angle</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="ThreadData.stop_lidar"><a class="viewcode-back" href="../src.html#ThreadData.ThreadData.stop_lidar">[docs]</a>    <span class="k">def</span> <span class="nf">stop_lidar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># methode pour arreter le LiDAR</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">stop_motor</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lidar</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Marwana4850.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

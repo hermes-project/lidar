@@ -1,0 +1,258 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>obstacles &#8212; lidar 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for obstacles</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># coding: utf-8</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+
+<div class="viewcode-block" id="Obstacle"><a class="viewcode-back" href="../src.html#obstacles.Obstacle">[docs]</a><span class="k">class</span> <span class="nc">Obstacle</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="sd">    Classe permettant de créer des obstacles</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Obstacle.__init__"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isMoving</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="mf">0.</span>  <span class="c1"># necessite que ce soit des vecteurs # TODO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictedPosition</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># [distance, angle] avec la distance en mm  et l&#39;angle en radian</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ancienPredictedKalman</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictedKalman</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pisteObstacle</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>  <span class="c1"># Les positions precedentes de l&#39;objet en mouvement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ancienObstacle</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>  <span class="c1"># distance en mm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">center</span>  <span class="c1"># valeur de milieu de l&#39;objet, exprimé grâce à un angle en radian</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">distance</span>  <span class="c1"># distance du milieu de l&#39;objet</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_is_moving"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_is_moving">[docs]</a>    <span class="k">def</span> <span class="nf">get_is_moving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isMoving</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_speed"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_speed">[docs]</a>    <span class="k">def</span> <span class="nf">get_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_predicted_position"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_predicted_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_predicted_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictedPosition</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_predicted_kalman"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_predicted_kalman">[docs]</a>    <span class="k">def</span> <span class="nf">get_predicted_kalman</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictedKalman</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_ancien_predicted_kalman"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_ancien_predicted_kalman">[docs]</a>    <span class="k">def</span> <span class="nf">get_ancien_predicted_kalman</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancienPredictedKalman</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_piste_obstacle"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_piste_obstacle">[docs]</a>    <span class="k">def</span> <span class="nf">get_piste_obstacle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pisteObstacle</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_width"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_width">[docs]</a>    <span class="k">def</span> <span class="nf">get_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_center"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_center">[docs]</a>    <span class="k">def</span> <span class="nf">get_center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_distance"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_distance">[docs]</a>    <span class="k">def</span> <span class="nf">get_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_updated"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_updated">[docs]</a>    <span class="k">def</span> <span class="nf">get_updated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">updated</span></div>
+
+<div class="viewcode-block" id="Obstacle.get_ancien_obst_associe"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.get_ancien_obst_associe">[docs]</a>    <span class="k">def</span> <span class="nf">get_ancien_obst_associe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancienObstacle</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_is_moving"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_is_moving">[docs]</a>    <span class="k">def</span> <span class="nf">set_is_moving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_moving</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param is_moving: bool</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isMoving</span> <span class="o">=</span> <span class="n">is_moving</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_speed"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_speed">[docs]</a>    <span class="k">def</span> <span class="nf">set_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vitesse</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param vitesse: Vec</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">vitesse</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_predicted_position"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_predicted_position">[docs]</a>    <span class="k">def</span> <span class="nf">set_predicted_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicted_position</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Position suivante de l&#39;objet, predite si cet objet est suppose fixe</span>
+
+<span class="sd">        :param predicted_position: tuple ([distance, angle] avec l&#39;angle en RADIAN et la distance en mm)</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictedPosition</span> <span class="o">=</span> <span class="n">predicted_position</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_predicted_kalman"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_predicted_kalman">[docs]</a>    <span class="k">def</span> <span class="nf">set_predicted_kalman</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicted_kalman_x</span><span class="p">,</span> <span class="n">predicted_kalman_p</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Position suivante de l&#39;objet, predite avec Kalman</span>
+
+<span class="sd">        :param predicted_kalman_x: vecteur de position et vitesse</span>
+<span class="sd">        :param predicted_kalman_p: matrice de covariance de l&#39;erreur</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictedKalman</span> <span class="o">=</span> <span class="p">[</span><span class="n">predicted_kalman_x</span><span class="p">,</span> <span class="n">predicted_kalman_p</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_ancien_predicted_kalman"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_ancien_predicted_kalman">[docs]</a>    <span class="k">def</span> <span class="nf">set_ancien_predicted_kalman</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ancien_predicted_kalman</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Position suivante de l&#39;objet, predite avec Kalman</span>
+
+<span class="sd">        :param ancien_predicted_kalman: tuple ([distance, angle] avec l&#39;angle en RADIAN et la distance en mm)</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ancienPredictedKalman</span> <span class="o">=</span> <span class="n">ancien_predicted_kalman</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_new_position_piste"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_new_position_piste">[docs]</a>    <span class="k">def</span> <span class="nf">set_new_position_piste</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_position_piste</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ajoute la derniere position de l&#39;objet a sa liste de positions precedentes</span>
+
+<span class="sd">        :param new_position_piste: tuple ([distance, angle] avec l&#39;angle en RADIAN et la distance en mm)</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pisteObstacle</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_position_piste</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Obstacle.remove_point_piste"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.remove_point_piste">[docs]</a>    <span class="k">def</span> <span class="nf">remove_point_piste</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enlève la valeur à gauche dans la liste de positions precedentes (piste)</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pisteObstacle</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_position_piste"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_position_piste">[docs]</a>    <span class="k">def</span> <span class="nf">set_position_piste</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_piste</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Met à jour la liste de positions precedentes</span>
+
+<span class="sd">        :param position_piste: liste de positions</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pisteObstacle</span> <span class="o">=</span> <span class="n">position_piste</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_width"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_width">[docs]</a>    <span class="k">def</span> <span class="nf">set_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param width: tuple</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_center"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_center">[docs]</a>    <span class="k">def</span> <span class="nf">set_center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param center: tuple (angle en RADIAN)</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">center</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_distance"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_distance">[docs]</a>    <span class="k">def</span> <span class="nf">set_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param distance: tuple (distance en mm)</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">distance</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_updated"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_updated">[docs]</a>    <span class="k">def</span> <span class="nf">set_updated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updated</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param updated: bool</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updated</span> <span class="o">=</span> <span class="n">updated</span></div>
+
+<div class="viewcode-block" id="Obstacle.set_ancien_obst_associe"><a class="viewcode-back" href="../src.html#obstacles.Obstacle.set_ancien_obst_associe">[docs]</a>    <span class="k">def</span> <span class="nf">set_ancien_obst_associe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ancien_obst_associe</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param ancien_obst_associe: objet de type Obstacle</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ancienObstacle</span> <span class="o">=</span> <span class="n">ancien_obst_associe</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lidar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Marwana4850.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
