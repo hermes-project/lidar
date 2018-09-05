@@ -6,12 +6,11 @@ Code of data treatment of the Hermes-LiDAR project.
 
 |        Etapes         |                           Actions                              |
 |:---------------------:|:--------------------------------------------------------------:|
-|0                      |Use Python 3                                                    |
+|0                      |Use Python 3  and pip3 (python-pip3)                            |
 |1                      |Clone the repository.                                           |
-|2                      |sudo pip install pyserial                                       |
-|3                      |sudo pip install matplotlib                                     |
-|4                      |Install tk8.6 (sudo pacman -S tk or sudo apt-get install tk).   |
-|5                      |Enjoy !                                                         |
+|2                      |sudo pip3 install -r requirements.txt                           |
+|3                      |Install tk8.6 (sudo pacman -S tk or sudo apt-get install tk).   |
+|4                      |Enjoy !                                                         |
 
 # Choice of application
 You can:
